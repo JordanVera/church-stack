@@ -1,0 +1,44 @@
+import { initTRPC, TRPCError } from '@trpc/server';
+import type { Context } from './context';
+
+const t = initTRPC.context<Context>().create();
+
+export const router = t.router;
+export const middleware = t.middleware;
+export const createCallerFactory = t.createCallerFactory;
+
+/** Open to anyone. */
+export const publicProcedure = t.procedure;
+
+/** Requires a signed-in user. */
+export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
+  if (!ctx.session?.user) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+  return next({ ctx: { ...ctx, session: ctx.session } });
+});
+
+/**
+ * Requires a resolved tenant. Accepts either `x-church-id` or `x-church-slug`
+ * and guarantees a non-null `churchId` downstream.
+ */
+export const tenantProcedure = t.procedure.use(async ({ ctx, next }) => {
+  let churchId = ctx.churchId;
+
+  if (!churchId && ctx.churchSlug) {
+    const church = await ctx.prisma.church.findUnique({
+      where: { slug: ctx.churchSlug },
+      select: { id: true },
+    });
+    churchId = church?.id ?? null;
+  }
+
+  if (!churchId) {
+    throw new TRPCError({
+      code: 'BAD_REQUEST',
+      message: 'Missing tenant. Provide an x-church-id or x-church-slug header.',
+    });
+  }
+
+  return next({ ctx: { ...ctx, churchId } });
+});
