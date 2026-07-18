@@ -1,68 +1,113 @@
 'use client';
 
+import Image from 'next/image';
 import { Smartphone, Palette, Zap, CalendarDays, HandHeart, Megaphone } from 'lucide-react';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion';
 
-const features = [
+const cells = [
   {
     icon: Palette,
     title: 'Fully whitelabel',
-    body: 'Your name, your logo, your colors. Every app is branded for the individual church, top to bottom.',
+    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.',
+    className: 'lg:col-span-2',
+    feature: true,
   },
   {
     icon: Zap,
     title: 'Launch in days',
-    body: 'One shared codebase, per-church config. Spin up a new church app without touching code.',
+    body: 'Ut enim ad minim veniam, quis nostrud exercitation.',
   },
   {
     icon: Megaphone,
     title: 'Announcements',
-    body: 'Push the week’s news straight to members’ phones and keep everyone in the loop.',
+    body: 'Duis aute irure dolor in reprehenderit in voluptate.',
   },
   {
     icon: CalendarDays,
     title: 'Events',
-    body: 'Service times, small groups, and special events — always up to date.',
+    body: 'Excepteur sint occaecat cupidatat non proident sunt.',
   },
   {
     icon: HandHeart,
     title: 'Giving-ready',
-    body: 'Built with giving in mind so congregations can support the mission with a tap.',
+    body: 'Sed ut perspiciatis unde omnis iste natus error sit.',
   },
   {
     icon: Smartphone,
     title: 'iOS & Android',
-    body: 'A single React Native app that ships to both stores from the same foundation.',
+    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.',
+    className: 'lg:col-span-3',
+    wide: true,
   },
 ];
 
 export default function Features() {
   return (
-    <section id="features" className="mx-auto max-w-6xl scroll-mt-20 px-6 py-24">
+    <section id="features" className="mx-auto max-w-6xl scroll-mt-24 px-6 py-28">
       <Reveal className="mx-auto max-w-2xl text-center">
-        <h2 className="font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-white">
-          Everything a church needs, out of the box
+        <p className="text-sm font-medium uppercase tracking-[0.25em] text-brand-500 dark:text-brand-400">
+          Lorem ipsum
+        </p>
+        <h2 className="mt-4 font-display text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl dark:text-white">
+          Everything, out of the box
         </h2>
         <p className="mt-4 text-lg text-slate-600 dark:text-slate-300">
-          Start with a solid foundation and customize per church.
+          Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.
         </p>
       </Reveal>
 
-      <Stagger className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {features.map((f) => (
+      <Stagger className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {cells.map((c) => (
           <StaggerItem
-            key={f.title}
+            key={c.title}
             whileHover={{ y: -6 }}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-            className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-xl hover:shadow-brand-600/5 dark:border-slate-800 dark:bg-slate-900"
+            className={`group relative overflow-hidden rounded-3xl border p-7 shadow-sm transition-shadow hover:shadow-xl hover:shadow-brand-600/10 ${
+              c.className ?? ''
+            } ${
+              c.feature || c.wide
+                ? 'border-brand-500/20 bg-gradient-to-br from-brand-600 to-brand-800 text-white'
+                : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900'
+            }`}
           >
-            <div className="grid h-11 w-11 place-items-center rounded-xl bg-brand-50 text-brand-600 transition-colors group-hover:bg-brand-600 group-hover:text-white dark:bg-brand-500/10 dark:text-brand-300">
-              <f.icon className="h-6 w-6" />
+            {c.wide && (
+              <div className="pointer-events-none absolute inset-0 opacity-30">
+                <Image
+                  src="https://images.unsplash.com/photo-1438032005730-c779502df39b?auto=format&fit=crop&w=1400&q=80"
+                  alt=""
+                  aria-hidden
+                  fill
+                  sizes="100vw"
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-brand-800 via-brand-700/80 to-transparent" />
+              </div>
+            )}
+            <div className="relative">
+              <div
+                className={`grid h-12 w-12 place-items-center rounded-2xl transition-colors ${
+                  c.feature || c.wide
+                    ? 'bg-white/15 text-white'
+                    : 'bg-brand-50 text-brand-600 group-hover:bg-brand-600 group-hover:text-white dark:bg-brand-500/10 dark:text-brand-300'
+                }`}
+              >
+                <c.icon className="h-6 w-6" />
+              </div>
+              <h3
+                className={`mt-5 font-display font-semibold ${
+                  c.feature || c.wide ? 'text-2xl text-white' : 'text-lg text-slate-900 dark:text-white'
+                }`}
+              >
+                {c.title}
+              </h3>
+              <p
+                className={`mt-2 max-w-md text-sm leading-relaxed ${
+                  c.feature || c.wide ? 'text-brand-100' : 'text-slate-600 dark:text-slate-300'
+                }`}
+              >
+                {c.body}
+              </p>
             </div>
-            <h3 className="mt-5 font-display text-lg font-semibold text-slate-900 dark:text-white">
-              {f.title}
-            </h3>
-            <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{f.body}</p>
           </StaggerItem>
         ))}
       </Stagger>

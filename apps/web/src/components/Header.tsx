@@ -34,13 +34,15 @@ export default function Header() {
       }`}
     >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <Link href="/" className="group flex items-center gap-2.5">
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-brand-600 font-display text-white shadow-sm shadow-brand-600/30 transition-transform duration-300 group-hover:-rotate-6">
-            C
-          </span>
-          <span className="font-display text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
-            Church Stack
-          </span>
+        <Link href="/" className="group flex items-center">
+          <Image
+            src="/brand/logo-horizontal.png"
+            alt="Church Stack"
+            width={220}
+            height={110}
+            priority
+            className="h-11 w-auto transition-transform duration-300 group-hover:scale-[1.03]"
+          />
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
