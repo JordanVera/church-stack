@@ -37,12 +37,12 @@ export default function SignupPage() {
 
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-6">
-      <Card className="border-slate-200 shadow-sm dark:border-slate-800">
+      <Card className="border-ink-200 shadow-sm dark:border-ink-800">
         <CardHeader className="px-6">
-          <CardTitle className="font-display text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+          <CardTitle className="font-display text-3xl font-bold tracking-tight text-ink-900 dark:text-white">
             Create your account
           </CardTitle>
-          <CardDescription className="text-slate-600 dark:text-slate-300">
+          <CardDescription className="text-ink-600 dark:text-ink-300">
             Start building church apps today.
           </CardDescription>
         </CardHeader>
@@ -50,7 +50,7 @@ export default function SignupPage() {
         <CardContent className="px-6">
           <form onSubmit={onSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="name" className="mb-1 text-slate-700 dark:text-slate-300">
+              <Label htmlFor="name" className="mb-1 text-ink-700 dark:text-ink-300">
                 Name
               </Label>
               <Input
@@ -62,7 +62,7 @@ export default function SignupPage() {
               />
             </div>
             <div>
-              <Label htmlFor="email" className="mb-1 text-slate-700 dark:text-slate-300">
+              <Label htmlFor="email" className="mb-1 text-ink-700 dark:text-ink-300">
                 Email
               </Label>
               <Input
@@ -75,7 +75,7 @@ export default function SignupPage() {
               />
             </div>
             <div>
-              <Label htmlFor="password" className="mb-1 text-slate-700 dark:text-slate-300">
+              <Label htmlFor="password" className="mb-1 text-ink-700 dark:text-ink-300">
                 Password
               </Label>
               <Input
@@ -87,7 +87,7 @@ export default function SignupPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="h-10 focus-visible:border-brand-500 focus-visible:ring-brand-200 dark:focus-visible:ring-brand-500/30"
               />
-              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">At least 8 characters.</p>
+              <p className="mt-1 text-xs text-ink-500 dark:text-ink-400">At least 8 characters.</p>
             </div>
             {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
             <Button type="submit" disabled={register.isPending} className="h-10 w-full font-semibold">
@@ -97,7 +97,7 @@ export default function SignupPage() {
         </CardContent>
       </Card>
 
-      <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-300">
+      <p className="mt-6 text-center text-sm text-ink-600 dark:text-ink-300">
         Already have an account?{' '}
         <Link href="/login" className="font-semibold text-brand-600 hover:text-brand-500 dark:text-brand-400">
           Log in

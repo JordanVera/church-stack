@@ -40,7 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
       className={`${sans.variable} ${display.variable} ${hero.variable}`}
     >
-      <body className="bg-white font-sans text-slate-900 antialiased transition-colors dark:bg-slate-950 dark:text-slate-100">
+      <body className="bg-white font-sans text-ink-900 antialiased transition-colors dark:bg-ink-950 dark:text-ink-100">
         <ThemeProvider>
           <SessionProvider>
             <TRPCProvider>

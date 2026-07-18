@@ -22,7 +22,7 @@ export default function ThemeToggle() {
       size="icon"
       aria-label="Toggle dark mode"
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className="rounded-lg border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+      className="rounded-lg border-ink-200 text-ink-600 hover:bg-ink-100 hover:text-ink-900 dark:border-ink-700 dark:text-ink-300 dark:hover:bg-ink-800 dark:hover:text-white"
     >
       {mounted && isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
     </Button>

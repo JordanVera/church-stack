@@ -262,7 +262,7 @@ export function ScrollLine({
   });
 
   return (
-    <div className={`absolute w-px bg-slate-200 dark:bg-slate-800 ${className ?? ''}`}>
+    <div className={`absolute w-px bg-ink-200 dark:bg-ink-800 ${className ?? ''}`}>
       <motion.div
         className="w-full origin-top bg-brand-500 dark:bg-brand-400"
         style={{ scaleY: reduce ? 1 : scrollYProgress, height: '100%' }}

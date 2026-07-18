@@ -31,12 +31,12 @@ export default function LoginPage() {
 
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-6">
-      <Card className="border-slate-200 shadow-sm dark:border-slate-800">
+      <Card className="border-ink-200 shadow-sm dark:border-ink-800">
         <CardHeader className="px-6">
-          <CardTitle className="font-display text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+          <CardTitle className="font-display text-3xl font-bold tracking-tight text-ink-900 dark:text-white">
             Welcome back
           </CardTitle>
-          <CardDescription className="text-slate-600 dark:text-slate-300">
+          <CardDescription className="text-ink-600 dark:text-ink-300">
             Log in to your Church Stack account.
           </CardDescription>
         </CardHeader>
@@ -44,7 +44,7 @@ export default function LoginPage() {
         <CardContent className="px-6">
           <form onSubmit={onSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="email" className="mb-1 text-slate-700 dark:text-slate-300">
+              <Label htmlFor="email" className="mb-1 text-ink-700 dark:text-ink-300">
                 Email
               </Label>
               <Input
@@ -57,7 +57,7 @@ export default function LoginPage() {
               />
             </div>
             <div>
-              <Label htmlFor="password" className="mb-1 text-slate-700 dark:text-slate-300">
+              <Label htmlFor="password" className="mb-1 text-ink-700 dark:text-ink-300">
                 Password
               </Label>
               <Input
@@ -77,7 +77,7 @@ export default function LoginPage() {
         </CardContent>
       </Card>
 
-      <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-300">
+      <p className="mt-6 text-center text-sm text-ink-600 dark:text-ink-300">
         Don’t have an account?{' '}
         <Link href="/signup" className="font-semibold text-brand-600 hover:text-brand-500 dark:text-brand-400">
           Sign up

@@ -29,7 +29,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   splash: {
     image: './assets/splash.png',
     resizeMode: 'contain',
-    backgroundColor: '#ffffff',
+    backgroundColor: '#f6e8ea',
   },
   assetBundlePatterns: ['**/*'],
   ios: {
@@ -40,7 +40,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     package: process.env.EXPO_PUBLIC_ANDROID_PACKAGE ?? 'com.churchstack.app',
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
-      backgroundColor: '#ffffff',
+      backgroundColor: '#f6e8ea',
     },
   },
   web: {

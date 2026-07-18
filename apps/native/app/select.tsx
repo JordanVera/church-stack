@@ -22,7 +22,7 @@ export default function SelectChurch() {
       <Text style={styles.subtitle}>Select your church to personalize the app.</Text>
 
       {churches.isLoading ? (
-        <ActivityIndicator style={{ marginTop: 40 }} color="#4f46e5" />
+        <ActivityIndicator style={{ marginTop: 40 }} color="#ef626c" />
       ) : churches.error ? (
         <Text style={styles.error}>
           Could not load churches. Is the API running at the configured URL?
@@ -47,17 +47,17 @@ export default function SelectChurch() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff', paddingHorizontal: 24, paddingTop: 24 },
-  title: { fontSize: 28, fontWeight: '700', color: '#0f172a' },
-  subtitle: { marginTop: 6, fontSize: 15, color: '#64748b' },
+  container: { flex: 1, backgroundColor: '#f6e8ea', paddingHorizontal: 24, paddingTop: 24 },
+  title: { fontSize: 28, fontWeight: '700', color: '#22181c' },
+  subtitle: { marginTop: 6, fontSize: 15, color: '#787272' },
   error: { marginTop: 24, color: '#dc2626' },
   card: {
-    backgroundColor: '#f8fafc',
-    borderColor: '#e2e8f0',
+    backgroundColor: '#ffffff',
+    borderColor: '#c7bcbd',
     borderWidth: 1,
     borderRadius: 16,
     padding: 18,
   },
-  cardTitle: { fontSize: 17, fontWeight: '600', color: '#0f172a' },
-  cardSubtitle: { marginTop: 4, fontSize: 14, color: '#64748b' },
+  cardTitle: { fontSize: 17, fontWeight: '600', color: '#22181c' },
+  cardSubtitle: { marginTop: 4, fontSize: 14, color: '#787272' },
 });

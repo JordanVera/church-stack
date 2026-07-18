@@ -12,22 +12,44 @@
   --font-display: var(--font-display), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   --font-hero: var(--font-hero), var(--font-display), sans-serif;
 
-  /* Brand — azure blue drawn from the Church Stack logo, with a steel accent. */
-  --color-brand-50: #edf7fd;
-  --color-brand-100: #d3ecfa;
-  --color-brand-200: #a9d9f4;
-  --color-brand-300: #74c1ea;
-  --color-brand-400: #3ba3df;
-  --color-brand-500: #1786cb;
-  --color-brand-600: #0d6cab;
-  --color-brand-700: #0f568a;
-  --color-brand-800: #124972;
-  --color-brand-900: #133d60;
-  --color-brand-950: #0b2740;
+  /* Brand — coral drawn from the Church Stack palette. */
+  --color-brand-50: #fef1f2;
+  --color-brand-100: #fcdfe1;
+  --color-brand-200: #f8babe;
+  --color-brand-300: #f3878e;
+  --color-brand-400: #ed4f5a;
+  --color-brand-500: #ef626c;
+  --color-brand-600: #e92533;
+  --color-brand-700: #be131f;
+  --color-brand-800: #8d0e17;
+  --color-brand-900: #620a10;
+  --color-brand-950: #3d060a;
 
-  --color-accent-400: #38bdf8;
-  --color-accent-500: #0ea5e9;
-  --color-accent-600: #0284c7;
+  /* Accent — mint, the cool counterpoint to the coral brand. */
+  --color-accent-50: #f3fcfa;
+  --color-accent-100: #e3f7f4;
+  --color-accent-200: #c3eee8;
+  --color-accent-300: #98e2d7;
+  --color-accent-400: #68d4c4;
+  --color-accent-500: #84dccf;
+  --color-accent-600: #4dccba;
+  --color-accent-700: #30aa98;
+  --color-accent-800: #247e71;
+  --color-accent-900: #19584e;
+  --color-accent-950: #103731;
+
+  /* Ink — warm neutral scale spanning the palette's blush and near-black. */
+  --color-ink-50: #f6e8ea;
+  --color-ink-100: #e2d6d7;
+  --color-ink-200: #c7bcbd;
+  --color-ink-300: #aba2a3;
+  --color-ink-400: #908889;
+  --color-ink-500: #787272;
+  --color-ink-600: #625d5e;
+  --color-ink-700: #4f4b4b;
+  --color-ink-800: #3f3c3c;
+  --color-ink-900: #312f2f;
+  --color-ink-950: #22181c;
 
   /* Animation easing shared by framer-motion + CSS. */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -37,135 +59,135 @@
   --brand: var(--color-brand-500);
   color-scheme: light;
   --background:
-    oklch(1 0 0);
+    var(--color-ink-50);
   --foreground:
-    oklch(0.145 0 0);
+    var(--color-ink-950);
   --card:
-    oklch(1 0 0);
+    #ffffff;
   --card-foreground:
-    oklch(0.145 0 0);
+    var(--color-ink-950);
   --popover:
-    oklch(1 0 0);
+    #ffffff;
   --popover-foreground:
-    oklch(0.145 0 0);
+    var(--color-ink-950);
   --primary:
-    var(--color-brand-600);
+    var(--color-brand-500);
   --primary-foreground:
-    oklch(0.985 0 0);
+    var(--color-ink-950);
   --secondary:
-    oklch(0.97 0 0);
+    var(--color-ink-100);
   --secondary-foreground:
-    oklch(0.205 0 0);
+    var(--color-ink-950);
   --muted:
-    oklch(0.97 0 0);
+    var(--color-ink-100);
   --muted-foreground:
-    oklch(0.556 0 0);
+    var(--color-ink-500);
   --accent:
-    var(--color-brand-50);
+    var(--color-accent-200);
   --accent-foreground:
-    var(--color-brand-600);
+    var(--color-ink-950);
   --destructive:
-    oklch(0.577 0.245 27.325);
+    var(--color-brand-700);
   --border:
-    oklch(0.922 0 0);
+    var(--color-ink-200);
   --input:
-    oklch(0.922 0 0);
+    var(--color-ink-200);
   --ring:
     var(--color-brand-400);
   --chart-1:
-    oklch(0.87 0 0);
+    var(--color-brand-500);
   --chart-2:
-    oklch(0.556 0 0);
+    var(--color-accent-500);
   --chart-3:
-    oklch(0.439 0 0);
+    var(--color-ink-600);
   --chart-4:
-    oklch(0.371 0 0);
+    var(--color-brand-700);
   --chart-5:
-    oklch(0.269 0 0);
+    var(--color-accent-700);
   --radius:
     0.625rem;
   --sidebar:
-    oklch(0.985 0 0);
+    #ffffff;
   --sidebar-foreground:
-    oklch(0.145 0 0);
+    var(--color-ink-950);
   --sidebar-primary:
-    oklch(0.205 0 0);
+    var(--color-brand-500);
   --sidebar-primary-foreground:
-    oklch(0.985 0 0);
+    var(--color-ink-950);
   --sidebar-accent:
-    oklch(0.97 0 0);
+    var(--color-ink-100);
   --sidebar-accent-foreground:
-    oklch(0.205 0 0);
+    var(--color-ink-950);
   --sidebar-border:
-    oklch(0.922 0 0);
+    var(--color-ink-200);
   --sidebar-ring:
-    oklch(0.708 0 0);
+    var(--color-brand-400);
 }
 
 .dark {
   color-scheme: dark;
   --background:
-    oklch(0.145 0 0);
+    var(--color-ink-950);
   --foreground:
-    oklch(0.985 0 0);
+    var(--color-ink-50);
   --card:
-    oklch(0.205 0 0);
+    var(--color-ink-900);
   --card-foreground:
-    oklch(0.985 0 0);
+    var(--color-ink-50);
   --popover:
-    oklch(0.205 0 0);
+    var(--color-ink-900);
   --popover-foreground:
-    oklch(0.985 0 0);
+    var(--color-ink-50);
   --primary:
-    var(--color-brand-400);
+    var(--color-brand-500);
   --primary-foreground:
-    oklch(0.145 0 0);
+    var(--color-ink-950);
   --secondary:
-    oklch(0.269 0 0);
+    var(--color-ink-800);
   --secondary-foreground:
-    oklch(0.985 0 0);
+    var(--color-ink-50);
   --muted:
-    oklch(0.269 0 0);
+    var(--color-ink-800);
   --muted-foreground:
-    oklch(0.708 0 0);
+    var(--color-ink-300);
   --accent:
-    color-mix(in oklch, var(--color-brand-500) 20%, transparent);
+    color-mix(in oklch, var(--color-accent-500) 25%, transparent);
   --accent-foreground:
-    var(--color-brand-300);
+    var(--color-accent-300);
   --destructive:
-    oklch(0.704 0.191 22.216);
+    var(--color-brand-400);
   --border:
     oklch(1 0 0 / 10%);
   --input:
     oklch(1 0 0 / 15%);
   --ring:
-    var(--color-brand-500);
+    var(--color-brand-400);
   --chart-1:
-    oklch(0.87 0 0);
+    var(--color-brand-400);
   --chart-2:
-    oklch(0.556 0 0);
+    var(--color-accent-400);
   --chart-3:
-    oklch(0.439 0 0);
+    var(--color-ink-300);
   --chart-4:
-    oklch(0.371 0 0);
+    var(--color-brand-300);
   --chart-5:
-    oklch(0.269 0 0);
+    var(--color-accent-300);
   --sidebar:
-    oklch(0.205 0 0);
+    var(--color-ink-900);
   --sidebar-foreground:
-    oklch(0.985 0 0);
+    var(--color-ink-50);
   --sidebar-primary:
-    oklch(0.488 0.243 264.376);
+    var(--color-brand-500);
   --sidebar-primary-foreground:
-    oklch(0.985 0 0);
+    var(--color-ink-950);
   --sidebar-accent:
-    oklch(0.269 0 0);
+    var(--color-ink-800);
   --sidebar-accent-foreground:
-    oklch(0.985 0 0);
+    var(--color-ink-50);
   --sidebar-border:
     oklch(1 0 0 / 10%);
   --sidebar-ring:
-    oklch(0.556 0 0);
+    var(--color-brand-400);
 }
 
 html {
@@ -178,7 +200,7 @@ body {
 
 ::selection {
   background-color: var(--color-brand-500);
-  color: white;
+  color: var(--color-ink-950);
 }
 
 /* Respect users who prefer reduced motion: neutralize transforms/animations. */

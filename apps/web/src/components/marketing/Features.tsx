@@ -49,10 +49,10 @@ export default function Features() {
         <p className="text-sm font-medium uppercase tracking-[0.25em] text-brand-500 dark:text-brand-400">
           What's included
         </p>
-        <h2 className="mt-4 font-display text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl dark:text-white">
+        <h2 className="mt-4 font-display text-4xl font-bold tracking-tight text-ink-900 sm:text-5xl dark:text-white">
           Everything, out of the box
         </h2>
-        <p className="mt-4 text-lg text-slate-600 dark:text-slate-300">
+        <p className="mt-4 text-lg text-ink-600 dark:text-ink-300">
           Every plan ships with the core tools your church needs to stay connected — no add-ons
           required.
         </p>
@@ -70,7 +70,7 @@ export default function Features() {
               className={`group relative h-full overflow-hidden rounded-3xl border py-7 shadow-sm ring-0 transition-shadow hover:shadow-xl hover:shadow-brand-600/10 ${
                 c.feature || c.wide
                   ? 'border-brand-500/20 bg-gradient-to-br from-brand-600 to-brand-800 text-white'
-                  : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900'
+                  : 'border-ink-200 bg-white dark:border-ink-800 dark:bg-ink-900'
               }`}
             >
               {c.wide && (
@@ -100,14 +100,14 @@ export default function Features() {
                   className={`mt-5 font-display font-semibold ${
                     c.feature || c.wide
                       ? 'text-2xl text-white'
-                      : 'text-lg text-slate-900 dark:text-white'
+                      : 'text-lg text-ink-900 dark:text-white'
                   }`}
                 >
                   {c.title}
                 </h3>
                 <p
                   className={`mt-2 max-w-md text-sm leading-relaxed ${
-                    c.feature || c.wide ? 'text-brand-100' : 'text-slate-600 dark:text-slate-300'
+                    c.feature || c.wide ? 'text-brand-100' : 'text-ink-600 dark:text-ink-300'
                   }`}
                 >
                   {c.body}

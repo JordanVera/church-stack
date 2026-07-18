@@ -28,10 +28,14 @@ export default function Home() {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <StatusBar style="light" />
       <View style={[styles.header, { backgroundColor: theme.primary }]}>
-        <Text style={styles.headerName}>{branding.name}</Text>
-        {branding.tagline ? <Text style={styles.headerTagline}>{branding.tagline}</Text> : null}
+        <Text style={[styles.headerName, { color: theme.primaryForeground }]}>{branding.name}</Text>
+        {branding.tagline ? (
+          <Text style={[styles.headerTagline, { color: theme.primaryForeground, opacity: 0.85 }]}>
+            {branding.tagline}
+          </Text>
+        ) : null}
         <TouchableOpacity onPress={clearTenant}>
-          <Text style={styles.switch}>Switch church</Text>
+          <Text style={[styles.switch, { color: theme.primaryForeground }]}>Switch church</Text>
         </TouchableOpacity>
       </View>
 
@@ -76,9 +80,9 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: { paddingHorizontal: 20, paddingTop: 24, paddingBottom: 28 },
-  headerName: { color: '#ffffff', fontSize: 26, fontWeight: '700' },
-  headerTagline: { color: 'rgba(255,255,255,0.85)', marginTop: 4, fontSize: 15 },
-  switch: { color: '#ffffff', marginTop: 14, fontSize: 13, textDecorationLine: 'underline' },
+  headerName: { fontSize: 26, fontWeight: '700' },
+  headerTagline: { marginTop: 4, fontSize: 15 },
+  switch: { marginTop: 14, fontSize: 13, textDecorationLine: 'underline' },
   sectionTitle: { fontSize: 20, fontWeight: '700', marginBottom: 12 },
   card: { borderWidth: 1, borderRadius: 14, padding: 16, marginBottom: 12 },
   cardTitle: { fontSize: 16, fontWeight: '600' },

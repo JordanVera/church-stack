@@ -14,7 +14,7 @@ const capabilities = [
 
 export default function LogoMarquee() {
   return (
-    <section className="relative overflow-hidden bg-slate-950 py-14">
+    <section className="relative overflow-hidden bg-ink-950 py-14">
       <Marquee duration={34} mask={false}>
         <div className="flex shrink-0 items-center gap-10 pr-10">
           {capabilities.map((label, i) => (

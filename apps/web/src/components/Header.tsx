@@ -30,7 +30,7 @@ export default function Header() {
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       className={`sticky top-0 z-50 transition-colors duration-300 ${
         scrolled
-          ? 'border-b border-slate-200/70 bg-white/80 backdrop-blur-md dark:border-slate-800/70 dark:bg-slate-950/80'
+          ? 'border-b border-ink-200/70 bg-white/80 backdrop-blur-md dark:border-ink-800/70 dark:bg-ink-950/80'
           : 'border-b border-transparent bg-transparent'
       }`}
     >
@@ -51,7 +51,7 @@ export default function Header() {
             <Link
               key={item.href}
               href={item.href}
-              className="group relative text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 transition hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+              className="group relative text-xs font-semibold uppercase tracking-[0.2em] text-ink-600 transition hover:text-ink-900 dark:text-ink-300 dark:hover:text-white"
             >
               {item.label}
               <span className="absolute -bottom-1.5 left-0 h-px w-0 bg-current transition-all duration-300 group-hover:w-full" />
@@ -63,7 +63,7 @@ export default function Header() {
           <ThemeToggle />
           <Button
             variant="ghost"
-            className="hidden text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 hover:bg-transparent hover:text-slate-900 sm:inline-flex dark:text-slate-300 dark:hover:text-white"
+            className="hidden text-xs font-semibold uppercase tracking-[0.2em] text-ink-600 hover:bg-transparent hover:text-ink-900 sm:inline-flex dark:text-ink-300 dark:hover:text-white"
             render={<Link href="/login" />}
           >
             Log in

@@ -2,6 +2,7 @@ import type { TenantBranding } from '@repo/config';
 
 export interface Theme {
   primary: string;
+  primaryForeground: string;
   secondary: string;
   background: string;
   card: string;
@@ -13,11 +14,14 @@ export interface Theme {
 export function themeFromBranding(branding: TenantBranding): Theme {
   return {
     primary: branding.primaryColor,
+    // Coral/mint brand colors are light enough that white text reads poorly on
+    // them, so default to a dark ink foreground instead.
+    primaryForeground: '#22181c',
     secondary: branding.secondaryColor,
-    background: '#ffffff',
-    card: '#f8fafc',
-    text: '#0f172a',
-    muted: '#64748b',
-    border: '#e2e8f0',
+    background: '#f6e8ea',
+    card: '#ffffff',
+    text: '#22181c',
+    muted: '#787272',
+    border: '#c7bcbd',
   };
 }

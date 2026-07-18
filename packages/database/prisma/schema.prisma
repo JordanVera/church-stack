@@ -26,8 +26,8 @@ model Church {
   name           String
   tagline        String?
   logoUrl        String?
-  primaryColor   String   @default("#4f46e5")
-  secondaryColor String   @default("#0ea5e9")
+  primaryColor   String   @default("#ef626c")
+  secondaryColor String   @default("#84dccf")
   contactEmail   String?
   phone          String?
   address        String?

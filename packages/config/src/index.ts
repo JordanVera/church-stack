@@ -30,8 +30,8 @@ export const DEFAULT_BRANDING: TenantBranding = {
   name: 'Church Stack',
   tagline: 'Your church, your app.',
   logoUrl: null,
-  primaryColor: '#4f46e5',
-  secondaryColor: '#0ea5e9',
+  primaryColor: '#ef626c',
+  secondaryColor: '#84dccf',
   contactEmail: null,
   features: {
     giving: true,

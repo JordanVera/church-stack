@@ -20,12 +20,12 @@ export default function BigStatement() {
   const reduce = useReducedMotion();
 
   return (
-    <section className="relative overflow-hidden bg-slate-950 py-28 text-white sm:py-36">
+    <section className="relative overflow-hidden bg-ink-950 py-28 text-white sm:py-36">
       {!reduce && (
         <>
           <motion.div
             aria-hidden
-            className="absolute left-1/4 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-brand-600/25 blur-3xl"
+            className="absolute left-1/4 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-brand-500/25 blur-3xl"
             animate={{ opacity: [0.4, 0.7, 0.4], scale: [1, 1.15, 1] }}
             transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
           />
@@ -62,9 +62,9 @@ export default function BigStatement() {
 
         {/* Member app — where updates happen */}
         <Reveal delay={0.1} className="sm:col-span-1">
-          <div className="relative flex min-h-[480px] flex-col overflow-hidden rounded-[2rem] bg-linear-to-br from-fuchsia-400 via-purple-400 to-teal-300 p-10 pb-24 sm:min-h-[560px] sm:p-14 sm:pb-28 lg:min-h-[640px] lg:p-16 lg:pb-32">
+          <div className="relative flex min-h-[480px] flex-col overflow-hidden rounded-[2rem] bg-linear-to-br from-brand-400 via-brand-500 to-accent-400 p-10 pb-24 sm:min-h-[560px] sm:p-14 sm:pb-28 lg:min-h-[640px] lg:p-16 lg:pb-32">
             <div className="flex items-center gap-3.5">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/90 text-purple-600 shadow-sm lg:h-12 lg:w-12">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/90 text-brand-600 shadow-sm lg:h-12 lg:w-12">
                 <Smartphone className="h-5.5 w-5.5" />
               </div>
               <span className="font-display text-2xl font-bold text-white lg:text-3xl">
@@ -76,29 +76,29 @@ export default function BigStatement() {
             </p>
 
             <motion.div
-              className="relative mx-auto mt-10 w-[85%] max-w-sm origin-bottom rounded-[2rem] border border-white/40 bg-white p-6 text-slate-900 shadow-2xl sm:mt-12 lg:mt-14 lg:max-w-md lg:p-8"
+              className="relative mx-auto mt-10 w-[85%] max-w-sm origin-bottom rounded-[2rem] border border-white/40 bg-white p-6 text-ink-900 shadow-2xl sm:mt-12 lg:mt-14 lg:max-w-md lg:p-8"
               initial={reduce ? undefined : { rotate: -7 }}
               animate={reduce ? undefined : { rotate: [-7, -4, -7], y: [0, -10, 0] }}
               transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
             >
-              <p className="text-sm font-semibold text-slate-500">Update your info</p>
+              <p className="text-sm font-semibold text-ink-500">Update your info</p>
               <div className="mt-4 space-y-3">
-                <div className="rounded-xl bg-slate-100 px-4 py-3">
-                  <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                <div className="rounded-xl bg-ink-100 px-4 py-3">
+                  <p className="text-[11px] font-medium uppercase tracking-wide text-ink-400">
                     Name
                   </p>
-                  <p className="text-base font-semibold text-slate-800">Hannah Barnes</p>
+                  <p className="text-base font-semibold text-ink-800">Hannah Barnes</p>
                 </div>
-                <div className="rounded-xl bg-slate-100 px-4 py-3">
-                  <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                <div className="rounded-xl bg-ink-100 px-4 py-3">
+                  <p className="text-[11px] font-medium uppercase tracking-wide text-ink-400">
                     Address
                   </p>
-                  <p className="text-base font-semibold text-slate-800">1472 Alderwood Ln</p>
+                  <p className="text-base font-semibold text-ink-800">1472 Alderwood Ln</p>
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   {['City', 'State', 'Zip'].map((f) => (
-                    <div key={f} className="rounded-xl bg-slate-100 px-3 py-2.5">
-                      <p className="text-[10px] font-medium text-slate-400">{f}</p>
+                    <div key={f} className="rounded-xl bg-ink-100 px-3 py-2.5">
+                      <p className="text-[10px] font-medium text-ink-400">{f}</p>
                     </div>
                   ))}
                 </div>
@@ -111,9 +111,9 @@ export default function BigStatement() {
 
         {/* Admin dashboard — where it shows up */}
         <Reveal delay={0.2} className="sm:col-span-2">
-          <div className="relative flex min-h-[480px] flex-col overflow-hidden rounded-[2rem] bg-linear-to-br from-sky-300 via-indigo-300 to-violet-300 p-10 pb-24 sm:min-h-[560px] sm:p-14 sm:pb-28 lg:min-h-[640px] lg:p-16 lg:pb-32">
+          <div className="relative flex min-h-[480px] flex-col overflow-hidden rounded-[2rem] bg-linear-to-br from-accent-300 via-accent-400 to-brand-300 p-10 pb-24 sm:min-h-[560px] sm:p-14 sm:pb-28 lg:min-h-[640px] lg:p-16 lg:pb-32">
             <div className="flex items-center gap-3.5">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/90 text-indigo-600 shadow-sm lg:h-12 lg:w-12">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/90 text-accent-700 shadow-sm lg:h-12 lg:w-12">
                 <ClipboardList className="h-5.5 w-5.5" />
               </div>
               <span className="font-display text-2xl font-bold text-white lg:text-3xl">
@@ -123,7 +123,7 @@ export default function BigStatement() {
             <p className="mt-2 text-base font-medium text-white/85 lg:text-lg">Shows up here.</p>
 
             <motion.div
-              className="mx-auto mt-10 flex w-[85%] max-w-md overflow-hidden rounded-[1.75rem] border border-white/40 bg-white text-slate-900 shadow-2xl sm:mt-12 lg:mt-14 lg:max-w-lg"
+              className="mx-auto mt-10 flex w-[85%] max-w-md overflow-hidden rounded-[1.75rem] border border-white/40 bg-white text-ink-900 shadow-2xl sm:mt-12 lg:mt-14 lg:max-w-lg"
               initial={reduce ? undefined : { y: 0 }}
               animate={reduce ? undefined : { y: [0, -10, 0] }}
               transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
@@ -134,38 +134,38 @@ export default function BigStatement() {
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-100 text-sm font-bold text-brand-700">
                       HB
                     </div>
-                    <p className="text-base font-semibold text-slate-800">Hannah Barnes</p>
+                    <p className="text-base font-semibold text-ink-800">Hannah Barnes</p>
                   </div>
-                  <div className="flex items-center gap-1.5 rounded-lg bg-slate-100 px-2.5 py-1.5 text-xs font-medium text-slate-500">
+                  <div className="flex items-center gap-1.5 rounded-lg bg-ink-100 px-2.5 py-1.5 text-xs font-medium text-ink-500">
                     Actions <ChevronDown className="h-3.5 w-3.5" />
                   </div>
                 </div>
 
                 <div className="mt-5 space-y-3">
-                  <div className="flex items-center gap-3 text-sm text-slate-500">
+                  <div className="flex items-center gap-3 text-sm text-ink-500">
                     <Mail className="h-4 w-4" />
-                    <span className="h-2 flex-1 rounded-full bg-slate-100" />
+                    <span className="h-2 flex-1 rounded-full bg-ink-100" />
                   </div>
-                  <div className="flex items-center gap-3 text-sm text-slate-500">
+                  <div className="flex items-center gap-3 text-sm text-ink-500">
                     <Phone className="h-4 w-4" />
-                    <span className="h-2 w-24 rounded-full bg-slate-100" />
+                    <span className="h-2 w-24 rounded-full bg-ink-100" />
                   </div>
-                  <div className="flex items-center gap-3 text-sm text-slate-500">
+                  <div className="flex items-center gap-3 text-sm text-ink-500">
                     <MapPin className="h-4 w-4" />
-                    <span className="text-sm font-medium text-slate-600">1472 Alderwood Ln</span>
+                    <span className="text-sm font-medium text-ink-600">1472 Alderwood Ln</span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex w-14 flex-col items-center gap-5 border-l border-slate-100 bg-slate-50 py-6 lg:w-16">
-                <User className="h-5 w-5 text-slate-400" />
-                <HelpCircle className="h-5 w-5 text-slate-400" />
+              <div className="flex w-14 flex-col items-center gap-5 border-l border-ink-100 bg-ink-50 py-6 lg:w-16">
+                <User className="h-5 w-5 text-ink-400" />
+                <HelpCircle className="h-5 w-5 text-ink-400" />
                 <span className="relative">
-                  <Bell className="h-5 w-5 text-slate-400" />
-                  <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-rose-500" />
+                  <Bell className="h-5 w-5 text-ink-400" />
+                  <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-brand-600" />
                 </span>
-                <MessageSquare className="h-5 w-5 text-slate-400" />
-                <ClipboardList className="h-5 w-5 text-slate-400" />
+                <MessageSquare className="h-5 w-5 text-ink-400" />
+                <ClipboardList className="h-5 w-5 text-ink-400" />
               </div>
             </motion.div>
 
@@ -181,7 +181,7 @@ function RefreshButton({ delay = 0 }: { delay?: number }) {
   const reduce = useReducedMotion();
   return (
     <motion.div
-      className="absolute bottom-6 right-6 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-md lg:h-12 lg:w-12"
+      className="absolute bottom-6 right-6 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-ink-600 shadow-md lg:h-12 lg:w-12"
       animate={reduce ? undefined : { rotate: 360 }}
       transition={{ duration: 3, repeat: Infinity, ease: 'linear', delay }}
     >

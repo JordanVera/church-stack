@@ -19,9 +19,9 @@ export default function Hero() {
   const reduce = useReducedMotion();
 
   return (
-    <section className="relative overflow-hidden bg-white pt-24 pb-14 sm:pt-28 lg:pt-20 lg:pb-10 dark:bg-slate-950">
+    <section className="relative overflow-hidden bg-white pt-24 pb-14 sm:pt-28 lg:pt-20 lg:pb-10 dark:bg-ink-950">
       {/* Dotted grid + constellation particles behind everything */}
-      <div className="absolute inset-0 -z-20 bg-grid text-slate-900/4 dark:text-white/5" />
+      <div className="absolute inset-0 -z-20 bg-grid text-ink-900/4 dark:text-white/5" />
       <Particles
         className="pointer-events-none absolute inset-0 -z-10 text-brand-500/70 dark:text-brand-300/50"
         density={8500}
@@ -60,7 +60,7 @@ export default function Hero() {
         className="absolute inset-0 -z-10 hidden dark:block"
         style={{
           background:
-            'radial-gradient(ellipse 70% 60% at 50% 30%, transparent 0%, transparent 45%, #020617 85%)',
+            'radial-gradient(ellipse 70% 60% at 50% 30%, transparent 0%, transparent 45%, #22181c 85%)',
         }}
       />
 
@@ -69,7 +69,7 @@ export default function Hero() {
           <Reveal delay={0.05}>
             <Badge
               variant="outline"
-              className="h-auto gap-2 rounded-full border-slate-200 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-sm backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300"
+              className="h-auto gap-2 rounded-full border-ink-200 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-ink-600 shadow-sm backdrop-blur-sm dark:border-ink-800 dark:bg-ink-900/60 dark:text-ink-300"
             >
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-500 opacity-75" />
@@ -79,7 +79,7 @@ export default function Hero() {
             </Badge>
           </Reveal>
 
-          <h1 className="relative z-10 mt-4 font-hero uppercase leading-[0.92] tracking-tight text-slate-900 sm:mt-5 lg:mt-3 dark:text-white text-[clamp(3rem,11vw,8rem)]">
+          <h1 className="relative z-10 mt-4 font-hero uppercase leading-[0.92] tracking-tight text-ink-900 sm:mt-5 lg:mt-3 dark:text-white text-[clamp(3rem,11vw,8rem)]">
             <LineReveal eager delay={0.15}>
               Your church.
             </LineReveal>
@@ -94,7 +94,7 @@ export default function Hero() {
           <Reveal
             delay={0.55}
             as="p"
-            className="relative z-10 mt-5 max-w-xl text-lg leading-relaxed text-slate-600 sm:text-xl lg:mt-4 lg:max-w-md lg:text-lg dark:text-slate-300"
+            className="relative z-10 mt-5 max-w-xl text-lg leading-relaxed text-ink-600 sm:text-xl lg:mt-4 lg:max-w-md lg:text-lg dark:text-ink-300"
           >
             Church Stack turns your branding into a fully whitelabeled iOS and Android app —
             announcements, events, giving, and sermons, ready before your next Sunday.
@@ -116,7 +116,7 @@ export default function Hero() {
             <Button
               variant="outline"
               size="lg"
-              className="group h-auto rounded-full border-slate-200 px-7 py-3.5 text-sm uppercase tracking-widest text-slate-700 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-transparent dark:text-slate-200 dark:hover:border-slate-600 dark:hover:bg-slate-900"
+              className="group h-auto rounded-full border-ink-200 px-7 py-3.5 text-sm uppercase tracking-widest text-ink-700 hover:border-ink-300 hover:bg-ink-50 dark:border-ink-700 dark:bg-transparent dark:text-ink-200 dark:hover:border-ink-600 dark:hover:bg-ink-900"
               render={<Link href="/#features" />}
             >
               See how it works
@@ -124,13 +124,13 @@ export default function Hero() {
             </Button>
           </Reveal>
 
-          <div className="relative z-10 mt-9 grid grid-cols-3 gap-6 border-t border-slate-200 pt-6 sm:max-w-xl lg:mt-7 lg:max-w-md lg:gap-4 lg:pt-5 dark:border-slate-800">
+          <div className="relative z-10 mt-9 grid grid-cols-3 gap-6 border-t border-ink-200 pt-6 sm:max-w-xl lg:mt-7 lg:max-w-md lg:gap-4 lg:pt-5 dark:border-ink-800">
             {stats.map((stat, i) => (
               <Reveal key={stat.label} delay={0.8 + i * 0.1}>
-                <p className="font-display text-3xl font-bold tabular-nums text-slate-900 sm:text-4xl lg:text-3xl dark:text-white">
+                <p className="font-display text-3xl font-bold tabular-nums text-ink-900 sm:text-4xl lg:text-3xl dark:text-white">
                   <Counter value={stat.value} suffix={stat.suffix} duration={1.4} />
                 </p>
-                <p className="mt-1 text-xs font-medium uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">
+                <p className="mt-1 text-xs font-medium uppercase tracking-[0.15em] text-ink-500 dark:text-ink-400">
                   {stat.label}
                 </p>
               </Reveal>

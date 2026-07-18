@@ -30,7 +30,7 @@ export default function AppPreviewCard() {
       )}
 
       <motion.div
-        className="relative overflow-hidden rounded-[2.25rem] border border-white/10 bg-slate-900 shadow-2xl shadow-slate-900/40"
+        className="relative overflow-hidden rounded-[2.25rem] border border-white/10 bg-ink-900 shadow-2xl shadow-ink-900/40"
         animate={reduce ? undefined : { y: [0, -12, 0] }}
         transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
       >
@@ -58,8 +58,8 @@ export default function AppPreviewCard() {
         <div className="mt-5 space-y-2.5 px-4 pb-6">
           <div className="flex items-center gap-3 rounded-2xl bg-white/5 p-3">
             <span className="relative flex h-2 w-2 shrink-0">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-500 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-500 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-500" />
             </span>
             <p className="text-xs font-semibold uppercase tracking-wide text-white/80">
               Live now &middot; Sunday Service
@@ -91,7 +91,7 @@ export default function AppPreviewCard() {
 
           <div className="rounded-2xl bg-white/5 p-3">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-300">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent-500/20 text-accent-300">
                 <Wallet className="h-4 w-4" />
               </div>
               <div className="flex-1">
@@ -101,7 +101,7 @@ export default function AppPreviewCard() {
             </div>
             <div className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
               <motion.div
-                className="h-full rounded-full bg-emerald-400"
+                className="h-full rounded-full bg-accent-400"
                 initial={{ width: 0 }}
                 whileInView={{ width: '62%' }}
                 viewport={{ once: true }}
@@ -138,7 +138,7 @@ export default function AppPreviewCard() {
           >
             <Badge
               variant="outline"
-              className="h-auto gap-2 rounded-2xl border-slate-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-slate-700 shadow-lg dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+              className="h-auto gap-2 rounded-2xl border-ink-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-ink-700 shadow-lg dark:border-ink-800 dark:bg-ink-900 dark:text-ink-200"
             >
               <Radio className="h-4 w-4 text-brand-500" />
               2 platforms, 1 app
@@ -151,7 +151,7 @@ export default function AppPreviewCard() {
           >
             <Badge
               variant="outline"
-              className="h-auto gap-2 rounded-2xl border-slate-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-slate-700 shadow-lg dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+              className="h-auto gap-2 rounded-2xl border-ink-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-ink-700 shadow-lg dark:border-ink-800 dark:bg-ink-900 dark:text-ink-200"
             >
               <Users className="h-4 w-4 text-accent-500" />
               1,204 members active
