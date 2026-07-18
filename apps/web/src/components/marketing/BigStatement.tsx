@@ -1,53 +1,20 @@
 'use client';
 
-import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
-  ArrowRight,
-  CalendarDays,
-  MessageCircle,
-  Palette,
-  Radio,
-  Users,
-  Wallet,
+  Bell,
+  ChevronDown,
+  ClipboardList,
+  HelpCircle,
+  Mail,
+  MapPin,
+  MessageSquare,
+  Phone,
+  RefreshCw,
+  Smartphone,
+  User,
 } from 'lucide-react';
-import { LineReveal, Parallax, Reveal } from '@/components/motion';
-import { Button } from '@/components/ui/button';
-
-const highlights = [
-  {
-    icon: MessageCircle,
-    title: 'Built-in ways to connect',
-    body: 'Chat with groups, register for events, check in kids, and give — the everyday moments that keep your people close.',
-  },
-  {
-    icon: Palette,
-    title: 'Make it unmistakably yours',
-    body: 'Your logo, your colors, your name on the App Store — publish your own content without touching a line of code.',
-  },
-];
-
-const floatingCards = [
-  { icon: Users, label: 'Check-in', className: 'left-2 top-2 sm:left-4 sm:top-6', duration: 6 },
-  {
-    icon: MessageCircle,
-    label: 'Group chat',
-    className: 'right-0 top-16 sm:right-2 sm:top-20',
-    duration: 7,
-  },
-  {
-    icon: CalendarDays,
-    label: 'Events',
-    className: 'left-6 bottom-24 sm:left-10 sm:bottom-28',
-    duration: 6.5,
-  },
-  {
-    icon: Wallet,
-    label: 'Give',
-    className: 'right-4 bottom-4 sm:right-8 sm:bottom-8',
-    duration: 8,
-  },
-];
+import { LineReveal, Reveal } from '@/components/motion';
 
 export default function BigStatement() {
   const reduce = useReducedMotion();
@@ -71,98 +38,154 @@ export default function BigStatement() {
         </>
       )}
 
-      <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-16 px-6 lg:grid-cols-[1fr_0.85fr] lg:gap-10">
-        <div>
-          <Reveal>
-            <p className="text-sm font-medium uppercase tracking-[0.3em] text-brand-300">
-              Mobile app &amp; web management
+      <div className="relative mx-auto max-w-6xl px-6">
+        <Reveal
+          delay={0.35}
+          as="p"
+          className="mx-auto mt-6 max-w-xl text-center text-lg leading-relaxed text-white/70"
+        >
+          Every profile update, form submission, and gift is captured the moment it happens — no
+          exports, no manual entry, no waiting.
+        </Reveal>
+      </div>
+
+      <div className="relative mt-16 grid gap-4 px-4 sm:grid-cols-3 sm:gap-6 sm:px-8 lg:px-12">
+        {!reduce && (
+          <motion.div
+            aria-hidden
+            className="absolute top-1/2 z-10 hidden h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-[0_0_20px_4px_rgba(255,255,255,0.8)] sm:block"
+            initial={{ left: '2%', opacity: 0 }}
+            animate={{ left: ['2%', '98%'], opacity: [0, 1, 1, 0] }}
+            transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut', repeatDelay: 0.8 }}
+          />
+        )}
+
+        {/* Member app — where updates happen */}
+        <Reveal delay={0.1} className="sm:col-span-1">
+          <div className="relative flex min-h-[480px] flex-col overflow-hidden rounded-[2rem] bg-linear-to-br from-fuchsia-400 via-purple-400 to-teal-300 p-10 pb-24 sm:min-h-[560px] sm:p-14 sm:pb-28 lg:min-h-[640px] lg:p-16 lg:pb-32">
+            <div className="flex items-center gap-3.5">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/90 text-purple-600 shadow-sm lg:h-12 lg:w-12">
+                <Smartphone className="h-5.5 w-5.5" />
+              </div>
+              <span className="font-display text-2xl font-bold text-white lg:text-3xl">
+                your church
+              </span>
+            </div>
+            <p className="mt-2 text-base font-medium text-white/85 lg:text-lg">
+              Updates happen here…
             </p>
-          </Reveal>
 
-          <h2 className="mt-4 font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
-            <LineReveal delay={0.05}>The app your</LineReveal>
-            <LineReveal delay={0.15} className="text-brand-400">
-              congregation
-            </LineReveal>
-            <LineReveal delay={0.25}>opens every Sunday.</LineReveal>
-          </h2>
-
-          <Reveal
-            delay={0.35}
-            as="p"
-            className="mt-6 max-w-lg text-lg leading-relaxed text-white/70"
-          >
-            Announcements, events, giving, and sermons — every real ministry moment lives in one
-            place, perfectly in sync with your admin dashboard.
-          </Reveal>
-
-          <div className="mt-10 grid gap-8 sm:grid-cols-2">
-            {highlights.map((h, i) => (
-              <Reveal key={h.title} delay={0.45 + i * 0.1}>
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500/15 text-brand-300">
-                  <h.icon className="h-4.5 w-4.5" />
-                </div>
-                <h3 className="mt-4 font-display text-base font-semibold text-white">
-                  {h.title}
-                </h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-white/60">{h.body}</p>
-              </Reveal>
-            ))}
-          </div>
-
-          <Reveal delay={0.65} className="mt-10">
-            <Button
-              size="lg"
-              className="group h-auto rounded-full bg-white px-7 py-3.5 text-sm uppercase tracking-widest text-slate-900 shadow-lg hover:bg-white/90"
-              render={<Link href="/signup" />}
+            <motion.div
+              className="relative mx-auto mt-10 w-[85%] max-w-sm origin-bottom rounded-[2rem] border border-white/40 bg-white p-6 text-slate-900 shadow-2xl sm:mt-12 lg:mt-14 lg:max-w-md lg:p-8"
+              initial={reduce ? undefined : { rotate: -7 }}
+              animate={reduce ? undefined : { rotate: [-7, -4, -7], y: [0, -10, 0] }}
+              transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
             >
-              Start building
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Button>
-          </Reveal>
-        </div>
+              <p className="text-sm font-semibold text-slate-500">Update your info</p>
+              <div className="mt-4 space-y-3">
+                <div className="rounded-xl bg-slate-100 px-4 py-3">
+                  <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                    Name
+                  </p>
+                  <p className="text-base font-semibold text-slate-800">Hannah Barnes</p>
+                </div>
+                <div className="rounded-xl bg-slate-100 px-4 py-3">
+                  <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                    Address
+                  </p>
+                  <p className="text-base font-semibold text-slate-800">1472 Alderwood Ln</p>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {['City', 'State', 'Zip'].map((f) => (
+                    <div key={f} className="rounded-xl bg-slate-100 px-3 py-2.5">
+                      <p className="text-[10px] font-medium text-slate-400">{f}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
 
-        <Reveal delay={0.3} y={32} className="relative mx-auto hidden aspect-square w-full max-w-md lg:block">
-          <Parallax speed={44} className="h-full">
-            <div className="relative h-full w-full">
-              {!reduce && (
-                <motion.div
-                  aria-hidden
-                  className="absolute inset-10 rounded-full opacity-30 blur-2xl"
-                  style={{
-                    background:
-                      'conic-gradient(from 0deg, var(--color-brand-400), var(--color-accent-400), var(--color-brand-500), var(--color-brand-400))',
-                  }}
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 24, repeat: Infinity, ease: 'linear' }}
-                />
-              )}
+            <RefreshButton />
+          </div>
+        </Reveal>
 
-              <div className="absolute inset-16 rounded-full border border-white/10 sm:inset-20" />
+        {/* Admin dashboard — where it shows up */}
+        <Reveal delay={0.2} className="sm:col-span-2">
+          <div className="relative flex min-h-[480px] flex-col overflow-hidden rounded-[2rem] bg-linear-to-br from-sky-300 via-indigo-300 to-violet-300 p-10 pb-24 sm:min-h-[560px] sm:p-14 sm:pb-28 lg:min-h-[640px] lg:p-16 lg:pb-32">
+            <div className="flex items-center gap-3.5">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/90 text-indigo-600 shadow-sm lg:h-12 lg:w-12">
+                <ClipboardList className="h-5.5 w-5.5" />
+              </div>
+              <span className="font-display text-2xl font-bold text-white lg:text-3xl">
+                dashboard
+              </span>
+            </div>
+            <p className="mt-2 text-base font-medium text-white/85 lg:text-lg">Shows up here.</p>
 
-              <div className="absolute left-1/2 top-1/2 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white/80">
-                <Radio className="h-4 w-4" />
+            <motion.div
+              className="mx-auto mt-10 flex w-[85%] max-w-md overflow-hidden rounded-[1.75rem] border border-white/40 bg-white text-slate-900 shadow-2xl sm:mt-12 lg:mt-14 lg:max-w-lg"
+              initial={reduce ? undefined : { y: 0 }}
+              animate={reduce ? undefined : { y: [0, -10, 0] }}
+              transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
+            >
+              <div className="flex-1 p-6 lg:p-8">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-100 text-sm font-bold text-brand-700">
+                      HB
+                    </div>
+                    <p className="text-base font-semibold text-slate-800">Hannah Barnes</p>
+                  </div>
+                  <div className="flex items-center gap-1.5 rounded-lg bg-slate-100 px-2.5 py-1.5 text-xs font-medium text-slate-500">
+                    Actions <ChevronDown className="h-3.5 w-3.5" />
+                  </div>
+                </div>
+
+                <div className="mt-5 space-y-3">
+                  <div className="flex items-center gap-3 text-sm text-slate-500">
+                    <Mail className="h-4 w-4" />
+                    <span className="h-2 flex-1 rounded-full bg-slate-100" />
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-slate-500">
+                    <Phone className="h-4 w-4" />
+                    <span className="h-2 w-24 rounded-full bg-slate-100" />
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-slate-500">
+                    <MapPin className="h-4 w-4" />
+                    <span className="text-sm font-medium text-slate-600">1472 Alderwood Ln</span>
+                  </div>
+                </div>
               </div>
 
-              {floatingCards.map((card) => (
-                <motion.div
-                  key={card.label}
-                  className={`absolute flex items-center gap-2.5 rounded-2xl border border-white/10 bg-slate-900/90 px-4 py-3 shadow-lg shadow-slate-950/40 backdrop-blur-sm ${card.className}`}
-                  animate={reduce ? undefined : { y: [0, -10, 0] }}
-                  transition={{ duration: card.duration, repeat: Infinity, ease: 'easeInOut' }}
-                >
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-brand-500/20 text-brand-300">
-                    <card.icon className="h-4 w-4" />
-                  </div>
-                  <span className="whitespace-nowrap text-xs font-semibold text-white/80">
-                    {card.label}
-                  </span>
-                </motion.div>
-              ))}
-            </div>
-          </Parallax>
+              <div className="flex w-14 flex-col items-center gap-5 border-l border-slate-100 bg-slate-50 py-6 lg:w-16">
+                <User className="h-5 w-5 text-slate-400" />
+                <HelpCircle className="h-5 w-5 text-slate-400" />
+                <span className="relative">
+                  <Bell className="h-5 w-5 text-slate-400" />
+                  <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-rose-500" />
+                </span>
+                <MessageSquare className="h-5 w-5 text-slate-400" />
+                <ClipboardList className="h-5 w-5 text-slate-400" />
+              </div>
+            </motion.div>
+
+            <RefreshButton delay={0.6} />
+          </div>
         </Reveal>
       </div>
     </section>
+  );
+}
+
+function RefreshButton({ delay = 0 }: { delay?: number }) {
+  const reduce = useReducedMotion();
+  return (
+    <motion.div
+      className="absolute bottom-6 right-6 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-slate-600 shadow-md lg:h-12 lg:w-12"
+      animate={reduce ? undefined : { rotate: 360 }}
+      transition={{ duration: 3, repeat: Infinity, ease: 'linear', delay }}
+    >
+      <RefreshCw className="h-4.5 w-4.5" />
+    </motion.div>
   );
 }
