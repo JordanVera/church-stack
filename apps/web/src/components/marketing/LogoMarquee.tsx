@@ -1,38 +1,33 @@
 'use client';
 
-import { Reveal } from '@/components/motion';
+import { Marquee } from '@/components/motion';
 
-const churches = [
-  'Lorem Ipsum',
-  'Dolor Sit',
-  'Amet Church',
-  'Consectetur',
-  'Adipiscing',
-  'Tempor',
-  'Incididunt',
-  'Magna Aliqua',
+const capabilities = [
+  'Announcements',
+  'Events',
+  'Giving',
+  'Sermons',
+  'Groups',
+  'Check-in',
+  'Push notifications',
 ];
 
 export default function LogoMarquee() {
   return (
-    <section className="border-y border-slate-200/70 bg-slate-50/60 py-12 dark:border-slate-800/70 dark:bg-slate-900/30">
-      <Reveal className="mx-auto max-w-6xl px-6">
-        <p className="text-center text-sm font-medium uppercase tracking-[0.25em] text-slate-500 dark:text-slate-400">
-          Lorem ipsum dolor sit amet
-        </p>
-      </Reveal>
-      <div className="marquee-mask mt-8 flex overflow-hidden">
-        <div className="animate-marquee flex shrink-0 items-center gap-16 pr-16">
-          {[...churches, ...churches].map((name, i) => (
+    <section className="relative overflow-hidden bg-slate-950 py-14">
+      <Marquee duration={34} mask={false}>
+        <div className="flex shrink-0 items-center gap-10 pr-10">
+          {capabilities.map((label, i) => (
             <span
-              key={`${name}-${i}`}
-              className="whitespace-nowrap font-display text-2xl font-semibold text-slate-400 dark:text-slate-600"
+              key={`${label}-${i}`}
+              className="flex items-center gap-10 whitespace-nowrap font-display text-5xl font-bold uppercase tracking-tight text-transparent [-webkit-text-stroke:1.5px_rgba(255,255,255,0.25)] sm:text-6xl lg:text-7xl"
             >
-              {name}
+              {label}
+              <span className="text-2xl text-brand-400 sm:text-3xl">✦</span>
             </span>
           ))}
         </div>
-      </div>
+      </Marquee>
     </section>
   );
 }

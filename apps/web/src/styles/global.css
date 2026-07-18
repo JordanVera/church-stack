@@ -8,6 +8,7 @@
     var(--font-sans), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica,
     Arial, sans-serif;
   --font-display: var(--font-display), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-hero: var(--font-hero), var(--font-display), sans-serif;
 
   /* Brand — azure blue drawn from the Church Stack logo, with a steel accent. */
   --color-brand-50: #edf7fd;

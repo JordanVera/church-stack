@@ -1,14 +1,19 @@
 'use client';
 
 import Image from 'next/image';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { useRef } from 'react';
 import { LineReveal, Parallax } from '@/components/motion';
 
 export default function BigStatement() {
   const reduce = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.88, 1, 0.88]);
+  const opacity = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [0.3, 1, 1, 0.3]);
 
   return (
-    <section className="relative overflow-hidden bg-slate-950 py-32 text-white sm:py-40">
+    <section ref={ref} className="relative overflow-hidden bg-slate-950 py-32 text-white sm:py-40">
       {/* Ambient brand glows */}
       {!reduce && (
         <>
@@ -28,7 +33,10 @@ export default function BigStatement() {
       )}
 
       {/* Faint logo watermark */}
-      <Parallax speed={40} className="pointer-events-none absolute inset-0 flex items-center justify-center">
+      <Parallax
+        speed={40}
+        className="pointer-events-none absolute inset-0 flex items-center justify-center"
+      >
         <Image
           src="/brand/logo-vertical.png"
           alt=""
@@ -39,9 +47,12 @@ export default function BigStatement() {
         />
       </Parallax>
 
-      <div className="relative mx-auto max-w-6xl px-6">
+      <motion.div
+        className="relative mx-auto max-w-6xl px-6"
+        style={reduce ? undefined : { scale, opacity }}
+      >
         <p className="mb-8 text-center text-sm font-medium uppercase tracking-[0.3em] text-brand-300">
-          Lorem ipsum dolor
+          Our mission
         </p>
         <h2 className="text-center font-display text-6xl font-bold leading-[0.9] tracking-tight sm:text-8xl lg:text-[9rem]">
           <LineReveal delay={0.05}>until</LineReveal>
@@ -51,7 +62,7 @@ export default function BigStatement() {
           <LineReveal delay={0.25}>church</LineReveal>
           <LineReveal delay={0.35}>connects.</LineReveal>
         </h2>
-      </div>
+      </motion.div>
     </section>
   );
 }

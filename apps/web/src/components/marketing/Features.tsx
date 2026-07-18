@@ -8,34 +8,34 @@ const cells = [
   {
     icon: Palette,
     title: 'Fully whitelabel',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.',
+    body: 'Your logo, your colors, your name on the App Store and Google Play. No "powered by" badge, ever.',
     className: 'lg:col-span-2',
     feature: true,
   },
   {
     icon: Zap,
     title: 'Launch in days',
-    body: 'Ut enim ad minim veniam, quis nostrud exercitation.',
+    body: 'Go from sign-up to a published app without waiting on a dev team or agency timeline.',
   },
   {
     icon: Megaphone,
     title: 'Announcements',
-    body: 'Duis aute irure dolor in reprehenderit in voluptate.',
+    body: 'Push updates straight to every phone the moment something changes.',
   },
   {
     icon: CalendarDays,
     title: 'Events',
-    body: 'Excepteur sint occaecat cupidatat non proident sunt.',
+    body: 'A shared calendar with RSVPs, reminders, and directions built in.',
   },
   {
     icon: HandHeart,
     title: 'Giving-ready',
-    body: 'Sed ut perspiciatis unde omnis iste natus error sit.',
+    body: 'Accept one-time and recurring gifts without sending people to a separate site.',
   },
   {
     icon: Smartphone,
     title: 'iOS & Android',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.',
+    body: 'One dashboard powers both native apps, so your team never manages two codebases.',
     className: 'lg:col-span-3',
     wide: true,
   },
@@ -46,13 +46,14 @@ export default function Features() {
     <section id="features" className="mx-auto max-w-6xl scroll-mt-24 px-6 py-28">
       <Reveal className="mx-auto max-w-2xl text-center">
         <p className="text-sm font-medium uppercase tracking-[0.25em] text-brand-500 dark:text-brand-400">
-          Lorem ipsum
+          What's included
         </p>
         <h2 className="mt-4 font-display text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl dark:text-white">
           Everything, out of the box
         </h2>
         <p className="mt-4 text-lg text-slate-600 dark:text-slate-300">
-          Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.
+          Every plan ships with the core tools your church needs to stay connected — no add-ons
+          required.
         </p>
       </Reveal>
 

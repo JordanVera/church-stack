@@ -33,7 +33,7 @@ export default function Header() {
           : 'border-b border-transparent bg-transparent'
       }`}
     >
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
         <Link href="/" className="group flex items-center">
           <Image
             src="/brand/logo-horizontal.png"
@@ -41,34 +41,34 @@ export default function Header() {
             width={220}
             height={110}
             priority
-            className="h-11 w-auto transition-transform duration-300 group-hover:scale-[1.03]"
+            className="h-24 w-auto transition-transform duration-300 group-hover:scale-[1.03]"
           />
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-10 md:flex">
           {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="group relative text-sm font-medium text-slate-600 transition hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+              className="group relative text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 transition hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
             >
               {item.label}
-              <span className="absolute -bottom-1 left-0 h-0.5 w-0 rounded-full bg-brand-500 transition-all duration-300 group-hover:w-full" />
+              <span className="absolute -bottom-1.5 left-0 h-px w-0 bg-current transition-all duration-300 group-hover:w-full" />
             </Link>
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <ThemeToggle />
           <Link
             href="/login"
-            className="hidden text-sm font-medium text-slate-600 transition hover:text-slate-900 sm:block dark:text-slate-300 dark:hover:text-white"
+            className="hidden text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 transition hover:text-slate-900 sm:block dark:text-slate-300 dark:hover:text-white"
           >
             Log in
           </Link>
           <Link
             href="/signup"
-            className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-brand-600/30 transition hover:bg-brand-500 hover:shadow-md hover:shadow-brand-600/40"
+            className="rounded-full bg-brand-600 px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.15em] text-white shadow-sm shadow-brand-600/30 transition hover:bg-brand-500 hover:shadow-md hover:shadow-brand-600/40"
           >
             Get started
           </Link>

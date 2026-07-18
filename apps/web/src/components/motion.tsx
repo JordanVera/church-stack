@@ -1,14 +1,17 @@
 'use client';
 
 import {
+  animate,
   motion,
+  useInView,
+  useMotionValue,
   useReducedMotion,
   useScroll,
   useTransform,
   type HTMLMotionProps,
   type Variants,
 } from 'framer-motion';
-import { useRef, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 
 type MotionTag = keyof typeof motion;
 
@@ -192,6 +195,100 @@ export function Parallax({
   return (
     <div ref={ref} className={className}>
       <motion.div style={reduce ? undefined : { y }}>{children}</motion.div>
+    </div>
+  );
+}
+
+/**
+ * Counts up from 0 to `value` once it scrolls into view. Renders `prefix`/`suffix`
+ * around the number so callers can wrap things like "$" or "+" without extra markup.
+ */
+export function Counter({
+  value,
+  duration = 1.6,
+  prefix = '',
+  suffix = '',
+  className,
+}: {
+  value: number;
+  duration?: number;
+  prefix?: string;
+  suffix?: string;
+  className?: string;
+}) {
+  const reduce = useReducedMotion();
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: '-80px' });
+  const count = useMotionValue(reduce ? value : 0);
+  const display = useTransform(count, (v) => `${prefix}${Math.round(v)}${suffix}`);
+
+  useEffect(() => {
+    if (!inView || reduce) return;
+    const controls = animate(count, value, { duration, ease: [0.16, 1, 0.3, 1] });
+    return () => controls.stop();
+  }, [inView, reduce, value, duration, count]);
+
+  return (
+    <motion.span ref={ref} className={className}>
+      {display}
+    </motion.span>
+  );
+}
+
+/**
+ * A vertical line whose fill height tracks scroll progress through `containerRef`.
+ * Drop inside a `relative` container alongside the content it should trace.
+ */
+export function ScrollLine({
+  containerRef,
+  className,
+}: {
+  containerRef: React.RefObject<HTMLElement | null>;
+  className?: string;
+}) {
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start center', 'end center'],
+  });
+
+  return (
+    <div className={`absolute w-px bg-slate-200 dark:bg-slate-800 ${className ?? ''}`}>
+      <motion.div
+        className="w-full origin-top bg-brand-500 dark:bg-brand-400"
+        style={{ scaleY: reduce ? 1 : scrollYProgress, height: '100%' }}
+      />
+    </div>
+  );
+}
+
+/**
+ * Infinite horizontal marquee. Pass pre-duplicated `children` sized for one loop —
+ * the track renders two copies back to back and scrolls the whole thing left.
+ */
+export function Marquee({
+  children,
+  className,
+  duration = 32,
+  reverse = false,
+  mask = true,
+}: {
+  children: ReactNode;
+  className?: string;
+  duration?: number;
+  reverse?: boolean;
+  mask?: boolean;
+}) {
+  return (
+    <div className={`flex overflow-hidden ${mask ? 'marquee-mask' : ''} ${className ?? ''}`}>
+      <motion.div
+        className="flex shrink-0 items-center"
+        animate={{ x: reverse ? ['-50%', '0%'] : ['0%', '-50%'] }}
+        transition={{ duration, repeat: Infinity, ease: 'linear' }}
+      >
+        {children}
+        {children}
+      </motion.div>
     </div>
   );
 }

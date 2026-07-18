@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Space_Grotesk } from 'next/font/google';
+import { Anton, Inter, Space_Grotesk } from 'next/font/google';
 import { TRPCProvider } from '@/lib/trpc-provider';
 import SessionProvider from '@/components/SessionProvider';
 import ThemeProvider from '@/components/ThemeProvider';
@@ -19,6 +19,14 @@ const display = Space_Grotesk({
   weight: ['500', '600', '700'],
 });
 
+// Heavy condensed grotesque reserved for oversized editorial headlines (hero-style statements).
+const hero = Anton({
+  subsets: ['latin'],
+  variable: '--font-hero',
+  display: 'swap',
+  weight: '400',
+});
+
 export const metadata: Metadata = {
   title: 'Church Stack — Whitelabel apps for churches',
   description:
@@ -27,7 +35,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${sans.variable} ${display.variable}`}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${sans.variable} ${display.variable} ${hero.variable}`}
+    >
       <body className="bg-white font-sans text-slate-900 antialiased transition-colors dark:bg-slate-950 dark:text-slate-100">
         <ThemeProvider>
           <SessionProvider>
