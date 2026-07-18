@@ -18,7 +18,7 @@ export default function DashboardPage() {
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">You’re signed out</h1>
         <p className="mt-2 text-slate-600 dark:text-slate-300">
           Please{' '}
-          <Link href="/login" className="font-semibold text-indigo-600 dark:text-indigo-400">
+          <Link href="/login" className="font-semibold text-brand-600 dark:text-brand-400">
             log in
           </Link>{' '}
           to view your dashboard.
@@ -52,7 +52,7 @@ export default function DashboardPage() {
             >
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-slate-900 dark:text-white">{m.church.name}</h3>
-                <span className="rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300">
+                <span className="rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">
                   {m.role}
                 </span>
               </div>

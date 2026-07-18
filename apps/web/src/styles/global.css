@@ -3,9 +3,40 @@
 /* Enable class-based dark mode (next-themes toggles `.dark` on <html>). */
 @custom-variant dark (&:where(.dark, .dark *));
 
+@theme {
+  --font-sans:
+    var(--font-sans), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif;
+  --font-display: var(--font-display), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+
+  /* Brand — azure blue drawn from the Church Stack logo, with a steel accent. */
+  --color-brand-50: #edf7fd;
+  --color-brand-100: #d3ecfa;
+  --color-brand-200: #a9d9f4;
+  --color-brand-300: #74c1ea;
+  --color-brand-400: #3ba3df;
+  --color-brand-500: #1786cb;
+  --color-brand-600: #0d6cab;
+  --color-brand-700: #0f568a;
+  --color-brand-800: #124972;
+  --color-brand-900: #133d60;
+  --color-brand-950: #0b2740;
+
+  --color-accent-400: #38bdf8;
+  --color-accent-500: #0ea5e9;
+  --color-accent-600: #0284c7;
+
+  /* Animation easing shared by framer-motion + CSS. */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 :root {
-  --brand: #4f46e5;
-  --brand-2: #0ea5e9;
+  --brand: var(--color-brand-500);
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
 }
 
 html {
@@ -14,20 +45,52 @@ html {
 
 body {
   min-height: 100vh;
-  font-family:
-    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 ::selection {
-  background-color: var(--brand);
+  background-color: var(--color-brand-500);
   color: white;
 }
 
-/* Avoid a flash of default-styled scrollbars/form controls per theme. */
-:root {
-  color-scheme: light;
+/* Respect users who prefer reduced motion: neutralize transforms/animations. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
-.dark {
-  color-scheme: dark;
+/* Subtle dotted grid used behind hero / feature sections. */
+.bg-grid {
+  background-image: radial-gradient(currentColor 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* Continuous horizontal marquee for the logo / social-proof strip. */
+@keyframes marquee-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee-x 32s linear infinite;
+}
+
+.marquee-mask {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 12%,
+    black 88%,
+    transparent
+  );
+  mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
 }
