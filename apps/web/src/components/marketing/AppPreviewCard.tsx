@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 import { Bell, CalendarDays, Megaphone, PlayCircle, Radio, Users, Wallet } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 const waveform = [4, 8, 5, 10, 6, 9, 4, 7, 5, 6];
 
@@ -131,24 +132,30 @@ export default function AppPreviewCard() {
       {!reduce && (
         <>
           <motion.div
-            className="absolute -left-10 top-8 hidden items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 shadow-lg sm:flex dark:border-slate-800 dark:bg-slate-900"
+            className="absolute -left-10 top-8 hidden sm:block"
             animate={{ y: [0, -10, 0] }}
             transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <Radio className="h-4 w-4 text-brand-500" />
-            <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+            <Badge
+              variant="outline"
+              className="h-auto gap-2 rounded-2xl border-slate-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-slate-700 shadow-lg dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+            >
+              <Radio className="h-4 w-4 text-brand-500" />
               2 platforms, 1 app
-            </span>
+            </Badge>
           </motion.div>
           <motion.div
-            className="absolute -right-8 bottom-14 hidden items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 shadow-lg sm:flex dark:border-slate-800 dark:bg-slate-900"
+            className="absolute -right-8 bottom-14 hidden sm:block"
             animate={{ y: [0, 12, 0] }}
             transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
           >
-            <Users className="h-4 w-4 text-accent-500" />
-            <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+            <Badge
+              variant="outline"
+              className="h-auto gap-2 rounded-2xl border-slate-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-slate-700 shadow-lg dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+            >
+              <Users className="h-4 w-4 text-accent-500" />
               1,204 members active
-            </span>
+            </Badge>
           </motion.div>
         </>
       )}

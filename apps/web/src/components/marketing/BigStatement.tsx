@@ -12,6 +12,7 @@ import {
   Wallet,
 } from 'lucide-react';
 import { LineReveal, Parallax, Reveal } from '@/components/motion';
+import { Button } from '@/components/ui/button';
 
 const highlights = [
   {
@@ -110,13 +111,14 @@ export default function BigStatement() {
           </div>
 
           <Reveal delay={0.65} className="mt-10">
-            <Link
-              href="/signup"
-              className="group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-semibold uppercase tracking-widest text-slate-900 shadow-lg transition hover:bg-white/90"
+            <Button
+              size="lg"
+              className="group h-auto rounded-full bg-white px-7 py-3.5 text-sm uppercase tracking-widest text-slate-900 shadow-lg hover:bg-white/90"
+              render={<Link href="/signup" />}
             >
               Start building
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
+            </Button>
           </Reveal>
         </div>
 

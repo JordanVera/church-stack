@@ -3,6 +3,9 @@
 import Link from 'next/link';
 import { Check } from 'lucide-react';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 
 const tiers = [
   {
@@ -52,48 +55,56 @@ export default function PricingPage() {
             key={tier.name}
             whileHover={{ y: -8 }}
             transition={{ type: 'spring', stiffness: 300, damping: 22 }}
-            className={`relative flex flex-col rounded-2xl border p-8 shadow-sm ${
-              tier.highlighted
-                ? 'border-brand-600 bg-white shadow-xl shadow-brand-600/10 ring-2 ring-brand-600 lg:-mt-4 lg:mb-4 dark:bg-slate-900'
-                : 'border-slate-200 dark:border-slate-800 dark:bg-slate-900'
-            }`}
+            className={tier.highlighted ? 'lg:-mt-4 lg:mb-4' : ''}
           >
-            {tier.highlighted && (
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-brand-600 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white shadow-sm">
-                Most popular
-              </span>
-            )}
-            <h3 className="font-display text-lg font-semibold text-slate-900 dark:text-white">
-              {tier.name}
-            </h3>
-            <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{tier.description}</p>
-            <div className="mt-6 flex items-baseline gap-1">
-              <span className="font-display text-4xl font-bold text-slate-900 dark:text-white">
-                {tier.price}
-              </span>
-              <span className="text-slate-500 dark:text-slate-400">{tier.period}</span>
-            </div>
-            <ul className="mt-8 space-y-3">
-              {tier.features.map((f) => (
-                <li
-                  key={f}
-                  className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-300"
-                >
-                  <Check className="h-5 w-5 shrink-0 text-brand-600 dark:text-brand-300" />
-                  {f}
-                </li>
-              ))}
-            </ul>
-            <Link
-              href="/signup"
-              className={`mt-8 rounded-xl px-4 py-3 text-center text-sm font-semibold transition ${
+            <Card
+              className={`relative h-full rounded-2xl py-8 shadow-sm ring-0 ${
                 tier.highlighted
-                  ? 'bg-brand-600 text-white shadow-sm shadow-brand-600/30 hover:bg-brand-500'
-                  : 'border border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800'
+                  ? 'border-brand-600 bg-white shadow-xl shadow-brand-600/10 ring-2 ring-brand-600 dark:bg-slate-900'
+                  : 'border-slate-200 dark:border-slate-800 dark:bg-slate-900'
               }`}
             >
-              {tier.cta}
-            </Link>
+              {tier.highlighted && (
+                <Badge className="absolute -top-3 left-1/2 h-auto -translate-x-1/2 px-3 py-1 text-xs uppercase tracking-wide shadow-sm">
+                  Most popular
+                </Badge>
+              )}
+              <CardContent className="flex h-full flex-col px-8">
+                <h3 className="font-display text-lg font-semibold text-slate-900 dark:text-white">
+                  {tier.name}
+                </h3>
+                <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{tier.description}</p>
+                <div className="mt-6 flex items-baseline gap-1">
+                  <span className="font-display text-4xl font-bold text-slate-900 dark:text-white">
+                    {tier.price}
+                  </span>
+                  <span className="text-slate-500 dark:text-slate-400">{tier.period}</span>
+                </div>
+                <ul className="mt-8 space-y-3">
+                  {tier.features.map((f) => (
+                    <li
+                      key={f}
+                      className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-300"
+                    >
+                      <Check className="h-5 w-5 shrink-0 text-brand-600 dark:text-brand-300" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <Button
+                  size="lg"
+                  variant={tier.highlighted ? 'default' : 'outline'}
+                  className={`mt-8 h-auto rounded-xl px-4 py-3 text-sm font-semibold ${
+                    tier.highlighted
+                      ? 'shadow-sm shadow-brand-600/30'
+                      : 'border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-transparent dark:text-slate-200 dark:hover:bg-slate-800'
+                  }`}
+                  render={<Link href="/signup" />}
+                >
+                  {tier.cta}
+                </Button>
+              </CardContent>
+            </Card>
           </StaggerItem>
         ))}
       </Stagger>

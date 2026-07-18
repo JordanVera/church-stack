@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { LineReveal, Reveal } from '@/components/motion';
+import { Button } from '@/components/ui/button';
 
 export default function CTA() {
   const reduce = useReducedMotion();
@@ -36,13 +37,14 @@ export default function CTA() {
           required, no agency invoices.
         </Reveal>
         <Reveal delay={0.4}>
-          <Link
-            href="/signup"
-            className="group mt-10 inline-flex items-center gap-2 rounded-full bg-white px-8 py-4 text-base font-semibold text-brand-700 shadow-lg transition hover:bg-brand-50"
+          <Button
+            size="lg"
+            className="group mt-10 h-auto rounded-full bg-white px-8 py-4 text-base text-brand-700 shadow-lg hover:bg-brand-50"
+            render={<Link href="/signup" />}
           >
             Get started free
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </Link>
+          </Button>
         </Reveal>
       </div>
     </section>

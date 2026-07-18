@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { Smartphone, Palette, Zap, CalendarDays, HandHeart, Megaphone } from 'lucide-react';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion';
+import { Card, CardContent } from '@/components/ui/card';
 
 const cells = [
   {
@@ -63,54 +64,56 @@ export default function Features() {
             key={c.title}
             whileHover={{ y: -6 }}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-            className={`group relative overflow-hidden rounded-3xl border p-7 shadow-sm transition-shadow hover:shadow-xl hover:shadow-brand-600/10 ${
-              c.className ?? ''
-            } ${
-              c.feature || c.wide
-                ? 'border-brand-500/20 bg-gradient-to-br from-brand-600 to-brand-800 text-white'
-                : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900'
-            }`}
+            className={c.className}
           >
-            {c.wide && (
-              <div className="pointer-events-none absolute inset-0 opacity-30">
-                <Image
-                  src="https://images.unsplash.com/photo-1438032005730-c779502df39b?auto=format&fit=crop&w=1400&q=80"
-                  alt=""
-                  aria-hidden
-                  fill
-                  sizes="100vw"
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-brand-800 via-brand-700/80 to-transparent" />
-              </div>
-            )}
-            <div className="relative">
-              <div
-                className={`grid h-12 w-12 place-items-center rounded-2xl transition-colors ${
-                  c.feature || c.wide
-                    ? 'bg-white/15 text-white'
-                    : 'bg-brand-50 text-brand-600 group-hover:bg-brand-600 group-hover:text-white dark:bg-brand-500/10 dark:text-brand-300'
-                }`}
-              >
-                <c.icon className="h-6 w-6" />
-              </div>
-              <h3
-                className={`mt-5 font-display font-semibold ${
-                  c.feature || c.wide
-                    ? 'text-2xl text-white'
-                    : 'text-lg text-slate-900 dark:text-white'
-                }`}
-              >
-                {c.title}
-              </h3>
-              <p
-                className={`mt-2 max-w-md text-sm leading-relaxed ${
-                  c.feature || c.wide ? 'text-brand-100' : 'text-slate-600 dark:text-slate-300'
-                }`}
-              >
-                {c.body}
-              </p>
-            </div>
+            <Card
+              className={`group relative h-full overflow-hidden rounded-3xl border py-7 shadow-sm ring-0 transition-shadow hover:shadow-xl hover:shadow-brand-600/10 ${
+                c.feature || c.wide
+                  ? 'border-brand-500/20 bg-gradient-to-br from-brand-600 to-brand-800 text-white'
+                  : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900'
+              }`}
+            >
+              {c.wide && (
+                <div className="pointer-events-none absolute inset-0 opacity-30">
+                  <Image
+                    src="https://images.unsplash.com/photo-1438032005730-c779502df39b?auto=format&fit=crop&w=1400&q=80"
+                    alt=""
+                    aria-hidden
+                    fill
+                    sizes="100vw"
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-brand-800 via-brand-700/80 to-transparent" />
+                </div>
+              )}
+              <CardContent className="relative px-7">
+                <div
+                  className={`grid h-12 w-12 place-items-center rounded-2xl transition-colors ${
+                    c.feature || c.wide
+                      ? 'bg-white/15 text-white'
+                      : 'bg-brand-50 text-brand-600 group-hover:bg-brand-600 group-hover:text-white dark:bg-brand-500/10 dark:text-brand-300'
+                  }`}
+                >
+                  <c.icon className="h-6 w-6" />
+                </div>
+                <h3
+                  className={`mt-5 font-display font-semibold ${
+                    c.feature || c.wide
+                      ? 'text-2xl text-white'
+                      : 'text-lg text-slate-900 dark:text-white'
+                  }`}
+                >
+                  {c.title}
+                </h3>
+                <p
+                  className={`mt-2 max-w-md text-sm leading-relaxed ${
+                    c.feature || c.wide ? 'text-brand-100' : 'text-slate-600 dark:text-slate-300'
+                  }`}
+                >
+                  {c.body}
+                </p>
+              </CardContent>
+            </Card>
           </StaggerItem>
         ))}
       </Stagger>

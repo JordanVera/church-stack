@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Counter, Parallax, Reveal } from '@/components/motion';
+import { Button } from '@/components/ui/button';
 
 const stats = [
   { value: 3, suffix: ' days', label: 'From sign-up to a live app in both stores' },
@@ -57,12 +58,14 @@ export default function Showcase() {
             </dl>
 
             <Reveal delay={0.2}>
-              <Link
-                href="/pricing"
-                className="mt-9 inline-block rounded-xl border border-slate-300 px-6 py-3.5 text-base font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+              <Button
+                variant="outline"
+                size="lg"
+                className="mt-9 h-auto rounded-xl border-slate-300 px-6 py-3.5 text-base text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-transparent dark:text-slate-200 dark:hover:bg-slate-800"
+                render={<Link href="/pricing" />}
               >
                 View pricing
-              </Link>
+              </Button>
             </Reveal>
           </div>
         </div>

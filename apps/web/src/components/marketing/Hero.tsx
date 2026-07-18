@@ -6,6 +6,8 @@ import { ArrowRight, ArrowUpRight, Sparkles } from 'lucide-react';
 import { Counter, LineReveal, Reveal } from '@/components/motion';
 import Particles from '@/components/marketing/Particles';
 import AppPreviewCard from '@/components/marketing/AppPreviewCard';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 const stats = [
   { value: 14, suffix: 'd', label: 'Idea to launch' },
@@ -65,13 +67,16 @@ export default function Hero() {
       <div className="relative mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 px-6 lg:grid-cols-[1fr_0.9fr] lg:gap-6">
         <div className="lg:max-w-xl">
           <Reveal delay={0.05}>
-            <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-sm backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300">
+            <Badge
+              variant="outline"
+              className="h-auto gap-2 rounded-full border-slate-200 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-sm backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300"
+            >
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-500 opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-500" />
               </span>
               iOS &amp; Android &middot; no code required
-            </span>
+            </Badge>
           </Reveal>
 
           <h1 className="relative z-10 mt-4 font-hero uppercase leading-[0.92] tracking-tight text-slate-900 sm:mt-5 lg:mt-3 dark:text-white text-[clamp(3rem,11vw,8rem)]">
@@ -99,21 +104,24 @@ export default function Hero() {
             delay={0.7}
             className="relative z-10 mt-7 flex flex-wrap items-center gap-4 lg:mt-6"
           >
-            <Link
-              href="/signup"
-              className="group inline-flex items-center gap-2 rounded-full bg-brand-600 px-7 py-3.5 text-sm font-semibold uppercase tracking-widest text-white shadow-lg shadow-brand-600/30 transition hover:bg-brand-500 hover:shadow-xl hover:shadow-brand-600/40"
+            <Button
+              size="lg"
+              className="group h-auto rounded-full px-7 py-3.5 text-sm uppercase tracking-widest shadow-lg shadow-brand-600/30 hover:shadow-xl hover:shadow-brand-600/40"
+              render={<Link href="/signup" />}
             >
               <Sparkles className="h-4 w-4 transition-transform group-hover:rotate-12" />
               Start building
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-            <Link
-              href="/#features"
-              className="group inline-flex items-center gap-1.5 rounded-full border border-slate-200 px-7 py-3.5 text-sm font-semibold uppercase tracking-widest text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:bg-slate-900"
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="group h-auto rounded-full border-slate-200 px-7 py-3.5 text-sm uppercase tracking-widest text-slate-700 hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-transparent dark:text-slate-200 dark:hover:border-slate-600 dark:hover:bg-slate-900"
+              render={<Link href="/#features" />}
             >
               See how it works
               <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </Link>
+            </Button>
           </Reveal>
 
           <div className="relative z-10 mt-9 grid grid-cols-3 gap-6 border-t border-slate-200 pt-6 sm:max-w-xl lg:mt-7 lg:max-w-md lg:gap-4 lg:pt-5 dark:border-slate-800">

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import ThemeToggle from '@/components/ThemeToggle';
+import { Button } from '@/components/ui/button';
 
 const nav = [
   { href: '/#features', label: 'Features' },
@@ -60,18 +61,19 @@ export default function Header() {
 
         <div className="flex items-center gap-4">
           <ThemeToggle />
-          <Link
-            href="/login"
-            className="hidden text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 transition hover:text-slate-900 sm:block dark:text-slate-300 dark:hover:text-white"
+          <Button
+            variant="ghost"
+            className="hidden text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 hover:bg-transparent hover:text-slate-900 sm:inline-flex dark:text-slate-300 dark:hover:text-white"
+            render={<Link href="/login" />}
           >
             Log in
-          </Link>
-          <Link
-            href="/signup"
-            className="rounded-full bg-brand-600 px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.15em] text-white shadow-sm shadow-brand-600/30 transition hover:bg-brand-500 hover:shadow-md hover:shadow-brand-600/40"
+          </Button>
+          <Button
+            className="rounded-full px-5 py-2.5 text-xs uppercase tracking-[0.15em] shadow-sm shadow-brand-600/30 hover:shadow-md hover:shadow-brand-600/40"
+            render={<Link href="/signup" />}
           >
             Get started
-          </Link>
+          </Button>
         </div>
       </div>
     </motion.header>
