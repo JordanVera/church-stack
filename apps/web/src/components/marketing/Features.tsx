@@ -96,7 +96,9 @@ export default function Features() {
               </div>
               <h3
                 className={`mt-5 font-display font-semibold ${
-                  c.feature || c.wide ? 'text-2xl text-white' : 'text-lg text-slate-900 dark:text-white'
+                  c.feature || c.wide
+                    ? 'text-2xl text-white'
+                    : 'text-lg text-slate-900 dark:text-white'
                 }`}
               >
                 {c.title}

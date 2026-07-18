@@ -145,24 +145,33 @@ export function WordReveal({
 /**
  * A single big line that slides up from behind a mask as it enters view.
  * Compose several for the oversized editorial statement blocks.
+ *
+ * Pass `eager` for content that's visible on load (e.g. a hero headline) —
+ * it animates immediately via `animate` instead of waiting on `whileInView`,
+ * which can fail to fire for elements that are already in the viewport
+ * before layout has fully settled (leaving them stuck masked/invisible).
  */
 export function LineReveal({
   children,
   className,
   delay = 0,
+  eager = false,
 }: {
   children: ReactNode;
   className?: string;
   delay?: number;
+  eager?: boolean;
 }) {
   const reduce = useReducedMotion();
+  const visible = { y: 0 };
   return (
     <span className="block overflow-hidden">
       <motion.span
         className={`block ${className ?? ''}`}
         initial={reduce ? false : { y: '115%' }}
-        whileInView={reduce ? undefined : { y: 0 }}
-        viewport={{ once: true, margin: '-60px' }}
+        animate={eager ? (reduce ? undefined : visible) : undefined}
+        whileInView={!eager ? (reduce ? undefined : visible) : undefined}
+        viewport={eager ? undefined : { once: true, margin: '-60px' }}
         transition={{ duration: 0.9, delay, ease: EASE }}
       >
         {children}

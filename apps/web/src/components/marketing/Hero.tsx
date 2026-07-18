@@ -17,7 +17,7 @@ export default function Hero() {
   const reduce = useReducedMotion();
 
   return (
-    <section className="relative overflow-hidden bg-white pt-24 pb-14 sm:pt-28 dark:bg-slate-950">
+    <section className="relative overflow-hidden bg-white pt-24 pb-14 sm:pt-28 lg:pt-20 lg:pb-10 dark:bg-slate-950">
       {/* Dotted grid + constellation particles behind everything */}
       <div className="absolute inset-0 -z-20 bg-grid text-slate-900/4 dark:text-white/5" />
       <Particles
@@ -62,8 +62,8 @@ export default function Hero() {
         }}
       />
 
-      <div className="relative mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-6 lg:grid-cols-[1.15fr_1fr] lg:gap-8">
-        <div>
+      <div className="relative mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 px-6 lg:grid-cols-[1fr_0.9fr] lg:gap-6">
+        <div className="lg:max-w-xl">
           <Reveal delay={0.05}>
             <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-sm backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300">
               <span className="relative flex h-2 w-2">
@@ -74,24 +74,31 @@ export default function Hero() {
             </span>
           </Reveal>
 
-          <h1 className="relative z-10 mt-4 font-hero uppercase leading-[0.82] tracking-tight text-slate-900 sm:mt-5 dark:text-white text-[clamp(3rem,11vw,9rem)]">
-            <LineReveal delay={0.15}>Your church.</LineReveal>
-            <LineReveal delay={0.28} className="text-brand-500 dark:text-brand-400">
+          <h1 className="relative z-10 mt-4 font-hero uppercase leading-[0.92] tracking-tight text-slate-900 sm:mt-5 lg:mt-3 dark:text-white text-[clamp(3rem,11vw,8rem)]">
+            <LineReveal eager delay={0.15}>
+              Your church.
+            </LineReveal>
+            <LineReveal eager delay={0.28} className="text-brand-500 dark:text-brand-400">
               Your app.
             </LineReveal>
-            <LineReveal delay={0.41}>Live in days.</LineReveal>
+            <LineReveal eager delay={0.41}>
+              Live in days.
+            </LineReveal>
           </h1>
 
           <Reveal
             delay={0.55}
             as="p"
-            className="relative z-10 mt-5 max-w-xl text-lg leading-relaxed text-slate-600 sm:text-xl dark:text-slate-300"
+            className="relative z-10 mt-5 max-w-xl text-lg leading-relaxed text-slate-600 sm:text-xl lg:mt-4 lg:max-w-md lg:text-lg dark:text-slate-300"
           >
             Church Stack turns your branding into a fully whitelabeled iOS and Android app —
             announcements, events, giving, and sermons, ready before your next Sunday.
           </Reveal>
 
-          <Reveal delay={0.7} className="relative z-10 mt-7 flex flex-wrap items-center gap-4">
+          <Reveal
+            delay={0.7}
+            className="relative z-10 mt-7 flex flex-wrap items-center gap-4 lg:mt-6"
+          >
             <Link
               href="/signup"
               className="group inline-flex items-center gap-2 rounded-full bg-brand-600 px-7 py-3.5 text-sm font-semibold uppercase tracking-widest text-white shadow-lg shadow-brand-600/30 transition hover:bg-brand-500 hover:shadow-xl hover:shadow-brand-600/40"
@@ -109,10 +116,10 @@ export default function Hero() {
             </Link>
           </Reveal>
 
-          <div className="relative z-10 mt-9 grid grid-cols-3 gap-6 border-t border-slate-200 pt-6 sm:max-w-xl dark:border-slate-800">
+          <div className="relative z-10 mt-9 grid grid-cols-3 gap-6 border-t border-slate-200 pt-6 sm:max-w-xl lg:mt-7 lg:max-w-md lg:gap-4 lg:pt-5 dark:border-slate-800">
             {stats.map((stat, i) => (
               <Reveal key={stat.label} delay={0.8 + i * 0.1}>
-                <p className="font-display text-3xl font-bold tabular-nums text-slate-900 sm:text-4xl dark:text-white">
+                <p className="font-display text-3xl font-bold tabular-nums text-slate-900 sm:text-4xl lg:text-3xl dark:text-white">
                   <Counter value={stat.value} suffix={stat.suffix} duration={1.4} />
                 </p>
                 <p className="mt-1 text-xs font-medium uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">
