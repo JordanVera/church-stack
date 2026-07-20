@@ -1,7 +1,14 @@
+import type { ComponentType } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { FieldSection } from './FieldSection';
+import {
+  FacebookIcon,
+  InstagramIcon,
+  ThreadsIcon,
+  YoutubeIcon,
+} from './SocialIcons';
 import type { OnboardDraft } from './types';
 import { slugifyName } from './types';
 
@@ -162,14 +169,52 @@ export function ChurchStep({ draft, onChange }: Props) {
         <div className="grid gap-4 sm:grid-cols-2">
           {(
             [
-              ['facebookUrl', 'Facebook', 'https://facebook.com/yourchurch'],
-              ['instagramUrl', 'Instagram', 'https://instagram.com/yourchurch'],
-              ['youtubeUrl', 'YouTube', 'https://youtube.com/@yourchurch'],
-              ['threadsUrl', 'Threads', 'https://threads.net/@yourchurch'],
-            ] as const
-          ).map(([key, label, placeholder]) => (
+              {
+                key: 'facebookUrl' as const,
+                label: 'Facebook',
+                placeholder: 'https://facebook.com/yourchurch',
+                Icon: FacebookIcon,
+                iconClass: 'text-[#1877F2]',
+              },
+              {
+                key: 'instagramUrl' as const,
+                label: 'Instagram',
+                placeholder: 'https://instagram.com/yourchurch',
+                Icon: InstagramIcon,
+                iconClass: 'text-[#E4405F]',
+              },
+              {
+                key: 'youtubeUrl' as const,
+                label: 'YouTube',
+                placeholder: 'https://youtube.com/@yourchurch',
+                Icon: YoutubeIcon,
+                iconClass: 'text-[#FF0000]',
+              },
+              {
+                key: 'threadsUrl' as const,
+                label: 'Threads',
+                placeholder: 'https://threads.net/@yourchurch',
+                Icon: ThreadsIcon,
+                iconClass: 'text-ink-900 dark:text-white',
+              },
+            ] satisfies Array<{
+              key: 'facebookUrl' | 'instagramUrl' | 'youtubeUrl' | 'threadsUrl';
+              label: string;
+              placeholder: string;
+              Icon: ComponentType<{ className?: string }>;
+              iconClass: string;
+            }>
+          ).map(({ key, label, placeholder, Icon, iconClass }) => (
             <div key={key}>
-              <Label htmlFor={key} className="mb-1.5 text-ink-700 dark:text-ink-300">
+              <Label
+                htmlFor={key}
+                className="mb-1.5 inline-flex items-center gap-2 text-ink-700 dark:text-ink-300"
+              >
+                <span
+                  className={`inline-flex size-6 items-center justify-center rounded-md bg-ink-50 dark:bg-ink-800/80 ${iconClass}`}
+                >
+                  <Icon className="size-3.5" />
+                </span>
                 {label}
               </Label>
               <Input

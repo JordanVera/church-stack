@@ -104,9 +104,24 @@ export function PlanningCenterImport({ draft, onChange }: Props) {
             Pull campuses and weekly service times from PC. You can edit everything after import.
           </p>
         </div>
-        <Button type="button" variant="outline" size="sm" onClick={() => setOpen((v) => !v)}>
-          {open ? 'Cancel' : 'Import'}
-        </Button>
+        {open ? (
+          <Button
+            type="button"
+            variant="outline"
+            className="h-10 border-ink-400 px-4 font-semibold text-ink-800 shadow-sm hover:bg-ink-100 dark:border-ink-500 dark:text-ink-100 dark:hover:bg-ink-800"
+            onClick={() => setOpen(false)}
+          >
+            Back
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            className="h-10 bg-brand-600 px-5 font-semibold text-white shadow-md shadow-brand-600/25 hover:bg-brand-700"
+            onClick={() => setOpen(true)}
+          >
+            Import
+          </Button>
+        )}
       </div>
 
       {open ? (

@@ -109,7 +109,7 @@ export function PastorsStep({ draft, onChange }: Props) {
       <Button
         type="button"
         variant="outline"
-        className="gap-1.5"
+        className="h-10 gap-1.5 border-ink-300 bg-white px-4 font-semibold text-ink-800 shadow-sm hover:border-ink-400 hover:bg-ink-50 dark:border-ink-500 dark:bg-ink-900 dark:text-ink-100 dark:hover:border-ink-400 dark:hover:bg-ink-800"
         onClick={() =>
           onChange({
             ...draft,

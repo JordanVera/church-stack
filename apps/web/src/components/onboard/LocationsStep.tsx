@@ -94,9 +94,7 @@ export function LocationsStep({ draft, onChange }: Props) {
                 value={location.pastorClientKey ?? ''}
                 onChange={(e) => {
                   const locations = draft.locations.map((l) =>
-                    l.key === location.key
-                      ? { ...l, pastorClientKey: e.target.value || null }
-                      : l
+                    l.key === location.key ? { ...l, pastorClientKey: e.target.value || null } : l
                   );
                   onChange({ ...draft, locations });
                 }}
@@ -116,8 +114,7 @@ export function LocationsStep({ draft, onChange }: Props) {
             </div>
             <div className="sm:col-span-2 space-y-2">
               <Label className="text-ink-700 dark:text-ink-300">
-                Location admin emails{' '}
-                <span className="font-normal text-ink-400">(optional)</span>
+                Location admin emails <span className="font-normal text-ink-400">(optional)</span>
               </Label>
               {(location.adminEmails.length ? location.adminEmails : ['']).map(
                 (email, emailIndex) => (
@@ -127,9 +124,7 @@ export function LocationsStep({ draft, onChange }: Props) {
                       value={email}
                       onChange={(e) => {
                         const nextEmails =
-                          location.adminEmails.length > 0
-                            ? [...location.adminEmails]
-                            : [''];
+                          location.adminEmails.length > 0 ? [...location.adminEmails] : [''];
                         nextEmails[emailIndex] = e.target.value;
                         const locations = draft.locations.map((l) =>
                           l.key === location.key ? { ...l, adminEmails: nextEmails } : l
@@ -172,8 +167,7 @@ export function LocationsStep({ draft, onChange }: Props) {
                       ? l
                       : {
                           ...l,
-                          adminEmails:
-                            l.adminEmails.length > 0 ? [...l.adminEmails, ''] : ['', ''],
+                          adminEmails: l.adminEmails.length > 0 ? [...l.adminEmails, ''] : ['', ''],
                         }
                   );
                   onChange({ ...draft, locations });
@@ -252,9 +246,7 @@ export function LocationsStep({ draft, onChange }: Props) {
                           : {
                               ...l,
                               services: l.services.map((s) =>
-                                s.key === service.key
-                                  ? { ...s, startTime: e.target.value }
-                                  : s
+                                s.key === service.key ? { ...s, startTime: e.target.value } : s
                               ),
                             }
                       );
@@ -293,6 +285,7 @@ export function LocationsStep({ draft, onChange }: Props) {
               type="button"
               variant="outline"
               size="sm"
+              className="h-9 border-ink-300 bg-white px-3 font-semibold text-ink-800 shadow-sm hover:border-ink-400 hover:bg-ink-50 dark:border-ink-500 dark:bg-ink-900 dark:text-ink-100 dark:hover:border-ink-400 dark:hover:bg-ink-800"
               onClick={() => {
                 const locations = draft.locations.map((l) =>
                   l.key !== location.key
@@ -322,7 +315,7 @@ export function LocationsStep({ draft, onChange }: Props) {
       <Button
         type="button"
         variant="outline"
-        className="gap-1.5"
+        className="h-10 gap-1.5 border-ink-300 bg-white px-4 font-semibold text-ink-800 shadow-sm hover:border-ink-400 hover:bg-ink-50 dark:border-ink-500 dark:bg-ink-900 dark:text-ink-100 dark:hover:border-ink-400 dark:hover:bg-ink-800"
         onClick={() =>
           onChange({
             ...draft,
