@@ -1,14 +1,15 @@
 'use client';
 
-import { useEffect, useId, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import {
-  Particles as TsParticles,
   ParticlesProvider,
   type ParticlesPluginRegistrar,
+  useParticlesProvider,
 } from '@tsparticles/react';
-import type { Engine, ISourceOptions } from '@tsparticles/engine';
+import { tsParticles, type Container, type Engine, type ISourceOptions } from '@tsparticles/engine';
 import { loadSlim } from '@tsparticles/slim';
 import { useReducedMotion } from 'framer-motion';
+import { useTheme } from 'next-themes';
 
 /** Must stay a stable reference — ParticlesProvider enforces one init for the app. */
 const initParticles: ParticlesPluginRegistrar = async (engine: Engine) => {
@@ -22,6 +23,10 @@ const DARK_COLOR = '#8ad0ef'; // brand-300
  * Soft drifting particle field powered by tsParticles (no link web).
  * Colors use brand theme tokens — not computed `text-*` styles — so they
  * stay correct under Tailwind v4 (oklch / color-mix) in light and dark mode.
+ *
+ * Loads against a real container element (never by id alone). If tsparticles
+ * can't find an id during an async race, it appends a canvas to `document.body`
+ * — which shows up as floating particles after the footer (esp. Firefox + dark).
  */
 export default function Particles({
   className,
@@ -60,22 +65,20 @@ function ParticlesField({
   darkColor: string;
 }) {
   const reactId = useId().replace(/:/g, '');
+  const hostRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<Container | undefined>(undefined);
   const reduce = useReducedMotion();
-  const [isDark, setIsDark] = useState(false);
+  const { loaded } = useParticlesProvider();
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const read = () => setIsDark(document.documentElement.classList.contains('dark'));
-    read();
-
-    const observer = new MutationObserver(read);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class'],
-    });
-
-    return () => observer.disconnect();
+    setMounted(true);
   }, []);
 
+  // Wait until next-themes has resolved so the first load uses the correct palette.
+  const themeReady = mounted && resolvedTheme != null;
+  const isDark = resolvedTheme === 'dark';
   const color = isDark ? darkColor : lightColor;
 
   const options = useMemo<ISourceOptions>(() => {
@@ -137,14 +140,40 @@ function ParticlesField({
     };
   }, [color, density, isDark, reduce]);
 
+  useEffect(() => {
+    if (!loaded || !themeReady) return;
+
+    const host = hostRef.current;
+    if (!host) return;
+
+    let cancelled = false;
+    const id = `particles-${reactId}`;
+
+    void tsParticles.load({ id, element: host, options }).then((container) => {
+      if (cancelled || !container || container.destroyed) {
+        container?.destroy();
+        return;
+      }
+      // Host unmounted during the async load — never keep an orphaned instance.
+      if (!host.isConnected) {
+        container.destroy();
+        return;
+      }
+      containerRef.current = container;
+    });
+
+    return () => {
+      cancelled = true;
+      containerRef.current?.destroy();
+      containerRef.current = undefined;
+    };
+  }, [loaded, themeReady, options, reactId]);
+
   return (
-    <div aria-hidden className={className}>
-      <TsParticles
-        key={color}
-        id={`particles-${reactId}-${isDark ? 'dark' : 'light'}`}
-        className="h-full w-full"
-        options={options}
-      />
-    </div>
+    <div
+      ref={hostRef}
+      aria-hidden
+      className={`overflow-hidden [&_canvas]:block [&_canvas]:h-full [&_canvas]:w-full ${className ?? ''}`}
+    />
   );
 }
