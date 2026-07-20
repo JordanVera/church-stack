@@ -203,7 +203,10 @@ export function Parallax({
 
   return (
     <div ref={ref} className={className}>
-      <motion.div style={reduce ? undefined : { y }}>{children}</motion.div>
+      {/* Fill the parent so transform doesn't collapse absolute/fill children to 0 height. */}
+      <motion.div className="absolute inset-0" style={reduce ? undefined : { y }}>
+        {children}
+      </motion.div>
     </div>
   );
 }

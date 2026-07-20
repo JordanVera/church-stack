@@ -25,7 +25,7 @@ export default function HowItWorks() {
   const timelineRef = useRef<HTMLDivElement>(null);
 
   return (
-    <section id="how" className="scroll-mt-24 bg-ink-50 py-28 dark:bg-ink-900/40">
+    <section id="how" className="scroll-mt-24 bg-ink-50 py-28 dark:bg-ink-900">
       <div className="mx-auto max-w-6xl px-6">
         <Reveal className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-medium uppercase tracking-[0.25em] text-brand-500 dark:text-brand-400">

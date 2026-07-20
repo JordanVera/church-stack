@@ -13,13 +13,13 @@ const stats = [
 
 export default function Showcase() {
   return (
-    <section className="relative overflow-hidden py-16 sm:py-24">
+    <section className="relative overflow-hidden py-16 sm:py-24 ">
       <div className="grid items-stretch lg:grid-cols-2">
         <Parallax speed={30} className="relative min-h-[380px] lg:min-h-[640px]">
           <div className="absolute inset-0">
             <Image
-              src="https://images.unsplash.com/photo-1438032005730-c779502df39b?auto=format&fit=crop&w=1400&q=80"
-              alt="Interior of a modern church building"
+              src="/marketing/showcase-community-steps.jpg"
+              alt="Community gathering on the steps of a modern church"
               fill
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="object-cover"
@@ -39,15 +39,15 @@ export default function Showcase() {
               </h2>
               <p className="mt-5 text-lg leading-relaxed text-ink-600 dark:text-ink-300">
                 No dev team, no agency retainer. Your staff manages announcements, events, and
-                giving from one dashboard, and it shows up instantly in an app that looks and
-                feels like it was built in-house.
+                giving from one dashboard, and it shows up instantly in an app that looks and feels
+                like it was built in-house.
               </p>
             </Reveal>
 
             <dl className="mt-10 grid grid-cols-3 gap-4 border-t border-ink-200 pt-8 dark:border-ink-800">
               {stats.map((s, i) => (
                 <Reveal key={s.label} delay={i * 0.1}>
-                  <dt className="font-display text-3xl font-bold text-brand-600 dark:text-brand-300">
+                  <dt className="font-display text-2xl font-bold text-brand-600 dark:text-brand-300">
                     <Counter value={s.value} suffix={s.suffix} />
                   </dt>
                   <dd className="mt-1 text-xs leading-snug text-ink-500 dark:text-ink-400">

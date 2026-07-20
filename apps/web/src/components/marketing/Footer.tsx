@@ -32,7 +32,7 @@ const columns = [
 
 export default function Footer() {
   return (
-    <footer className="relative overflow-hidden bg-white pt-20 pb-10 text-ink-950 dark:bg-ink-950 dark:text-white">
+    <footer className="relative overflow-hidden bg-white pt-20 pb-10 text-ink-950 dark:bg-ink-950 dark:text-white border-t border-ink-200/70 dark:border-ink-800/70">
       <div className="mx-auto max-w-6xl px-6">
         <Stagger className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <StaggerItem>

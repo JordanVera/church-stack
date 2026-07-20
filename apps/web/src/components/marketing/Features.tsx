@@ -1,5 +1,6 @@
 'use client';
 
+import { motion, useReducedMotion } from 'framer-motion';
 import { Smartphone, Palette, Zap, CalendarDays, HandHeart, Megaphone } from 'lucide-react';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion';
 import { Card, CardContent } from '@/components/ui/card';
@@ -41,7 +42,13 @@ const cells = [
   },
 ];
 
-const brandSwatches = ['#1a8bbd', '#e8a87c', '#7c9a7e', '#c47a8a', '#5b6eae'];
+const orbitColors = ['#55bae8', '#f5b07a', '#f4a5c8', '#a78bfa', '#34d399', '#fbbf24'];
+
+const brandIcons = [
+  { initials: 'GC', from: '#f5d0a9', to: '#c47a8a', rotate: -14, x: -58, y: -42 },
+  { initials: 'HV', from: '#7dd3c0', to: '#2a7a6b', rotate: 10, x: 52, y: -36 },
+  { initials: 'RC', from: '#c4b5fd', to: '#5b6eae', rotate: -8, x: -48, y: 48 },
+];
 
 export default function Features() {
   return (
@@ -113,57 +120,174 @@ export default function Features() {
   );
 }
 
-/** Brand-customization mock: store listing + palette, no stock photography. */
+/** Animated brand constellation — icons, orbiting color, store badge. */
 function WhitelabelVisual() {
+  const reduce = useReducedMotion();
+
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-y-0 right-0 hidden w-[52%] sm:block"
+      className="pointer-events-none absolute inset-y-0 right-0 hidden w-[55%] sm:block"
     >
-      <div className="absolute inset-0 bg-linear-to-l from-brand-900/40 via-transparent to-transparent" />
-      <div className="absolute right-5 top-1/2 w-[min(100%,220px)] -translate-y-1/2 lg:right-8 lg:w-60">
-        {/* Soft glow behind the mock */}
-        <div className="absolute -inset-6 rounded-3xl bg-white/5 blur-2xl" />
+      <div className="absolute inset-0 bg-linear-to-l from-brand-900/45 via-transparent to-transparent" />
 
-        {/* App Store–style listing card */}
-        <div className="relative overflow-hidden rounded-2xl border border-white/20 bg-white/10 p-3.5 shadow-2xl shadow-brand-950/40 backdrop-blur-sm">
-          <div className="flex items-center gap-3">
-            <div className="grid h-14 w-14 shrink-0 place-items-center rounded-[1.1rem] bg-linear-to-br from-[#f5d0a9] to-[#c47a8a] shadow-lg shadow-black/20 ring-1 ring-white/30">
-              <span className="font-display text-lg font-bold text-white drop-shadow-sm">✦</span>
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold text-white">Grace Church</p>
-              <p className="truncate text-[11px] text-white/60">Events · Giving · Live</p>
-              <div className="mt-1.5 flex items-center gap-1">
-                <div className="flex gap-0.5">
-                  {[0, 1, 2, 3, 4].map((i) => (
-                    <span key={i} className="h-1.5 w-1.5 rounded-full bg-amber-300/90" />
-                  ))}
-                </div>
-                <span className="text-[10px] text-white/50">4.9</span>
-              </div>
-            </div>
-          </div>
+      {/* Ambient color blooms */}
+      <div className="absolute right-8 top-6 h-28 w-28 rounded-full bg-[#f4a5c8]/25 blur-3xl" />
+      <div className="absolute bottom-8 right-16 h-32 w-32 rounded-full bg-brand-300/30 blur-3xl" />
+      <div className="absolute right-28 top-1/2 h-24 w-24 -translate-y-1/2 rounded-full bg-[#a78bfa]/20 blur-3xl" />
 
-          <div className="mt-3 flex gap-1.5">
-            {brandSwatches.map((color) => (
+      <div className="absolute right-2 top-1/2 h-55 w-55 -translate-y-1/2 lg:right-6 lg:h-60 lg:w-60">
+        {/* Slow-spinning color orbit */}
+        <motion.div
+          className="absolute inset-0"
+          animate={reduce ? undefined : { rotate: 360 }}
+          transition={reduce ? undefined : { duration: 28, repeat: Infinity, ease: 'linear' }}
+        >
+          {orbitColors.map((color, i) => {
+            const angle = (i / orbitColors.length) * Math.PI * 2 - Math.PI / 2;
+            const r = 46; // % from center
+            const left = 50 + Math.cos(angle) * r;
+            const top = 50 + Math.sin(angle) * r;
+            return (
               <span
                 key={color}
-                className="h-6 flex-1 rounded-md ring-1 ring-white/25"
+                className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full shadow-lg ring-2 ring-white/40"
+                style={{
+                  backgroundColor: color,
+                  left: `${left}%`,
+                  top: `${top}%`,
+                  boxShadow: `0 0 18px ${color}88`,
+                }}
+              />
+            );
+          })}
+        </motion.div>
+
+        {/* Dashed orbit ring */}
+        <div className="absolute inset-[18%] rounded-full border border-dashed border-white/25" />
+        <motion.div
+          className="absolute inset-[8%] rounded-full border border-white/10"
+          animate={reduce ? undefined : { rotate: -360 }}
+          transition={reduce ? undefined : { duration: 40, repeat: Infinity, ease: 'linear' }}
+          style={{
+            background:
+              'conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.18) 8%, transparent 18%, transparent 100%)',
+          }}
+        />
+
+        {/* Satellite brand icons */}
+        {brandIcons.map((b, i) => (
+          <motion.div
+            key={b.initials}
+            className="absolute left-1/2 top-1/2 z-10"
+            initial={false}
+            animate={
+              reduce
+                ? { x: b.x, y: b.y, rotate: b.rotate }
+                : {
+                    x: b.x,
+                    y: [b.y, b.y - 8, b.y],
+                    rotate: b.rotate,
+                  }
+            }
+            transition={
+              reduce
+                ? undefined
+                : {
+                    duration: 4.5 + i * 0.6,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                    delay: i * 0.35,
+                  }
+            }
+          >
+            <div
+              className="grid h-11 w-11 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-[0.9rem] shadow-xl ring-1 ring-white/35"
+              style={{
+                background: `linear-gradient(145deg, ${b.from}, ${b.to})`,
+              }}
+            >
+              <span className="text-[11px] font-bold tracking-wide text-white drop-shadow-sm">
+                {b.initials}
+              </span>
+            </div>
+          </motion.div>
+        ))}
+
+        {/* Hero app icon */}
+        <motion.div
+          className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2"
+          animate={reduce ? undefined : { y: [0, -10, 0], rotate: [0, 2, 0, -2, 0] }}
+          transition={reduce ? undefined : { duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          <div className="relative">
+            <div className="absolute -inset-4 rounded-[2rem] bg-white/15 blur-xl" />
+            <div className="relative grid h-22 w-22 place-items-center overflow-hidden rounded-[1.55rem] bg-linear-to-br from-white via-[#e8f6fc] to-brand-400 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.55)] ring-2 ring-white/50 lg:h-24 lg:w-24 lg:rounded-[1.75rem]">
+              {/* Inner sheen */}
+              <div className="absolute inset-0 bg-linear-to-br from-white/70 via-transparent to-transparent" />
+              <div className="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-[#f4a5c8]/40 blur-2xl" />
+              <div className="absolute -bottom-3 -left-2 h-14 w-14 rounded-full bg-brand-500/35 blur-xl" />
+              <span className="relative font-display text-3xl font-bold text-brand-800 drop-shadow-sm lg:text-4xl">
+                ✦
+              </span>
+            </div>
+
+            {/* Live brand pulse */}
+            {!reduce && (
+              <motion.span
+                className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-[#34d399] ring-2 ring-brand-700"
+                animate={{ scale: [1, 1.25, 1], opacity: [1, 0.7, 1] }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              />
+            )}
+          </div>
+        </motion.div>
+
+        {/* Floating store badge */}
+        <motion.div
+          className="absolute bottom-1 right-2 z-30 lg:bottom-0 lg:right-0"
+          animate={reduce ? undefined : { y: [0, 6, 0] }}
+          transition={
+            reduce ? undefined : { duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }
+          }
+        >
+          <div className="rounded-xl border border-white/25 bg-white/95 px-2.5 py-1.5 shadow-xl shadow-black/25 backdrop-blur-sm">
+            <p className="text-[8px] font-semibold tracking-[0.14em] text-ink-400 uppercase">
+              App Store
+            </p>
+            <p className="font-display text-[11px] font-bold text-ink-900">Grace Church</p>
+            <div className="mt-0.5 flex items-center gap-1">
+              <div className="flex gap-px">
+                {[0, 1, 2, 3, 4].map((i) => (
+                  <span key={i} className="h-1 w-1 rounded-full bg-amber-400" />
+                ))}
+              </div>
+              <span className="text-[8px] font-medium text-ink-500">4.9 · Free</span>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Color chip strip */}
+        <motion.div
+          className="absolute left-0 top-2 z-30 lg:top-0"
+          animate={reduce ? undefined : { y: [0, -5, 0] }}
+          transition={
+            reduce ? undefined : { duration: 4.2, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }
+          }
+        >
+          <div className="flex items-center gap-1 rounded-full border border-white/25 bg-white/15 p-1.5 shadow-lg backdrop-blur-md">
+            {orbitColors.slice(0, 4).map((color) => (
+              <span
+                key={color}
+                className="h-4 w-4 rounded-full ring-1 ring-white/40"
                 style={{ backgroundColor: color }}
               />
             ))}
+            <span className="px-1.5 text-[9px] font-bold tracking-wide text-white/80">
+              Your colors
+            </span>
           </div>
-
-          <div className="mt-3 rounded-xl bg-white/95 py-2 text-center text-[11px] font-bold tracking-wide text-brand-800">
-            GET — Free
-          </div>
-        </div>
-
-        {/* Secondary branded icon floating behind */}
-        <div className="absolute -bottom-3 -left-6 grid h-12 w-12 place-items-center rounded-2xl bg-linear-to-br from-brand-400 to-brand-600 shadow-lg ring-1 ring-white/25">
-          <span className="text-sm font-bold text-white">GC</span>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
