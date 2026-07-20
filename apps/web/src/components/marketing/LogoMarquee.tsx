@@ -23,7 +23,7 @@ export default function LogoMarquee() {
               className="flex items-center gap-10 whitespace-nowrap font-display text-5xl font-bold uppercase tracking-tight text-transparent [-webkit-text-stroke:1.5px_rgba(34,24,28,0.22)] sm:text-6xl lg:text-7xl dark:[-webkit-text-stroke:1.5px_rgba(255,255,255,0.25)]"
             >
               {label}
-              <span className="text-2xl text-brand-500 sm:text-3xl dark:text-brand-400">✦</span>
+              <span className="text-2xl text-brand-500 sm:text-3xl dark:text-brand-600">✦</span>
             </span>
           ))}
         </div>
