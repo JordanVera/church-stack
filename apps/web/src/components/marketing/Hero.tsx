@@ -79,7 +79,7 @@ export default function Hero() {
             </Badge>
           </Reveal>
 
-          <h1 className="relative z-10 mt-4 font-hero uppercase leading-[0.92] tracking-tight text-ink-900 sm:mt-5 lg:mt-3 dark:text-white text-[clamp(3rem,11vw,8rem)]">
+          <h1 className="relative z-10 mt-4 font-hero uppercase leading-[0.92] tracking-tight text-ink-900 sm:mt-5 lg:mt-3 dark:text-white text-[clamp(2.5rem,9vw,6.5rem)]">
             <LineReveal eager delay={0.15}>
               Your church.
             </LineReveal>

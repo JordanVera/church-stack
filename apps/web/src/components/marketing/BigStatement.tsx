@@ -29,17 +29,17 @@ export default function BigStatement() {
   return (
     <section className="relative overflow-hidden bg-white py-12 text-ink-900  dark:bg-ink-950 dark:text-white">
       <div className="relative mx-auto max-w-6xl px-6">
-        <Reveal
-          delay={0.2}
-          as="h2"
-          className="mx-auto mt-10 max-w-3xl text-center font-display text-4xl font-bold leading-snug tracking-tight text-brand-500 dark:text-brand-400"
-        >
-          <span className="bg-gradient-to-r from-brand-500 via-accent-500 to-brand-400 bg-clip-text text-transparent">
+        <Reveal delay={0.2} className="mx-auto max-w-2xl text-center">
+          <p className="text-sm font-medium uppercase tracking-[0.25em] text-brand-500 dark:text-brand-400">
+            Live sync
+          </p>
+          <h2 className="mt-4 font-display text-4xl font-bold tracking-tight text-ink-900 sm:text-5xl dark:text-white">
             Instantly see every update, form, and gift
-          </span>
-          <span className="block  text-ink-900 dark:text-white font-normal">
-            no exports, no manual entry, no waiting.
-          </span>
+          </h2>
+          <p className="mt-4 text-lg text-ink-600 dark:text-ink-300">
+            No exports, no manual entry, no waiting — every profile change and gift is captured the
+            moment it happens.
+          </p>
         </Reveal>
       </div>
 
