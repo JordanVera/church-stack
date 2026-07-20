@@ -1,13 +1,14 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
+import bcrypt from 'bcryptjs';
 import { router, publicProcedure, protectedProcedure } from '../trpc';
 import { isPlatformDev } from '../platform-dev';
 import { prisma } from '@repo/database';
 
 export const authRouter = router({
   /**
-   * Public self-serve user registration is disabled.
-   * Platform admins/devs are created manually in the User table; churches sign up via church.onboard.
+   * Public self-serve user registration.
+   * Churches sign up separately via church.onboard.
    */
   register: publicProcedure
     .input(
@@ -19,20 +20,22 @@ export const authRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      // throw new TRPCError({
-      //   code: 'FORBIDDEN',
-      //   message: 'User signup is disabled. Register your church instead.',
-      // });
       const existingCount = await prisma.user.count({ where: { email: input.email } });
       if (existingCount > 0) {
         throw new TRPCError({ code: 'BAD_REQUEST', message: 'User already exists' });
       }
 
+      const passwordHash = await bcrypt.hash(input.password, 10);
       const user = await prisma.user.create({
         data: {
           name: input.name,
           email: input.email,
-          password: input.password,
+          password: passwordHash,
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
         },
       });
 
