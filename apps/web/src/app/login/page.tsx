@@ -37,18 +37,21 @@ function LoginForm() {
     }
 
     try {
-      const me = await utils.auth.me.fetch();
-      const allowed = Boolean(me?.isAdmin || me?.isDev);
-      if (!allowed) {
-        await signOut({ redirect: false });
-        setError('This login is for Church Stack staff only. Churches should register instead.');
-        setLoading(false);
-        return;
+      const billingReturn = callbackUrl.startsWith('/billing/');
+      if (!billingReturn) {
+        const me = await utils.auth.me.fetch();
+        const allowed = Boolean(me?.isAdmin || me?.isDev);
+        if (!allowed) {
+          await signOut({ redirect: false });
+          setError('This login is for Church Stack staff only. Churches should register instead.');
+          setLoading(false);
+          return;
+        }
       }
       router.push(callbackUrl);
     } catch {
       await signOut({ redirect: false });
-      setError('Unable to verify staff access.');
+      setError('Unable to verify access.');
     } finally {
       setLoading(false);
     }

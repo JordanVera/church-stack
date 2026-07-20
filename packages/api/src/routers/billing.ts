@@ -1,8 +1,9 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { planTierDefaults, type PlanTierId } from '@repo/config';
-import type { PrismaClient } from '@repo/database';
+import type { Church, PrismaClient } from '@repo/database';
 import { router, protectedProcedure, publicProcedure } from '../trpc';
+import { isPlatformDev } from '../platform-dev';
 import {
   getStripe,
   isStripeConfigured,
@@ -17,13 +18,13 @@ async function assertChurchAccess(
   prisma: PrismaClient,
   userId: string,
   churchId: string,
-  isPlatformAdmin: boolean
+  opts: { isPlatformAdmin: boolean; email?: string | null }
 ) {
   const church = await prisma.church.findUnique({ where: { id: churchId } });
   if (!church) {
     throw new TRPCError({ code: 'NOT_FOUND', message: 'Church not found' });
   }
-  if (isPlatformAdmin) return church;
+  if (opts.isPlatformAdmin || isPlatformDev(opts.email)) return church;
 
   const membership = await prisma.membership.findUnique({
     where: { userId_churchId: { userId, churchId } },
@@ -34,6 +35,71 @@ async function assertChurchAccess(
   return church;
 }
 
+async function createCheckoutForChurch(
+  prisma: PrismaClient,
+  args: {
+    church: Church;
+    planTier: PlanTierId;
+    customerEmail?: string | null;
+    successUrl: string;
+    cancelUrl: string;
+  }
+) {
+  const priceId = priceIdForPlanTier(args.planTier);
+  if (!priceId) {
+    throw new TRPCError({
+      code: 'PRECONDITION_FAILED',
+      message: `Missing Stripe price env for plan ${args.planTier}`,
+    });
+  }
+
+  const stripe = getStripe();
+  let customerId = args.church.stripeCustomerId;
+
+  if (!customerId) {
+    const customer = await stripe.customers.create({
+      email: args.customerEmail ?? args.church.contactEmail ?? undefined,
+      name: args.church.name,
+      metadata: {
+        churchId: args.church.id,
+        churchSlug: args.church.slug,
+      },
+    });
+    customerId = customer.id;
+    await prisma.church.update({
+      where: { id: args.church.id },
+      data: { stripeCustomerId: customerId },
+    });
+  }
+
+  const session = await stripe.checkout.sessions.create({
+    mode: 'subscription',
+    customer: customerId,
+    line_items: [{ price: priceId, quantity: 1 }],
+    success_url: args.successUrl,
+    cancel_url: args.cancelUrl,
+    metadata: {
+      churchId: args.church.id,
+      planTier: args.planTier,
+    },
+    subscription_data: {
+      metadata: {
+        churchId: args.church.id,
+        planTier: args.planTier,
+      },
+    },
+  });
+
+  if (!session.url) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Stripe did not return a checkout URL',
+    });
+  }
+
+  return { url: session.url, sessionId: session.id };
+}
+
 export const billingRouter = router({
   /** Public catalog for pricing page / checkout UI. */
   catalog: publicProcedure.query(() => {
@@ -42,6 +108,47 @@ export const billingRouter = router({
       prices: listConfiguredPrices(),
     };
   }),
+
+  /** Public church summary for the subscribe page. */
+  subscribePreview: publicProcedure
+    .input(
+      z.object({
+        churchId: z.string().min(1).optional(),
+        slug: z.string().min(1).optional(),
+        planTier: planTierSchema.optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      if (!input.churchId && !input.slug) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Provide churchId or slug',
+        });
+      }
+
+      const church = await ctx.prisma.church.findFirst({
+        where: input.churchId ? { id: input.churchId } : { slug: input.slug },
+        select: {
+          id: true,
+          slug: true,
+          name: true,
+          planTier: true,
+          stripeCustomerId: true,
+          stripeSubscriptionId: true,
+        },
+      });
+
+      if (!church) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Church not found' });
+      }
+
+      return {
+        church,
+        configured: isStripeConfigured(),
+        requestedPlan: input.planTier ?? null,
+        priceConfigured: input.planTier ? Boolean(priceIdForPlanTier(input.planTier)) : null,
+      };
+    }),
 
   createCheckoutSession: protectedProcedure
     .input(
@@ -60,67 +167,96 @@ export const billingRouter = router({
         });
       }
 
-      const priceId = priceIdForPlanTier(input.planTier);
-      if (!priceId) {
+      const user = ctx.session.user!;
+      const church = await assertChurchAccess(ctx.prisma, user.id, input.churchId, {
+        isPlatformAdmin: Boolean(user.isAdmin),
+        email: user.email,
+      });
+
+      return createCheckoutForChurch(ctx.prisma, {
+        church,
+        planTier: input.planTier,
+        customerEmail: user.email,
+        successUrl: input.successUrl,
+        cancelUrl: input.cancelUrl,
+      });
+    }),
+
+  /**
+   * For church admins listed on the church during onboard:
+   * claim OWNER membership (if needed) then start Stripe Checkout.
+   */
+  claimAndCheckout: protectedProcedure
+    .input(
+      z.object({
+        churchId: z.string().min(1),
+        planTier: planTierSchema,
+        successUrl: z.string().url(),
+        cancelUrl: z.string().url(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (!isStripeConfigured()) {
         throw new TRPCError({
           code: 'PRECONDITION_FAILED',
-          message: `Missing Stripe price env for plan ${input.planTier}`,
+          message: 'Stripe is not configured. Set STRIPE_SECRET_KEY and price env vars.',
         });
       }
 
       const user = ctx.session.user!;
-      const church = await assertChurchAccess(
-        ctx.prisma,
-        user.id,
-        input.churchId,
-        Boolean(user.isAdmin)
-      );
-
-      const stripe = getStripe();
-      let customerId = church.stripeCustomerId;
-
-      if (!customerId) {
-        const customer = await stripe.customers.create({
-          email: user.email ?? church.contactEmail ?? undefined,
-          name: church.name,
-          metadata: {
-            churchId: church.id,
-            churchSlug: church.slug,
-          },
-        });
-        customerId = customer.id;
-        await ctx.prisma.church.update({
-          where: { id: church.id },
-          data: { stripeCustomerId: customerId },
+      const email = user.email?.trim().toLowerCase();
+      if (!email) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Your account needs an email address to subscribe.',
         });
       }
 
-      const session = await stripe.checkout.sessions.create({
-        mode: 'subscription',
-        customer: customerId,
-        line_items: [{ price: priceId, quantity: 1 }],
-        success_url: input.successUrl,
-        cancel_url: input.cancelUrl,
-        metadata: {
-          churchId: church.id,
-          planTier: input.planTier,
-        },
-        subscription_data: {
-          metadata: {
-            churchId: church.id,
-            planTier: input.planTier,
-          },
-        },
+      const church = await ctx.prisma.church.findUnique({ where: { id: input.churchId } });
+      if (!church) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Church not found' });
+      }
+
+      const isStaff = Boolean(user.isAdmin) || isPlatformDev(user.email);
+      const membership = await ctx.prisma.membership.findUnique({
+        where: { userId_churchId: { userId: user.id, churchId: church.id } },
       });
 
-      if (!session.url) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Stripe did not return a checkout URL',
+      if (!membership && !isStaff) {
+        const adminEmail = await ctx.prisma.churchAdminEmail.findFirst({
+          where: { churchId: church.id, email },
         });
+        if (!adminEmail) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message:
+              'Sign in with an admin email listed for this church during signup to start billing.',
+          });
+        }
+
+        await ctx.prisma.membership.create({
+          data: {
+            userId: user.id,
+            churchId: church.id,
+            role: 'OWNER',
+          },
+        });
+      } else if (
+        membership &&
+        membership.role !== 'OWNER' &&
+        membership.role !== 'ADMIN' &&
+        !isStaff
+      ) {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Not allowed for this church' });
       }
 
-      return { url: session.url, sessionId: session.id };
+      return createCheckoutForChurch(ctx.prisma, {
+        church,
+        planTier: input.planTier,
+        customerEmail: user.email,
+        successUrl: input.successUrl,
+        cancelUrl: input.cancelUrl,
+      });
     }),
 
   createPortalSession: protectedProcedure
@@ -139,12 +275,10 @@ export const billingRouter = router({
       }
 
       const user = ctx.session.user!;
-      const church = await assertChurchAccess(
-        ctx.prisma,
-        user.id,
-        input.churchId,
-        Boolean(user.isAdmin)
-      );
+      const church = await assertChurchAccess(ctx.prisma, user.id, input.churchId, {
+        isPlatformAdmin: Boolean(user.isAdmin),
+        email: user.email,
+      });
 
       if (!church.stripeCustomerId) {
         throw new TRPCError({
@@ -205,9 +339,11 @@ export async function applyStripeSubscriptionToChurch(
     args.status === 'unpaid' ||
     args.status === 'incomplete_expired'
   ) {
+    const siteDefaults = planTierDefaults('SITE');
     await prisma.church.update({
       where: { id: church.id },
       data: {
+        ...siteDefaults,
         stripeSubscriptionId: null,
         stripePriceId: null,
       },

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
 import { trpc } from '@/lib/trpc-client';
@@ -10,8 +10,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
-export default function SignupPage() {
+function safeCallbackUrl(value: string | null) {
+  if (!value || !value.startsWith('/') || value.startsWith('//')) return '/dashboard';
+  return value;
+}
+
+function SignupForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = safeCallbackUrl(searchParams.get('callbackUrl'));
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,10 +33,10 @@ export default function SignupPage() {
       await register.mutateAsync({ name, email, password });
       const res = await signIn('credentials', { email, password, redirect: false });
       if (res?.error) {
-        router.push('/login');
+        router.push(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
         return;
       }
-      router.push('/dashboard');
+      router.push(callbackUrl);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong.');
     }
@@ -104,12 +111,24 @@ export default function SignupPage() {
       <p className="mt-6 text-center text-sm text-ink-600 dark:text-ink-300">
         Already have an account?{' '}
         <Link
-          href="/login"
+          href={`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`}
           className="font-semibold text-brand-600 hover:text-brand-500 dark:text-brand-400"
         >
           Log in
         </Link>
       </p>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto max-w-md px-6 py-20 text-ink-600 dark:text-ink-300">Loading…</div>
+      }
+    >
+      <SignupForm />
+    </Suspense>
   );
 }

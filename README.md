@@ -103,6 +103,33 @@ ALLOW_DEV_CONSOLE=true
 
 Sign in with a matching email, then open http://localhost:3000/dev
 
+## Stripe billing
+
+Monthly subscriptions map Stripe Price IDs → `Church.planTier` (Site / Growth / Custom).
+
+1. In the [Stripe Dashboard](https://dashboard.stripe.com/), create three Products with **monthly** Prices:
+   - Site — $129/mo
+   - Growth — $249/mo
+   - Custom — $599/mo (or your Custom base)
+2. Copy each Price ID into `.env`:
+
+   ```bash
+   STRIPE_SECRET_KEY=sk_test_...
+   STRIPE_WEBHOOK_SECRET=whsec_...
+   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+   STRIPE_PRICE_SITE=price_...
+   STRIPE_PRICE_GROWTH=price_...
+   STRIPE_PRICE_CUSTOM=price_...
+   ```
+
+3. Add a webhook endpoint to `https://<your-host>/api/stripe/webhook` (locally: `stripe listen --forward-to localhost:3000/api/stripe/webhook`) for:
+   - `checkout.session.completed`
+   - `customer.subscription.updated`
+   - `customer.subscription.deleted`
+4. Enable the **Customer Portal** (cancel subscription + update payment method).
+
+Flow: `/pricing` → `/onboard?plan=…` → `/billing/subscribe` (claim admin + Checkout) → webhook updates `planTier`. Staff can also start Checkout / Portal from `/dev/churches/[slug]`.
+
 ## Deploying
 
 See [`DEPLOY.md`](DEPLOY.md) for deploying `apps/web` to Vercel, env vars, and how shared `@repo/*` packages ship with each deploy.

@@ -1,9 +1,11 @@
 import type { ReactNode } from 'react';
+import { PLAN_TIERS, type PlanTierId } from '@repo/config';
 import type { OnboardDraft } from './types';
 import { dayLabel, formatTime } from './types';
 
 type Props = {
   draft: OnboardDraft;
+  planTier?: PlanTierId;
 };
 
 function ReviewBlock({ title, children }: { title: string; children: ReactNode }) {
@@ -15,7 +17,8 @@ function ReviewBlock({ title, children }: { title: string; children: ReactNode }
   );
 }
 
-export function ReviewStep({ draft }: Props) {
+export function ReviewStep({ draft, planTier = 'SITE' }: Props) {
+  const plan = PLAN_TIERS[planTier];
   const churchAdmins = draft.adminEmails.map((e) => e.trim()).filter(Boolean);
   const socials = [
     ['Facebook', draft.facebookUrl],
@@ -34,6 +37,19 @@ export function ReviewStep({ draft }: Props) {
           Confirm everything looks right — you can go back to edit any step.
         </p>
       </div>
+
+      <ReviewBlock title="Selected plan">
+        <p className="text-base font-semibold text-ink-900 dark:text-white">
+          {plan.name}{' '}
+          <span className="font-normal text-ink-500">
+            ({plan.priceLabel}
+            {plan.period})
+          </span>
+        </p>
+        <p className="mt-1 text-ink-500 dark:text-ink-400">
+          Features unlock after you complete payment on the next step.
+        </p>
+      </ReviewBlock>
 
       <ReviewBlock title="Church">
         <p className="text-base font-semibold text-ink-900 dark:text-white">{draft.name}</p>

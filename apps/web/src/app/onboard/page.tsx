@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { PLAN_TIERS, type PlanTierId } from '@repo/config';
 import { trpc } from '@/lib/trpc-client';
 import { Button } from '@/components/ui/button';
 import { ChurchStep } from '@/components/onboard/ChurchStep';
@@ -18,6 +20,11 @@ import {
   isValidOptionalUrl,
   type OnboardDraft,
 } from '@/components/onboard/types';
+
+function parsePlan(value: string | null): PlanTierId {
+  if (value === 'SITE' || value === 'GROWTH' || value === 'CUSTOM') return value;
+  return 'SITE';
+}
 
 function validateStep(step: number, draft: OnboardDraft): string | null {
   if (step === 0) {
@@ -73,20 +80,24 @@ function validateStep(step: number, draft: OnboardDraft): string | null {
   return null;
 }
 
-export default function OnboardPage() {
+function OnboardForm() {
+  const searchParams = useSearchParams();
+  const planTier = parsePlan(searchParams.get('plan'));
+  const plan = PLAN_TIERS[planTier];
   const reduce = useReducedMotion();
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState<OnboardDraft>(() => createInitialDraft());
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState<{ name: string; slug: string } | null>(null);
+  const [done, setDone] = useState<{ id: string; name: string; slug: string } | null>(null);
 
   const onboard = trpc.church.onboard.useMutation({
     onSuccess: (church) => {
-      setDone({ name: church.name, slug: church.slug });
+      setDone({ id: church.id, name: church.name, slug: church.slug });
     },
   });
 
   if (done) {
+    const subscribeHref = `/billing/subscribe?churchId=${encodeURIComponent(done.id)}&plan=${planTier}`;
     return (
       <div className="relative overflow-hidden">
         <div className="relative mx-auto flex min-h-[70vh]  flex-col justify-center px-6 py-20 text-center">
@@ -101,12 +112,24 @@ export default function OnboardPage() {
             </h1>
             <p className="mt-3 text-base leading-relaxed text-ink-600 dark:text-ink-300">
               <span className="font-semibold text-ink-800 dark:text-ink-100">{done.name}</span>{' '}
-              <span className="text-ink-400">/{done.slug}</span> has been submitted. We’ll follow up
-              with your admin contacts next.
+              <span className="text-ink-400">/{done.slug}</span> has been submitted.
             </p>
-            <Button className="mt-8 h-11 px-6" render={<Link href="/" />}>
-              Back to home
-            </Button>
+            <p className="mt-2 text-sm text-ink-500 dark:text-ink-400">
+              Selected plan: {plan.name} ({plan.priceLabel}
+              {plan.period}). Complete payment to activate paid features.
+            </p>
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Button className="h-11 px-6" render={<Link href={subscribeHref} />}>
+                Start subscription
+              </Button>
+              <Button
+                variant="outline"
+                className="h-11 px-6 border-ink-300 dark:border-ink-700 dark:bg-transparent"
+                render={<Link href="/" />}
+              >
+                Back to home
+              </Button>
+            </div>
           </motion.div>
         </div>
       </div>
@@ -178,7 +201,12 @@ export default function OnboardPage() {
             Register your church
           </h1>
           <p className="mt-3 max-w-xl text-base leading-relaxed text-ink-600 dark:text-ink-300">
-            A short guided setup — church basics, pastors, campuses, then review.
+            A short guided setup — church basics, pastors, campuses, then review. Selected plan:{' '}
+            <span className="font-semibold text-ink-800 dark:text-ink-100">
+              {plan.name} ({plan.priceLabel}
+              {plan.period})
+            </span>
+            .
           </p>
         </header>
 
@@ -209,7 +237,7 @@ export default function OnboardPage() {
                 {step === 0 ? <ChurchStep draft={draft} onChange={setDraft} /> : null}
                 {step === 1 ? <PastorsStep draft={draft} onChange={setDraft} /> : null}
                 {step === 2 ? <LocationsStep draft={draft} onChange={setDraft} /> : null}
-                {step === 3 ? <ReviewStep draft={draft} /> : null}
+                {step === 3 ? <ReviewStep draft={draft} planTier={planTier} /> : null}
               </motion.div>
             </AnimatePresence>
 
@@ -250,5 +278,17 @@ export default function OnboardPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function OnboardPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto max-w-3xl px-6 py-20 text-ink-600 dark:text-ink-300">Loading…</div>
+      }
+    >
+      <OnboardForm />
+    </Suspense>
   );
 }

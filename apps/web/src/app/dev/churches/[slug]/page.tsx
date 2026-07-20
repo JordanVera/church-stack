@@ -96,6 +96,24 @@ export default function DevChurchDetailPage() {
     },
   });
 
+  const createCheckout = trpc.billing.createCheckoutSession.useMutation({
+    onSuccess: (data) => {
+      window.location.href = data.url;
+    },
+    onError: (err) => {
+      setActionMessage(`Checkout failed: ${err.message}`);
+    },
+  });
+
+  const createPortal = trpc.billing.createPortalSession.useMutation({
+    onSuccess: (data) => {
+      window.location.href = data.url;
+    },
+    onError: (err) => {
+      setActionMessage(`Portal failed: ${err.message}`);
+    },
+  });
+
   const syncPco = trpc.church.syncPlanningCenter.useMutation({
     onSuccess: async (result) => {
       setActionMessage(
@@ -386,6 +404,62 @@ export default function DevChurchDetailPage() {
       </div>
 
       <div className="mt-12 grid gap-4">
+        <h2 className="text-lg font-semibold text-ink-900 dark:text-white">Billing</h2>
+        <Card className="border-ink-200 dark:border-ink-800 dark:bg-ink-900">
+          <CardHeader className="px-5">
+            <CardTitle className="text-base text-ink-900 dark:text-white">Stripe</CardTitle>
+            <CardDescription className="text-ink-500 dark:text-ink-400">
+              Start Checkout for a tier, or open the Customer Portal when a Stripe customer exists.
+              {church.stripeCustomerId ? (
+                <span className="mt-1 block">Customer: {church.stripeCustomerId}</span>
+              ) : null}
+              {church.stripeSubscriptionId ? (
+                <span className="mt-1 block">Subscription: {church.stripeSubscriptionId}</span>
+              ) : null}
+              {church.stripePriceId ? (
+                <span className="mt-1 block">Price: {church.stripePriceId}</span>
+              ) : null}
+            </CardDescription>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {(['SITE', 'GROWTH', 'CUSTOM'] as const).map((tier) => (
+                <Button
+                  key={tier}
+                  type="button"
+                  variant="outline"
+                  disabled={createCheckout.isPending}
+                  className="border-ink-300 dark:border-ink-700 dark:bg-transparent"
+                  onClick={() => {
+                    const origin = window.location.origin;
+                    createCheckout.mutate({
+                      churchId: church.id,
+                      planTier: tier,
+                      successUrl: `${origin}/billing/success?churchId=${encodeURIComponent(church.id)}`,
+                      cancelUrl: `${origin}/dev/churches/${church.slug}`,
+                    });
+                  }}
+                >
+                  Checkout {tier}
+                </Button>
+              ))}
+              <Button
+                type="button"
+                disabled={createPortal.isPending || !church.stripeCustomerId}
+                className="bg-brand-600 text-white"
+                onClick={() => {
+                  createPortal.mutate({
+                    churchId: church.id,
+                    returnUrl: `${window.location.origin}/dev/churches/${church.slug}`,
+                  });
+                }}
+              >
+                {createPortal.isPending ? 'Opening…' : 'Manage billing'}
+              </Button>
+            </div>
+          </CardHeader>
+        </Card>
+      </div>
+
+      <div className="mt-12 grid gap-4">
         <h2 className="text-lg font-semibold text-ink-900 dark:text-white">Plan & sync</h2>
         <Card className="border-ink-200 dark:border-ink-800 dark:bg-ink-900">
           <CardHeader className="px-5">
@@ -393,11 +467,8 @@ export default function DevChurchDetailPage() {
               Product tier & Planning Center
             </CardTitle>
             <CardDescription className="text-ink-500 dark:text-ink-400">
-              Apply Site / Growth / Custom feature gates, or pull locations, events, and life groups
-              from Planning Center into the shared DB.
-              {church.stripeSubscriptionId ? (
-                <span className="mt-1 block">Stripe sub: {church.stripeSubscriptionId}</span>
-              ) : null}
+              Manual comps / offline deals: apply Site / Growth / Custom feature gates without Stripe.
+              Or pull locations, events, and life groups from Planning Center into the shared DB.
             </CardDescription>
             <div className="mt-4 flex flex-wrap gap-2">
               {(['SITE', 'GROWTH', 'CUSTOM'] as const).map((tier) => (
