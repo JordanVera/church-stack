@@ -94,3 +94,7 @@ ALLOW_DEV_CONSOLE=true
 ```
 
 Sign in with a matching email, then open http://localhost:3000/dev
+
+## Deploying
+
+See [`DEPLOY.md`](DEPLOY.md) for deploying `apps/web` to Vercel, env vars, and how shared `@repo/*` packages ship with each deploy.
