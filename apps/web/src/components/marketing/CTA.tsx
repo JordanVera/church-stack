@@ -11,7 +11,7 @@ export default function CTA() {
   const reduce = useReducedMotion();
 
   return (
-    <section className="relative overflow-hidden bg-brand-50 py-32 text-ink-900 sm:py-40 lg:py-48 dark:bg-ink-950 dark:text-white">
+    <section className="relative overflow-hidden bg-brand-50 py-32 text-ink-900 dark:bg-ink-950 dark:text-white">
       {/* Atmosphere — brand wash + warm accent, matching Planning Center language */}
       <div
         aria-hidden

@@ -32,7 +32,7 @@ const columns = [
 
 export default function Footer() {
   return (
-    <footer className="relative overflow-hidden bg-white pt-20 pb-10 text-ink-950 dark:bg-ink-950 dark:text-white border-t border-ink-200/70 dark:border-ink-800/70">
+    <footer className="relative overflow-hidden bg-white py-20  text-ink-950 dark:bg-ink-950 dark:text-white border-t border-ink-200/70 dark:border-ink-800/70">
       <div className="mx-auto max-w-6xl px-6">
         <Stagger className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <StaggerItem>
@@ -69,10 +69,10 @@ export default function Footer() {
           ))}
         </Stagger>
 
-        <Reveal className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-ink-200 pt-8 text-xs text-ink-500 sm:flex-row dark:border-white/10 dark:text-white/40">
+        <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-ink-200 pt-8 text-xs text-ink-500 sm:flex-row dark:border-white/10 dark:text-white/40">
           <p>© {new Date().getFullYear()} Church Stack. Software that empowers ministry.</p>
           <p>Made for churches, by churches.</p>
-        </Reveal>
+        </div>
       </div>
     </footer>
   );
