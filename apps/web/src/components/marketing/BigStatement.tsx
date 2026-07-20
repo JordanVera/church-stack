@@ -79,12 +79,7 @@ export default function BigStatement() {
 
                 <div className="space-y-2.5 px-4 pb-5 pt-2">
                   <Field label="Name" value="Hannah Barnes" />
-                  <Field
-                    label="Address"
-                    value="1472 Alderwood Ln"
-                    active
-                    reduce={reduce}
-                  />
+                  <Field label="Address" value="1472 Alderwood Ln" active reduce={reduce} />
                   <div className="grid grid-cols-3 gap-2">
                     <Field label="City" value="Portland" compact />
                     <Field label="State" value="OR" compact />
@@ -220,9 +215,7 @@ function StatementCard({
           <div className="flex items-center gap-3">
             <div
               className={`flex h-11 w-11 items-center justify-center rounded-2xl shadow-lg ring-1 ring-white/20 ${
-                isBrand
-                  ? 'bg-white/95 text-brand-600'
-                  : 'bg-white/95 text-accent-700'
+                isBrand ? 'bg-white/95 text-brand-600' : 'bg-white/95 text-accent-700'
               }`}
             >
               <Icon className="h-5 w-5" strokeWidth={2} />
@@ -265,9 +258,7 @@ function Field({
 }) {
   return (
     <div
-      className={`rounded-xl border px-3 transition-colors ${
-        compact ? 'py-2' : 'py-2.5'
-      } ${
+      className={`rounded-xl border px-3 transition-colors ${compact ? 'py-2' : 'py-2.5'} ${
         active
           ? 'border-brand-400/70 bg-brand-500/15 ring-2 ring-brand-400/35'
           : 'border-white/10 bg-white/5'
