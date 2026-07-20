@@ -44,7 +44,7 @@ export default function HowItWorks() {
           </p>
         </Reveal>
 
-        <Stagger className="mt-16 grid gap-4 lg:grid-cols-3">
+        <Stagger className="mt-16 grid gap-12 lg:gap-4 lg:grid-cols-3">
           {steps.map((s) => (
             <StaggerItem
               key={s.n}
@@ -59,7 +59,7 @@ export default function HowItWorks() {
                 </div>
 
                 <div className="relative flex flex-1 flex-col px-7 py-7">
-                  <span className="font-display text-sm font-bold tracking-[0.2em] text-brand-500 dark:text-brand-400">
+                  <span className="font-display text-3xl font-bold tracking-[0.2em] text-brand-500 dark:text-brand-400">
                     {s.n}
                   </span>
                   <h3 className="mt-3 font-display text-xl font-semibold text-ink-900 dark:text-white">

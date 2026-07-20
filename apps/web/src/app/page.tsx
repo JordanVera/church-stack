@@ -4,6 +4,7 @@ import BigStatement from '@/components/marketing/BigStatement';
 import Features from '@/components/marketing/Features';
 import Showcase from '@/components/marketing/Showcase';
 import HowItWorks from '@/components/marketing/HowItWorks';
+import PlanningCenter from '@/components/marketing/PlanningCenter';
 import CTA from '@/components/marketing/CTA';
 
 export default function HomePage() {
@@ -15,6 +16,7 @@ export default function HomePage() {
       <Features />
       <Showcase />
       <HowItWorks />
+      <PlanningCenter />
       <CTA />
     </div>
   );
