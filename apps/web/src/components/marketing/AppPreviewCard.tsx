@@ -12,26 +12,54 @@ const waveform = [4, 8, 5, 10, 6, 9, 4, 7, 5, 6];
  * just floating UI chrome built from divs/icons so it stays crisp at any size
  * and adapts to light/dark automatically.
  */
+/** Matches Hero's Reveal (delay 0.35 + duration 0.7) so the glow arrives after the card. */
+const GLOW_IN_DELAY = 1.05;
+
 export default function AppPreviewCard() {
   const reduce = useReducedMotion();
 
   return (
     <div className="relative mx-auto w-full max-w-sm">
-      {!reduce && (
-        <motion.div
-          aria-hidden
-          className="absolute -inset-8 -z-10 rounded-[3rem] opacity-30 blur-2xl"
-          style={{
-            background:
-              'conic-gradient(from 0deg, var(--color-brand-400), var(--color-accent-400), var(--color-brand-500), var(--color-brand-400))',
-          }}
-          animate={{ rotate: 360 }}
-          transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-        />
-      )}
+      {/*
+        Soft multi-hue wash at z-0 (card at z-10) so it stays above the hero edge wash.
+        Fades in after the parent Reveal finishes — blue, pink, and orange blended lightly.
+      */}
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute -inset-12 z-0"
+        initial={reduce ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={
+          reduce
+            ? { duration: 0 }
+            : { duration: 0.9, delay: GLOW_IN_DELAY, ease: [0.16, 1, 0.3, 1] }
+        }
+      >
+        <div className="absolute -left-6 top-4 h-44 w-44 rounded-full bg-brand-400/25 blur-3xl dark:bg-brand-400/80" />
+        <div className="absolute -right-4 top-10 h-40 w-40 rounded-full bg-[#f4a5c8]/30 blur-3xl dark:bg-[#f4a5c8]/80" />
+        <div className="absolute bottom-2 left-1/4 h-36 w-48 rounded-full bg-[#f5b07a]/28 blur-3xl dark:bg-[#f5b07a]/80" />
+        {/* Side glows hugging the left/right middle of the phone */}
+        <div className="absolute top-1/2 -left-4 h-40 w-32 -translate-y-1/2 rounded-full bg-[#a78bfa]/30 blur-2xl dark:bg-[#a78bfa]/55" />
+        <div className="absolute top-1/2 -right-4 h-40 w-32 -translate-y-1/2 rounded-full bg-[#34d399]/30 blur-2xl dark:bg-[#34d399]/55" />
+      </motion.div>
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute -inset-2 z-0 rounded-[3rem] blur-2xl"
+        style={{
+          background:
+            'radial-gradient(ellipse 65% 65% at 50% 50%, var(--color-brand-300), #ff8fc0 40%, #ff9d5c 60%, transparent 78%)',
+        }}
+        initial={reduce ? false : { opacity: 0 }}
+        animate={{ opacity: 0.32 }}
+        transition={
+          reduce
+            ? { duration: 0 }
+            : { duration: 0.9, delay: GLOW_IN_DELAY, ease: [0.16, 1, 0.3, 1] }
+        }
+      />
 
       <motion.div
-        className="relative overflow-hidden rounded-[1.75rem] border border-white/15 bg-ink-950 shadow-[0_24px_80px_-12px_rgba(0,0,0,0.55)] ring-1 ring-white/10"
+        className="relative z-10 overflow-hidden rounded-[1.75rem] border border-white/15 bg-ink-950 shadow-[0_24px_80px_-12px_rgba(0,0,0,0.55)] ring-1 ring-white/10"
         animate={reduce ? undefined : { y: [0, -12, 0] }}
         transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
       >
@@ -71,7 +99,9 @@ export default function AppPreviewCard() {
           />
 
           <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2.5">
-            <p className="text-[9px] font-semibold uppercase tracking-wider text-white/45">Giving</p>
+            <p className="text-[9px] font-semibold uppercase tracking-wider text-white/45">
+              Giving
+            </p>
             <p className="mt-0.5 text-sm font-semibold text-white">Building Fund</p>
             <p className="text-[11px] text-white/45">$12,480 of $20,000</p>
             <div className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
@@ -123,7 +153,7 @@ export default function AppPreviewCard() {
       {!reduce && (
         <>
           <motion.div
-            className="absolute -left-10 top-8 hidden sm:block"
+            className="absolute -left-10 top-8 z-20 hidden sm:block"
             animate={{ y: [0, -10, 0] }}
             transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
           >
@@ -131,12 +161,11 @@ export default function AppPreviewCard() {
               variant="outline"
               className="h-auto gap-2 rounded-2xl border-ink-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-ink-700 shadow-lg dark:border-ink-800 dark:bg-ink-900 dark:text-ink-200"
             >
-              <Radio className="h-4 w-4 text-brand-500" />
-              2 platforms, 1 app
+              <Radio className="h-4 w-4 text-brand-500" />2 platforms, 1 app
             </Badge>
           </motion.div>
           <motion.div
-            className="absolute -right-8 bottom-14 hidden sm:block"
+            className="absolute -right-8 bottom-14 z-20 hidden sm:block"
             animate={{ y: [0, 12, 0] }}
             transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
           >
@@ -195,9 +224,7 @@ function Field({
           </p>
           {hint && <p className="mt-0.5 text-[11px] text-white/45">{hint}</p>}
         </div>
-        {trailing && (
-          <div className={`shrink-0 ${hint ? 'mt-3' : 'self-center'}`}>{trailing}</div>
-        )}
+        {trailing && <div className={`shrink-0 ${hint ? 'mt-3' : 'self-center'}`}>{trailing}</div>}
       </div>
     </div>
   );
