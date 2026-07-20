@@ -41,6 +41,19 @@ enum MobileBuildStatus {
   FAILED
 }
 
+/// Productized SaaS tier (Site / Growth / Custom).
+enum PlanTier {
+  SITE
+  GROWTH
+  CUSTOM
+}
+
+/// Where a content row originated (manual CMS vs Planning Center sync).
+enum ContentSource {
+  MANUAL
+  PLANNING_CENTER
+}
+
 // Tenant + its whitelabel branding.
 model Church {
   id             String   @id @default(cuid())
@@ -62,10 +75,11 @@ model Church {
   youtubeUrl   String?
   threadsUrl   String?
 
-  // Feature flags (whitelabel toggles per church)
-  givingEnabled   Boolean @default(true)
-  eventsEnabled   Boolean @default(true)
-  sermonsEnabled  Boolean @default(true)
+  // Product plan + feature flags (whitelabel toggles per church)
+  planTier        PlanTier @default(SITE)
+  givingEnabled   Boolean  @default(false)
+  eventsEnabled   Boolean  @default(true)
+  sermonsEnabled  Boolean  @default(true)
 
   // Website provisioning (per-church Next.js / Vercel project)
   websiteStatus       WebsiteStatus @default(NONE)
@@ -74,9 +88,14 @@ model Church {
   vercelProjectId     String?
   vercelDeploymentId  String?
 
-  // Mobile: shared App Store app by default; white-label EAS for paid tier
-  mobilePlan         MobilePlan        @default(SHARED)
+  // Mobile: Site+ defaults to white-label; SHARED kept for legacy / trials
+  mobilePlan         MobilePlan        @default(WHITELABEL)
   mobileBuildStatus  MobileBuildStatus @default(NONE)
+
+  // Stripe billing (subscription mapped to planTier)
+  stripeCustomerId     String? @unique
+  stripeSubscriptionId String? @unique
+  stripePriceId        String?
 
   // Optional Planning Center Personal Access Token credentials
   planningCenterApiKey    String? @db.Text
@@ -91,9 +110,11 @@ model Church {
   sermonSeries  SermonSeries[]
   pastors       Pastor[]
   locations     Location[]
+  lifeGroups    LifeGroup[]
   adminEmails   ChurchAdminEmail[]
 
   @@index([slug])
+  @@index([planTier])
 }
 
 /// Admin contact emails for a church (church-wide when locationId is null).
@@ -133,40 +154,68 @@ model Pastor {
 
 // Campus / site (e.g. Grace Church North).
 model Location {
-  id        String  @id @default(cuid())
-  churchId  String
-  name      String
-  address   String
-  pastorId  String?
-  sortOrder Int     @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String        @id @default(cuid())
+  churchId   String
+  name       String
+  address    String
+  pastorId   String?
+  sortOrder  Int           @default(0)
+  source     ContentSource @default(MANUAL)
+  /// Planning Center campus id (or other external system id).
+  externalId String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
 
   church      Church             @relation(fields: [churchId], references: [id], onDelete: Cascade)
   pastor      Pastor?            @relation(fields: [pastorId], references: [id], onDelete: SetNull)
   services    Service[]
   adminEmails ChurchAdminEmail[]
 
+  @@unique([churchId, externalId])
   @@index([churchId])
   @@index([pastorId])
 }
 
 // Recurring weekly service at a location.
 model Service {
-  id         String   @id @default(cuid())
+  id         String        @id @default(cuid())
   locationId String
   name       String
   /// 0 = Sunday … 6 = Saturday (JS Date.getDay())
   dayOfWeek  Int
   /// Local start time as HH:mm (24h)
   startTime  String
-  sortOrder  Int      @default(0)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  sortOrder  Int           @default(0)
+  source     ContentSource @default(MANUAL)
+  externalId String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
 
   location Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
 
+  @@unique([locationId, externalId])
   @@index([locationId])
+}
+
+// Small group / life group (manual or synced from Planning Center Groups).
+model LifeGroup {
+  id          String        @id @default(cuid())
+  churchId    String
+  name        String
+  description String?       @db.Text
+  location    String?
+  /// 0 = Sunday … 6 = Saturday when known
+  meetingDay  Int?
+  meetingTime String?
+  source      ContentSource @default(MANUAL)
+  externalId  String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  church Church @relation(fields: [churchId], references: [id], onDelete: Cascade)
+
+  @@unique([churchId, externalId])
+  @@index([churchId])
 }
 
 // Global user (can belong to multiple churches via Membership).
@@ -262,18 +311,21 @@ model Announcement {
 }
 
 model Event {
-  id          String   @id @default(cuid())
+  id          String        @id @default(cuid())
   churchId    String
   title       String
-  description String?  @db.Text
+  description String?       @db.Text
   location    String?
   startsAt    DateTime
   endsAt      DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  source      ContentSource @default(MANUAL)
+  externalId  String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
   church Church @relation(fields: [churchId], references: [id], onDelete: Cascade)
 
+  @@unique([churchId, externalId])
   @@index([churchId])
   @@index([startsAt])
 }

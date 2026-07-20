@@ -6,14 +6,17 @@ A Turborepo monorepo for building and shipping whitelabel apps for small-to-medi
 
 ```
 apps/
-  web/          Next.js 16 platform (marketing, auth, /admin, /dev, tRPC)
-  church-site/  Per-church Next.js public site template (one Vercel project each)
-  native/       Expo mobile app — shared picker by default, EAS white-label optional
+  web/                   Next.js 16 platform (marketing, auth, /admin, /dev, tRPC, Stripe)
+  church-site/           White-label public site template (one Vercel project each)
+  custom-site-starter/   Starter for Custom-tier Next.js sites (same shared API/DB)
+  native/                Expo mobile app — white-label EAS for paid tiers
 packages/
-  api/               Shared tRPC router + context + provision helpers
+  api/               Shared tRPC router + PCO sync + Vercel/EAS/Stripe helpers
   database/          Prisma client + multi-tenant MySQL schema + seed
-  config/            Shared whitelabel/tenant branding types and defaults
+  config/            Branding types + PlanTier definitions (Site/Growth/Custom)
   typescript-config/ Shared tsconfig presets
+docs/
+  custom-site-delivery.md
 ```
 
 ## Architecture
@@ -21,12 +24,17 @@ packages/
 - **Shared API** – The tRPC router lives in `@repo/api` and is imported by both `apps/web`
   (which hosts the HTTP handler at `/api/trpc`) and `apps/native` / `apps/church-site`
   (which call it over HTTP).
-- **Multi-tenant backend** – Every domain row is keyed by `churchId`. A `Church` row holds
-  each tenant's branding (name, colors, logo) plus website/mobile provisioning state.
-- **Websites** – Separate Next.js deploy per church from `apps/church-site`, locked via
-  `CHURCH_SLUG`. Provision from `/dev` when Vercel credentials are set.
-- **Hybrid mobile** – Shared App Store app by default; white-label EAS builds (`eas.json`
-  profile `whitelabel`) for paid churches. See [`apps/native/WHITELABEL.md`](apps/native/WHITELABEL.md).
+- **Multi-tenant backend** – One shared MySQL database. Every domain row is keyed by
+  `churchId`. A `Church` row holds branding, `planTier` (Site / Growth / Custom),
+  website/mobile provisioning, and Stripe subscription ids.
+- **Websites** – White-label deploys from `apps/church-site` (custom domain attach via
+  Vercel). Custom-tier sites use [`apps/custom-site-starter`](apps/custom-site-starter) /
+  [`docs/custom-site-delivery.md`](docs/custom-site-delivery.md) — still the same API/DB.
+- **Mobile** – White-label EAS builds (`MobilePlan.WHITELABEL`) are the default for paid
+  tiers; SHARED remains for trials. See [`apps/native/WHITELABEL.md`](apps/native/WHITELABEL.md).
+- **Planning Center** – Syncs campuses, events, and life groups into shared tables
+  (`externalId` + `source`). Web and mobile always read Church Stack, not PCO directly.
+- **Billing** – Stripe Checkout / Customer Portal + webhook map prices to `planTier`.
 - **`/dev` console** – Engineer tools gated by `PLATFORM_DEV_EMAILS` (no DB flag). Product
   ops stay on `/admin` via `User.isAdmin`.
 

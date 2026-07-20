@@ -7,6 +7,16 @@
  * maps a `Church` row (a structurally-compatible subset) into this shape.
  */
 
+export {
+  PLAN_TIERS,
+  PLAN_TIER_LIST,
+  getPlan,
+  planTierDefaults,
+  planAllowsGiving,
+  planAllowsCustomSite,
+} from './plans';
+export type { PlanTierId, PlanDefinition, PlanEntitlements } from './plans';
+
 export interface TenantBranding {
   slug: string;
   name: string;

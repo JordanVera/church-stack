@@ -16,6 +16,7 @@
     "@repo/database": "*",
     "@trpc/server": "^11.6.0",
     "bcryptjs": "^3.0.2",
+    "stripe": "^22.3.2",
     "zod": "^4.1.12"
   },
   "devDependencies": {

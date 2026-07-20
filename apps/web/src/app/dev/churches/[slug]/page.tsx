@@ -24,7 +24,8 @@ export default function DevChurchDetailPage() {
   const [customDomain, setCustomDomain] = useState('');
   const [planningCenterApiKey, setPlanningCenterApiKey] = useState('');
   const [planningCenterSecretKey, setPlanningCenterSecretKey] = useState('');
-  const [givingEnabled, setGivingEnabled] = useState(true);
+  const [planTier, setPlanTier] = useState<'SITE' | 'GROWTH' | 'CUSTOM'>('SITE');
+  const [givingEnabled, setGivingEnabled] = useState(false);
   const [eventsEnabled, setEventsEnabled] = useState(true);
   const [sermonsEnabled, setSermonsEnabled] = useState(true);
   const [isActive, setIsActive] = useState(true);
@@ -41,6 +42,7 @@ export default function DevChurchDetailPage() {
     setCustomDomain(c.customDomain ?? '');
     setPlanningCenterApiKey(c.planningCenterApiKey ?? '');
     setPlanningCenterSecretKey(c.planningCenterSecretKey ?? '');
+    setPlanTier(c.planTier);
     setGivingEnabled(c.givingEnabled);
     setEventsEnabled(c.eventsEnabled);
     setSermonsEnabled(c.sermonsEnabled);
@@ -57,10 +59,52 @@ export default function DevChurchDetailPage() {
 
   const provision = trpc.church.provisionWebsite.useMutation({
     onSuccess: async (result) => {
+      const domainNote =
+        result.domainVerification != null
+          ? `\nDomain: ${result.domainVerification.ok ? 'attached' : 'failed'} — ${
+              result.domainVerification.error ??
+              (result.domainVerification.verified ? 'verified' : 'pending DNS')
+            }`
+          : '';
       setActionMessage(
-        result.ok ? `Website provisioned: ${result.url}` : `Provision failed: ${result.error}`
+        result.ok
+          ? `Website provisioned: ${result.url}${domainNote}`
+          : `Provision failed: ${result.error}`
       );
       await utils.church.adminGetBySlug.invalidate({ slug });
+    },
+  });
+
+  const attachDomain = trpc.church.attachCustomDomain.useMutation({
+    onSuccess: async (result) => {
+      const dns = result.dns?.map((d) => `${d.type} ${d.name} → ${d.value}`).join('\n') ?? '';
+      setActionMessage(
+        result.ok
+          ? `Domain ${result.domain} attached${result.verified ? ' (verified)' : ' (awaiting DNS)'}.${
+              dns ? `\n\nDNS records:\n${dns}` : ''
+            }`
+          : `Domain attach failed: ${result.error}`
+      );
+      await utils.church.adminGetBySlug.invalidate({ slug });
+    },
+  });
+
+  const setProductPlan = trpc.church.setPlanTier.useMutation({
+    onSuccess: async () => {
+      setActionMessage('Plan tier updated (feature flags applied).');
+      await utils.church.adminGetBySlug.invalidate({ slug });
+    },
+  });
+
+  const syncPco = trpc.church.syncPlanningCenter.useMutation({
+    onSuccess: async (result) => {
+      setActionMessage(
+        `Planning Center sync complete: ${result.locationsUpserted} locations, ${result.servicesUpserted} services, ${result.eventsUpserted} events, ${result.lifeGroupsUpserted} life groups.`
+      );
+      await utils.church.adminGetBySlug.invalidate({ slug });
+    },
+    onError: (err) => {
+      setActionMessage(`Planning Center sync failed: ${err.message}`);
     },
   });
 
@@ -119,6 +163,9 @@ export default function DevChurchDetailPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           <Badge className="bg-ink-100 text-ink-700 dark:bg-ink-800 dark:text-ink-200">
+            plan {church.planTier}
+          </Badge>
+          <Badge className="bg-ink-100 text-ink-700 dark:bg-ink-800 dark:text-ink-200">
             site {church.websiteStatus}
           </Badge>
           <Badge className="bg-ink-100 text-ink-700 dark:bg-ink-800 dark:text-ink-200">
@@ -150,6 +197,7 @@ export default function DevChurchDetailPage() {
             customDomain: customDomain.trim() || null,
             planningCenterApiKey: planningCenterApiKey.trim() || null,
             planningCenterSecretKey: planningCenterSecretKey.trim() || null,
+            planTier,
             givingEnabled,
             eventsEnabled,
             sermonsEnabled,
@@ -159,6 +207,19 @@ export default function DevChurchDetailPage() {
       >
         <h2 className="text-lg font-semibold text-ink-900 dark:text-white">Branding & flags</h2>
         <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2 sm:col-span-2">
+            <Label htmlFor="planTier">Product plan</Label>
+            <select
+              id="planTier"
+              value={planTier}
+              onChange={(e) => setPlanTier(e.target.value as 'SITE' | 'GROWTH' | 'CUSTOM')}
+              className="flex h-10 w-full rounded-md border border-ink-200 bg-white px-3 text-sm dark:border-ink-700 dark:bg-ink-900"
+            >
+              <option value="SITE">Site ($129)</option>
+              <option value="GROWTH">Growth ($249)</option>
+              <option value="CUSTOM">Custom (from $599)</option>
+            </select>
+          </div>
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="name">Name</Label>
             <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
@@ -303,12 +364,61 @@ export default function DevChurchDetailPage() {
               <Button
                 type="button"
                 variant="outline"
+                disabled={attachDomain.isPending || !church.customDomain}
+                className="border-ink-300 dark:border-ink-700 dark:bg-transparent"
+                onClick={() => attachDomain.mutate({ churchId: church.id })}
+              >
+                {attachDomain.isPending ? 'Attaching…' : 'Attach custom domain'}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
                 className="border-ink-300 dark:border-ink-700 dark:bg-transparent"
                 render={
                   <a href={`${previewUrl}?slug=${church.slug}`} target="_blank" rel="noreferrer" />
                 }
               >
                 Local preview
+              </Button>
+            </div>
+          </CardHeader>
+        </Card>
+      </div>
+
+      <div className="mt-12 grid gap-4">
+        <h2 className="text-lg font-semibold text-ink-900 dark:text-white">Plan & sync</h2>
+        <Card className="border-ink-200 dark:border-ink-800 dark:bg-ink-900">
+          <CardHeader className="px-5">
+            <CardTitle className="text-base text-ink-900 dark:text-white">
+              Product tier & Planning Center
+            </CardTitle>
+            <CardDescription className="text-ink-500 dark:text-ink-400">
+              Apply Site / Growth / Custom feature gates, or pull locations, events, and life groups
+              from Planning Center into the shared DB.
+              {church.stripeSubscriptionId ? (
+                <span className="mt-1 block">Stripe sub: {church.stripeSubscriptionId}</span>
+              ) : null}
+            </CardDescription>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {(['SITE', 'GROWTH', 'CUSTOM'] as const).map((tier) => (
+                <Button
+                  key={tier}
+                  type="button"
+                  variant="outline"
+                  disabled={setProductPlan.isPending}
+                  className="border-ink-300 dark:border-ink-700 dark:bg-transparent"
+                  onClick={() => setProductPlan.mutate({ churchId: church.id, planTier: tier })}
+                >
+                  Set {tier}
+                </Button>
+              ))}
+              <Button
+                type="button"
+                disabled={syncPco.isPending}
+                onClick={() => syncPco.mutate({ churchId: church.id })}
+                className="bg-brand-600 text-white"
+              >
+                {syncPco.isPending ? 'Syncing…' : 'Sync Planning Center'}
               </Button>
             </div>
           </CardHeader>

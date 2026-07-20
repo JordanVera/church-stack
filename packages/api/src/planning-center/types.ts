@@ -33,3 +33,21 @@ export type ImportedCampus = {
   contactEmail: string | null;
   services: ImportedServiceTime[];
 };
+
+export type ImportedCalendarEvent = {
+  pcoEventId: string;
+  title: string;
+  description: string | null;
+  location: string | null;
+  startsAt: Date;
+  endsAt: Date | null;
+};
+
+export type ImportedGroup = {
+  pcoGroupId: string;
+  name: string;
+  description: string | null;
+  location: string | null;
+  meetingDay: number | null;
+  meetingTime: string | null;
+};

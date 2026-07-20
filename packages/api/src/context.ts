@@ -5,6 +5,8 @@ export interface SessionUser {
   id: string;
   email?: string | null;
   name?: string | null;
+  /** Platform admin (Church Stack /admin). */
+  isAdmin?: boolean;
 }
 
 export interface Session {

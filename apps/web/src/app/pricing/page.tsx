@@ -2,40 +2,11 @@
 
 import Link from 'next/link';
 import { Check } from 'lucide-react';
+import { PLAN_TIER_LIST } from '@repo/config';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-
-const tiers = [
-  {
-    name: 'Starter',
-    price: '$49',
-    period: '/mo',
-    description: 'For a single church getting started.',
-    features: ['1 branded app', 'Announcements & events', 'iOS & Android builds', 'Email support'],
-    cta: 'Start free trial',
-    highlighted: false,
-  },
-  {
-    name: 'Growth',
-    price: '$99',
-    period: '/mo',
-    description: 'For growing churches that want it all.',
-    features: ['Everything in Starter', 'Giving integration', 'Sermon series', 'Priority support'],
-    cta: 'Choose Growth',
-    highlighted: true,
-  },
-  {
-    name: 'Network',
-    price: 'Custom',
-    period: '',
-    description: 'For multi-site churches and networks.',
-    features: ['Multiple churches', 'Central admin', 'Custom features', 'Dedicated support'],
-    cta: 'Contact sales',
-    highlighted: false,
-  },
-];
 
 export default function PricingPage() {
   return (
@@ -45,20 +16,21 @@ export default function PricingPage() {
           Simple, honest pricing
         </h1>
         <p className="mt-4 text-lg text-ink-600 dark:text-ink-300">
-          Pick a plan per church. Cancel anytime. No agency invoices.
+          White-label site and church-named apps on every plan. One shared database — content
+          updates everywhere at once. Cancel anytime.
         </p>
       </Reveal>
 
-      <Stagger className="mt-16 grid items-start gap-8 lg:grid-cols-3">
-        {tiers.map((tier) => (
+      <Stagger className="mt-16 grid items-start gap-8 pt-4 lg:grid-cols-3">
+        {PLAN_TIER_LIST.map((tier) => (
           <StaggerItem
-            key={tier.name}
+            key={tier.id}
             whileHover={{ y: -8 }}
             transition={{ type: 'spring', stiffness: 300, damping: 22 }}
             className={tier.highlighted ? 'lg:-mt-4 lg:mb-4' : ''}
           >
             <Card
-              className={`relative h-full rounded-2xl py-8 shadow-sm ring-0 ${
+              className={`relative h-full overflow-visible rounded-2xl py-8 shadow-sm ring-0 ${
                 tier.highlighted
                   ? 'border-brand-600 bg-white shadow-xl shadow-brand-600/10 ring-2 ring-brand-600 dark:bg-ink-900'
                   : 'border-ink-200 dark:border-ink-800 dark:bg-ink-900'
@@ -76,7 +48,7 @@ export default function PricingPage() {
                 <p className="mt-2 text-sm text-ink-600 dark:text-ink-300">{tier.description}</p>
                 <div className="mt-6 flex items-baseline gap-1">
                   <span className="font-display text-4xl font-bold text-ink-900 dark:text-white">
-                    {tier.price}
+                    {tier.priceLabel}
                   </span>
                   <span className="text-ink-500 dark:text-ink-400">{tier.period}</span>
                 </div>
@@ -99,7 +71,13 @@ export default function PricingPage() {
                       ? 'shadow-sm shadow-brand-600/30'
                       : 'border-ink-300 text-ink-700 hover:bg-ink-50 dark:border-ink-700 dark:bg-transparent dark:text-ink-200 dark:hover:bg-ink-800'
                   }`}
-                  render={<Link href="/onboard" />}
+                  render={
+                    <Link
+                      href={
+                        tier.id === 'CUSTOM' ? '/onboard?plan=CUSTOM' : `/onboard?plan=${tier.id}`
+                      }
+                    />
+                  }
                 >
                   {tier.cta}
                 </Button>
@@ -108,6 +86,22 @@ export default function PricingPage() {
           </StaggerItem>
         ))}
       </Stagger>
+
+      <div className="mx-auto mt-12 max-w-2xl space-y-3 text-center text-sm text-ink-500 dark:text-ink-400">
+        <p>
+          Prices do <span className="font-medium text-ink-700 dark:text-ink-200">not</span> include
+          purchasing a domain name. You buy and own your domain; we connect it to your site.
+        </p>
+        <p>
+          Every plan hosts your church data on Church Stack (events, announcements, locations, and
+          more) whether you sync from Planning Center or manage everything here — so site and mobile
+          stay in sync on one database.
+        </p>
+        <p>
+          Multi-campus networks: Custom base plus per-church seats. App Store / Play
+          first-submission setup may include a one-time fee.
+        </p>
+      </div>
     </div>
   );
 }

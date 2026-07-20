@@ -1,5 +1,7 @@
 import type {
+  ImportedCalendarEvent,
   ImportedCampus,
+  ImportedGroup,
   ImportedServiceTime,
   PcoJsonApiListResponse,
   PcoJsonApiResource,
@@ -101,6 +103,81 @@ export function mapCampusesWithServiceTimes(
         address: formatCampusAddress(attrs),
         contactEmail,
         services,
+      };
+    });
+}
+
+function asString(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function asDate(value: unknown): Date | null {
+  if (typeof value !== 'string' && typeof value !== 'number') return null;
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+export function mapCalendarEvents(payload: PcoJsonApiListResponse): ImportedCalendarEvent[] {
+  return payload.data
+    .filter((item) => item.type === 'Event' || item.type === 'CalendarEvent')
+    .map((item) => {
+      const attrs = item.attributes;
+      const title = asString(attrs.name) ?? asString(attrs.title) ?? 'Event';
+      const startsAt =
+        asDate(attrs.starts_at) ?? asDate(attrs.start_at) ?? asDate(attrs.starts);
+      if (!startsAt) return null;
+
+      const endsAt = asDate(attrs.ends_at) ?? asDate(attrs.end_at) ?? asDate(attrs.ends);
+      const description = asString(attrs.description) ?? asString(attrs.summary);
+      const location =
+        asString(attrs.location_name) ??
+        asString(attrs.location) ??
+        asString(attrs.where);
+
+      return {
+        pcoEventId: item.id,
+        title,
+        description,
+        location,
+        startsAt,
+        endsAt,
+      };
+    })
+    .filter((e): e is ImportedCalendarEvent => Boolean(e));
+}
+
+export function mapGroups(payload: PcoJsonApiListResponse): ImportedGroup[] {
+  return payload.data
+    .filter((item) => item.type === 'Group')
+    .map((item) => {
+      const attrs = item.attributes;
+      const name = asString(attrs.name) ?? 'Group';
+      const description = asString(attrs.description) ?? asString(attrs.schedule);
+      const location =
+        asString(attrs.location_name) ??
+        asString(attrs.location) ??
+        asString(attrs.meeting_location);
+
+      const dayRaw = asString(attrs.schedule_day) ?? asString(attrs.day);
+      const meetingDay =
+        dayRaw != null ? (DAY_TO_NUMBER[dayRaw.toLowerCase()] ?? null) : null;
+
+      const meetingTime =
+        asString(attrs.schedule_time) ??
+        asString(attrs.meeting_time) ??
+        (typeof attrs.start_time === 'number'
+          ? pcoStartTimeToHhmm(attrs.start_time)
+          : null);
+
+      return {
+        pcoGroupId: item.id,
+        name,
+        description,
+        location,
+        meetingDay,
+        meetingTime,
       };
     });
 }

@@ -18,6 +18,7 @@ const handler = async (req: Request) => {
                 id: session.user.id,
                 email: session.user.email,
                 name: session.user.name,
+                isAdmin: session.user.isAdmin,
               },
             }
           : null,

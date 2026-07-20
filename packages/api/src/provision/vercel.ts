@@ -7,6 +7,17 @@ type ProvisionResult = {
   projectId?: string | null;
   deploymentId?: string | null;
   url?: string | null;
+  domainAttached?: boolean;
+  domainVerification?: DomainAttachResult | null;
+};
+
+export type DomainAttachResult = {
+  ok: boolean;
+  domain: string;
+  verified?: boolean;
+  error?: string;
+  /** DNS hints for the church owner. */
+  dns?: Array<{ type: string; name: string; value: string }>;
 };
 
 function vercelHeaders(token: string): HeadersInit {
@@ -20,14 +31,105 @@ function teamQuery(teamId: string | undefined): string {
   return teamId ? `?teamId=${encodeURIComponent(teamId)}` : '';
 }
 
+function normalizeDomain(raw: string): string {
+  return raw
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, '')
+    .replace(/\/.*$/, '');
+}
+
+/**
+ * Attach a custom domain to a Vercel project and return verification / DNS hints.
+ */
+export async function attachCustomDomainToProject(
+  projectId: string,
+  domainRaw: string,
+  options?: { token?: string; teamId?: string }
+): Promise<DomainAttachResult> {
+  const token = options?.token ?? process.env.VERCEL_TOKEN;
+  const teamId = options?.teamId ?? process.env.VERCEL_TEAM_ID;
+  const domain = normalizeDomain(domainRaw);
+
+  if (!token) {
+    return {
+      ok: false,
+      domain,
+      error: 'Missing VERCEL_TOKEN — cannot attach custom domain automatically.',
+    };
+  }
+
+  if (!domain || !domain.includes('.')) {
+    return { ok: false, domain, error: 'Invalid custom domain' };
+  }
+
+  try {
+    const addRes = await fetch(
+      `https://api.vercel.com/v10/projects/${encodeURIComponent(projectId)}/domains${teamQuery(teamId)}`,
+      {
+        method: 'POST',
+        headers: vercelHeaders(token),
+        body: JSON.stringify({ name: domain }),
+      }
+    );
+
+    if (!addRes.ok) {
+      const body = await addRes.text();
+      // Already configured is fine.
+      if (addRes.status !== 409 && !body.includes('already') && !body.includes('exists')) {
+        return {
+          ok: false,
+          domain,
+          error: `Vercel domain attach failed (${addRes.status}): ${body}`,
+        };
+      }
+    }
+
+    const configRes = await fetch(
+      `https://api.vercel.com/v6/domains/${encodeURIComponent(domain)}/config${teamQuery(teamId)}`,
+      { headers: vercelHeaders(token) }
+    );
+
+    let dns: DomainAttachResult['dns'] = [
+      { type: 'A', name: '@', value: '76.76.21.21' },
+      { type: 'CNAME', name: 'www', value: 'cname.vercel-dns.com' },
+    ];
+    let verified = false;
+
+    if (configRes.ok) {
+      const config = (await configRes.json()) as {
+        misconfigured?: boolean;
+        configuredBy?: string | null;
+        recommendedCNAME?: Array<{ rank: number; value: string }>;
+        recommendedIPv4?: Array<{ rank: number; value: string }>;
+      };
+      verified = config.misconfigured === false;
+      const cname = config.recommendedCNAME?.[0]?.value;
+      const ipv4 = config.recommendedIPv4?.[0]?.value;
+      if (cname || ipv4) {
+        dns = [];
+        if (ipv4) dns.push({ type: 'A', name: '@', value: ipv4 });
+        if (cname) dns.push({ type: 'CNAME', name: 'www', value: cname });
+      }
+    }
+
+    return { ok: true, domain, verified, dns };
+  } catch (err) {
+    return {
+      ok: false,
+      domain,
+      error: err instanceof Error ? err.message : 'Unknown domain attach error',
+    };
+  }
+}
+
 /**
  * Create or update a per-church Vercel project for `apps/church-site` and
  * trigger a deployment. Requires `VERCEL_TOKEN` + `VERCEL_GIT_REPO`
  * (`owner/repo`). Optional: `VERCEL_TEAM_ID`, `PLATFORM_API_URL`,
  * `VERCEL_CHURCH_SITE_ROOT` (default `apps/church-site`).
  *
- * Without credentials, marks the church FAILED with a clear error so /dev
- * can surface the gap (local stub path).
+ * When `customDomain` is set, attaches it via the Vercel Domains API.
  */
 export async function provisionChurchWebsite(
   prisma: PrismaClient,
@@ -99,7 +201,6 @@ export async function provisionChurchWebsite(
       });
 
       if (!createRes.ok) {
-        // Project may already exist — try to look it up by name.
         const listRes = await fetch(
           `https://api.vercel.com/v9/projects/${encodeURIComponent(projectName)}${teamQuery(teamId)}`,
           { headers: vercelHeaders(token) }
@@ -116,7 +217,6 @@ export async function provisionChurchWebsite(
       }
     }
 
-    // Upsert env vars for this project.
     const envVars = [
       { key: 'CHURCH_SLUG', value: church.slug },
       { key: 'PLATFORM_API_URL', value: platformApiUrl },
@@ -136,7 +236,6 @@ export async function provisionChurchWebsite(
           }),
         }
       );
-      // Ignore duplicate-env errors; Vercel returns 400 if key exists.
     }
 
     const deployRes = await fetch(`https://api.vercel.com/v13/deployments${teamQuery(teamId)}`, {
@@ -168,9 +267,20 @@ export async function provisionChurchWebsite(
       url?: string;
     };
 
+    let domainVerification: DomainAttachResult | null = null;
+    let domainAttached = false;
+
+    if (church.customDomain) {
+      domainVerification = await attachCustomDomainToProject(projectId, church.customDomain, {
+        token,
+        teamId,
+      });
+      domainAttached = domainVerification.ok;
+    }
+
     const url =
       church.customDomain != null
-        ? `https://${church.customDomain}`
+        ? `https://${normalizeDomain(church.customDomain)}`
         : deployment.url
           ? `https://${deployment.url}`
           : `https://${projectName}.vercel.app`;
@@ -182,6 +292,9 @@ export async function provisionChurchWebsite(
         websiteUrl: url,
         vercelProjectId: projectId,
         vercelDeploymentId: deployment.id,
+        customDomain: church.customDomain
+          ? normalizeDomain(church.customDomain)
+          : church.customDomain,
       },
     });
 
@@ -191,6 +304,8 @@ export async function provisionChurchWebsite(
       projectId,
       deploymentId: deployment.id,
       url,
+      domainAttached,
+      domainVerification,
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown Vercel error';

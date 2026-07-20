@@ -1,6 +1,11 @@
 import { TRPCError } from '@trpc/server';
-import { mapCampusesWithServiceTimes } from './map';
-import type { ImportedCampus, PcoJsonApiListResponse } from './types';
+import { mapCampusesWithServiceTimes, mapCalendarEvents, mapGroups } from './map';
+import type {
+  ImportedCalendarEvent,
+  ImportedCampus,
+  ImportedGroup,
+  PcoJsonApiListResponse,
+} from './types';
 
 const PCO_BASE = 'https://api.planningcenteronline.com';
 
@@ -157,4 +162,56 @@ export async function fetchCampusesWithServiceTimes(
   }
 
   return campuses;
+}
+
+/**
+ * Soft-fetch helper: missing product access (403/404) returns empty instead of failing
+ * the whole sync (campuses may still succeed).
+ */
+async function pcoFetchOptional(
+  path: string,
+  applicationId: string,
+  secret: string
+): Promise<PcoJsonApiListResponse | null> {
+  try {
+    return await pcoFetchJson(path, applicationId, secret);
+  } catch (err) {
+    if (err instanceof TRPCError && (err.code === 'FORBIDDEN' || err.code === 'NOT_FOUND')) {
+      return null;
+    }
+    throw err;
+  }
+}
+
+/**
+ * Fetch upcoming calendar events from Planning Center Calendar API.
+ */
+export async function fetchCalendarEvents(
+  applicationId: string,
+  secret: string
+): Promise<ImportedCalendarEvent[]> {
+  const now = new Date().toISOString();
+  const payload = await pcoFetchOptional(
+    `/calendar/v2/events?filter=future&order=starts_at&per_page=100&where[starts_at][gte]=${encodeURIComponent(now)}`,
+    applicationId,
+    secret
+  );
+  if (!payload || !Array.isArray(payload.data)) return [];
+  return mapCalendarEvents(payload);
+}
+
+/**
+ * Fetch groups (life groups) from Planning Center Groups API.
+ */
+export async function fetchGroups(
+  applicationId: string,
+  secret: string
+): Promise<ImportedGroup[]> {
+  const payload = await pcoFetchOptional(
+    '/groups/v2/groups?per_page=100&order=name',
+    applicationId,
+    secret
+  );
+  if (!payload || !Array.isArray(payload.data)) return [];
+  return mapGroups(payload);
 }

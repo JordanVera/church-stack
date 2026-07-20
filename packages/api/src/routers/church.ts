@@ -1,10 +1,16 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { toTenantBranding } from '@repo/config';
+import { planTierDefaults, toTenantBranding } from '@repo/config';
 import { router, publicProcedure, devProcedure } from '../trpc';
-import { provisionChurchWebsite } from '../provision/vercel';
+import {
+  attachCustomDomainToProject,
+  provisionChurchWebsite,
+} from '../provision/vercel';
 import { queueWhiteLabelBuild, setMobilePlan } from '../provision/eas';
 import { fetchCampusesWithServiceTimes } from '../planning-center/client';
+import { syncPlanningCenterForChurch } from '../planning-center/sync';
+
+const planTierSchema = z.enum(['SITE', 'GROWTH', 'CUSTOM']);
 
 const slugSchema = z
   .string()
@@ -23,6 +29,7 @@ const churchCreateInput = z.object({
   phone: z.string().max(40).optional().nullable(),
   address: z.string().max(300).optional().nullable(),
   timezone: z.string().min(1).optional(),
+  planTier: planTierSchema.optional(),
   givingEnabled: z.boolean().optional(),
   eventsEnabled: z.boolean().optional(),
   sermonsEnabled: z.boolean().optional(),
@@ -159,30 +166,43 @@ export const churchRouter = router({
       });
       if (!church) return null;
 
-      const [events, announcements, sermonSeries] = await Promise.all([
-        church.eventsEnabled
-          ? ctx.prisma.event.findMany({
-              where: { churchId: church.id, startsAt: { gte: new Date() } },
-              orderBy: { startsAt: 'asc' },
-              take: 12,
-            })
-          : Promise.resolve([]),
-        ctx.prisma.announcement.findMany({
-          where: { churchId: church.id, published: true },
-          orderBy: { createdAt: 'desc' },
-          take: 8,
-        }),
-        church.sermonsEnabled
-          ? ctx.prisma.sermonSeries.findMany({
-              where: { churchId: church.id },
-              orderBy: { createdAt: 'desc' },
-              take: 8,
-            })
-          : Promise.resolve([]),
-      ]);
+      const [events, announcements, sermonSeries, lifeGroups, locations] =
+        await Promise.all([
+          church.eventsEnabled
+            ? ctx.prisma.event.findMany({
+                where: { churchId: church.id, startsAt: { gte: new Date() } },
+                orderBy: { startsAt: 'asc' },
+                take: 12,
+              })
+            : Promise.resolve([]),
+          ctx.prisma.announcement.findMany({
+            where: { churchId: church.id, published: true },
+            orderBy: { createdAt: 'desc' },
+            take: 8,
+          }),
+          church.sermonsEnabled
+            ? ctx.prisma.sermonSeries.findMany({
+                where: { churchId: church.id },
+                orderBy: { createdAt: 'desc' },
+                take: 8,
+              })
+            : Promise.resolve([]),
+          ctx.prisma.lifeGroup.findMany({
+            where: { churchId: church.id },
+            orderBy: { name: 'asc' },
+            take: 24,
+          }),
+          ctx.prisma.location.findMany({
+            where: { churchId: church.id },
+            orderBy: { sortOrder: 'asc' },
+            include: { services: { orderBy: { sortOrder: 'asc' } } },
+            take: 20,
+          }),
+        ]);
 
       return {
         branding: toTenantBranding(church),
+        planTier: church.planTier,
         contact: {
           email: church.contactEmail,
           phone: church.phone,
@@ -192,6 +212,8 @@ export const churchRouter = router({
         events,
         announcements,
         sermonSeries,
+        lifeGroups,
+        locations,
       };
     }),
 
@@ -251,6 +273,7 @@ export const churchRouter = router({
     }
 
     return ctx.prisma.$transaction(async (tx) => {
+      const siteDefaults = planTierDefaults('SITE');
       const church = await tx.church.create({
         data: {
           slug: input.slug,
@@ -261,6 +284,7 @@ export const churchRouter = router({
           instagramUrl: input.instagramUrl ?? null,
           youtubeUrl: input.youtubeUrl ?? null,
           threadsUrl: input.threadsUrl ?? null,
+          ...siteDefaults,
         },
       });
 
@@ -342,6 +366,7 @@ export const churchRouter = router({
     }
 
     const { ownerEmail, ...data } = input;
+    const tierDefaults = planTierDefaults(data.planTier ?? 'SITE');
 
     const church = await ctx.prisma.church.create({
       data: {
@@ -355,9 +380,10 @@ export const churchRouter = router({
         phone: data.phone ?? null,
         address: data.address ?? null,
         timezone: data.timezone,
-        givingEnabled: data.givingEnabled,
-        eventsEnabled: data.eventsEnabled,
-        sermonsEnabled: data.sermonsEnabled,
+        ...tierDefaults,
+        givingEnabled: data.givingEnabled ?? tierDefaults.givingEnabled,
+        eventsEnabled: data.eventsEnabled ?? tierDefaults.eventsEnabled,
+        sermonsEnabled: data.sermonsEnabled ?? tierDefaults.sermonsEnabled,
         isActive: data.isActive ?? true,
         planningCenterApiKey: data.planningCenterApiKey ?? null,
         planningCenterSecretKey: data.planningCenterSecretKey ?? null,
@@ -396,10 +422,27 @@ export const churchRouter = router({
       }
     }
 
+    const tierPatch =
+      data.planTier !== undefined ? planTierDefaults(data.planTier) : null;
+
     return ctx.prisma.church.update({
       where: { id },
       data: {
         ...data,
+        ...(tierPatch ?? {}),
+        // Explicit flag overrides win over tier defaults when both are sent.
+        givingEnabled:
+          data.givingEnabled !== undefined
+            ? data.givingEnabled
+            : (tierPatch?.givingEnabled ?? undefined),
+        eventsEnabled:
+          data.eventsEnabled !== undefined
+            ? data.eventsEnabled
+            : (tierPatch?.eventsEnabled ?? undefined),
+        sermonsEnabled:
+          data.sermonsEnabled !== undefined
+            ? data.sermonsEnabled
+            : (tierPatch?.sermonsEnabled ?? undefined),
         tagline: data.tagline === undefined ? undefined : data.tagline,
         logoUrl: data.logoUrl === undefined ? undefined : data.logoUrl,
         contactEmail: data.contactEmail === undefined ? undefined : data.contactEmail,
@@ -414,6 +457,24 @@ export const churchRouter = router({
     });
   }),
 
+  setPlanTier: devProcedure
+    .input(
+      z.object({
+        churchId: z.string().min(1),
+        planTier: planTierSchema,
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const existing = await ctx.prisma.church.findUnique({ where: { id: input.churchId } });
+      if (!existing) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Church not found' });
+      }
+      return ctx.prisma.church.update({
+        where: { id: input.churchId },
+        data: planTierDefaults(input.planTier),
+      });
+    }),
+
   provisionWebsite: devProcedure
     .input(z.object({ churchId: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
@@ -422,6 +483,50 @@ export const churchRouter = router({
         throw new TRPCError({ code: 'NOT_FOUND', message: 'Church not found' });
       }
       return provisionChurchWebsite(ctx.prisma, church);
+    }),
+
+  attachCustomDomain: devProcedure
+    .input(z.object({ churchId: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const church = await ctx.prisma.church.findUnique({ where: { id: input.churchId } });
+      if (!church) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Church not found' });
+      }
+      if (!church.customDomain) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Set customDomain on the church before attaching.',
+        });
+      }
+      if (!church.vercelProjectId) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Provision the website first so a Vercel project exists.',
+        });
+      }
+
+      const result = await attachCustomDomainToProject(
+        church.vercelProjectId,
+        church.customDomain
+      );
+
+      if (result.ok) {
+        await ctx.prisma.church.update({
+          where: { id: church.id },
+          data: {
+            customDomain: result.domain,
+            websiteUrl: `https://${result.domain}`,
+          },
+        });
+      }
+
+      return result;
+    }),
+
+  syncPlanningCenter: devProcedure
+    .input(z.object({ churchId: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      return syncPlanningCenterForChurch(ctx.prisma, input.churchId);
     }),
 
   setMobilePlan: devProcedure

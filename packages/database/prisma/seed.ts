@@ -4,6 +4,7 @@ import {
   WebsiteStatus,
   MobilePlan,
   MobileBuildStatus,
+  PlanTier,
 } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
@@ -19,11 +20,13 @@ async function main() {
       secondaryColor: '#0ea5e9',
       contactEmail: 'hello@gracechurch.example',
       timezone: 'America/Chicago',
-      // Typical new church: shared app, site not provisioned yet
+      planTier: PlanTier.SITE,
+      givingEnabled: false,
+      // Typical new church: white-label mobile, site not provisioned yet
       websiteStatus: WebsiteStatus.NONE,
       websiteUrl: null as string | null,
       customDomain: null as string | null,
-      mobilePlan: MobilePlan.SHARED,
+      mobilePlan: MobilePlan.WHITELABEL,
       mobileBuildStatus: MobileBuildStatus.NONE,
       planningCenterApiKey: null as string | null,
       planningCenterSecretKey: null as string | null,
@@ -37,6 +40,8 @@ async function main() {
       secondaryColor: '#f59e0b',
       contactEmail: 'hello@hillside.example',
       timezone: 'America/Denver',
+      planTier: PlanTier.GROWTH,
+      givingEnabled: true,
       // Demo of a paid white-label path + local site preview URL
       websiteStatus: WebsiteStatus.LIVE,
       websiteUrl: 'http://localhost:3001?slug=hillside',
@@ -75,7 +80,8 @@ async function main() {
       contactEmail: c.contactEmail,
       timezone: c.timezone,
       isActive: true,
-      givingEnabled: true,
+      planTier: c.planTier,
+      givingEnabled: c.givingEnabled,
       eventsEnabled: true,
       sermonsEnabled: true,
       websiteStatus: c.websiteStatus,
