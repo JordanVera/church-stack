@@ -51,7 +51,7 @@ export default function HowItWorks() {
               whileHover={{ y: -6 }}
               transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             >
-              <article className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-ink-200 bg-white shadow-sm ring-0 transition-shadow hover:shadow-xl hover:shadow-brand-600/10 dark:border-ink-800 dark:bg-ink-900">
+              <article className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-ink-200 bg-white shadow-sm ring-0 transition-shadow hover:shadow-xl hover:shadow-brand-600/10 dark:border-white/10 dark:bg-white/5">
                 <div className="relative h-52 overflow-hidden bg-linear-to-br from-brand-600 to-brand-800 sm:h-56">
                   {s.visual === 'brand' && <BrandVisual />}
                   {s.visual === 'content' && <ContentVisual />}

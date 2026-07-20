@@ -120,18 +120,21 @@ export default function Hero() {
             </Button>
           </Reveal>
 
-          <div className="relative z-10 mt-9 grid grid-cols-3 gap-6 border-t border-ink-200 pt-6 sm:max-w-xl lg:mt-7 lg:max-w-md lg:gap-4 lg:pt-5 dark:border-ink-800">
-            {stats.map((stat, i) => (
-              <Reveal key={stat.label} delay={0.8 + i * 0.1}>
+          <Reveal
+            delay={0.85}
+            className="relative z-10 mt-9 grid grid-cols-3 gap-6 border-t border-ink-200 pt-6 sm:max-w-xl lg:mt-7 lg:max-w-md lg:gap-4 lg:pt-5 dark:border-ink-800"
+          >
+            {stats.map((stat) => (
+              <div key={stat.label}>
                 <p className="font-display text-3xl font-bold tabular-nums text-ink-900 sm:text-4xl lg:text-3xl dark:text-white">
                   <Counter value={stat.value} suffix={stat.suffix} duration={1.4} />
                 </p>
                 <p className="mt-1 text-xs font-medium uppercase tracking-[0.15em] text-ink-500 dark:text-ink-400">
                   {stat.label}
                 </p>
-              </Reveal>
+              </div>
             ))}
-          </div>
+          </Reveal>
         </div>
 
         <Reveal delay={0.35} y={32} className="hidden lg:block">

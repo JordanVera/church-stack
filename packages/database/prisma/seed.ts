@@ -29,6 +29,19 @@ async function main() {
 
   const password = await bcrypt.hash('password123', 10);
 
+  // Platform admin — only this user can open /admin on the web app.
+  const platformAdmin = await prisma.user.upsert({
+    where: { email: 'admin@churchstack.example' },
+    update: { name: 'Platform Admin', isAdmin: true, password },
+    create: {
+      name: 'Platform Admin',
+      email: 'admin@churchstack.example',
+      password,
+      isAdmin: true,
+    },
+  });
+  console.log(`Seeded platform admin ${platformAdmin.email} (password123)`);
+
   for (const c of churches) {
     const church = await prisma.church.upsert({
       where: { slug: c.slug },

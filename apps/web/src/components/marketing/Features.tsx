@@ -78,7 +78,7 @@ export default function Features() {
               className={`group relative h-full overflow-hidden rounded-3xl border py-12 shadow-sm ring-0 transition-shadow hover:shadow-xl hover:shadow-brand-600/10 ${
                 c.feature || c.wide
                   ? 'border-brand-500/20 bg-linear-to-br from-brand-600 to-brand-800 text-white'
-                  : 'border-ink-200 bg-white dark:border-ink-800 dark:bg-ink-900'
+                  : 'border-ink-200 bg-white dark:border-white/10 dark:bg-white/5'
               }`}
             >
               {c.feature && <WhitelabelVisual />}

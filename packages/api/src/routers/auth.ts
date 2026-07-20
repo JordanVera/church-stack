@@ -49,6 +49,7 @@ export const authRouter = router({
         id: true,
         name: true,
         email: true,
+        isAdmin: true,
         memberships: {
           select: {
             role: true,

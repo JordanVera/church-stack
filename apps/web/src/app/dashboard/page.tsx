@@ -12,7 +12,9 @@ export default function DashboardPage() {
   const me = trpc.auth.me.useQuery(undefined, { enabled: status === 'authenticated' });
 
   if (status === 'loading') {
-    return <div className="mx-auto max-w-4xl px-6 py-20 text-ink-600 dark:text-ink-300">Loading…</div>;
+    return (
+      <div className="mx-auto max-w-4xl px-6 py-20 text-ink-600 dark:text-ink-300">Loading…</div>
+    );
   }
 
   if (status === 'unauthenticated') {
@@ -32,18 +34,31 @@ export default function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-16">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-ink-900 dark:text-white">Dashboard</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-ink-900 dark:text-white">
+            Dashboard
+          </h1>
           <p className="mt-1 text-ink-600 dark:text-ink-300">Signed in as {me.data?.email}</p>
         </div>
-        <Button
-          variant="outline"
-          onClick={() => signOut({ callbackUrl: '/' })}
-          className="border-ink-300 text-sm font-medium text-ink-700 dark:border-ink-700 dark:bg-transparent dark:text-ink-200 dark:hover:bg-ink-800"
-        >
-          Sign out
-        </Button>
+        <div className="flex items-center gap-2">
+          {me.data?.isAdmin ? (
+            <Button
+              variant="outline"
+              className="border-ink-300 text-sm font-medium text-ink-700 dark:border-ink-700 dark:bg-transparent dark:text-ink-200 dark:hover:bg-ink-800"
+              render={<Link href="/admin" />}
+            >
+              Admin
+            </Button>
+          ) : null}
+          <Button
+            variant="outline"
+            onClick={() => signOut({ callbackUrl: '/' })}
+            className="border-ink-300 text-sm font-medium text-ink-700 dark:border-ink-700 dark:bg-transparent dark:text-ink-200 dark:hover:bg-ink-800"
+          >
+            Sign out
+          </Button>
+        </div>
       </div>
 
       <h2 className="mt-10 text-lg font-semibold text-ink-900 dark:text-white">Your churches</h2>
@@ -70,7 +85,9 @@ export default function DashboardPage() {
             </Card>
           ))
         ) : (
-          <p className="text-sm text-ink-600 dark:text-ink-300">You’re not part of any church yet.</p>
+          <p className="text-sm text-ink-600 dark:text-ink-300">
+            You’re not part of any church yet.
+          </p>
         )}
       </div>
     </div>
