@@ -14,30 +14,13 @@ import {
   Smartphone,
   User,
 } from 'lucide-react';
-import { LineReveal, Reveal } from '@/components/motion';
+import { Reveal } from '@/components/motion';
 
 export default function BigStatement() {
   const reduce = useReducedMotion();
 
   return (
     <section className="relative overflow-hidden bg-ink-950 py-28 text-white sm:py-36">
-      {!reduce && (
-        <>
-          <motion.div
-            aria-hidden
-            className="absolute left-1/4 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-brand-500/25 blur-3xl"
-            animate={{ opacity: [0.4, 0.7, 0.4], scale: [1, 1.15, 1] }}
-            transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-          />
-          <motion.div
-            aria-hidden
-            className="absolute bottom-0 right-1/4 h-96 w-96 translate-x-1/2 rounded-full bg-accent-500/20 blur-3xl"
-            animate={{ opacity: [0.3, 0.6, 0.3], scale: [1.1, 1, 1.1] }}
-            transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-          />
-        </>
-      )}
-
       <div className="relative mx-auto max-w-6xl px-6">
         <Reveal
           delay={0.35}
@@ -49,11 +32,11 @@ export default function BigStatement() {
         </Reveal>
       </div>
 
-      <div className="relative mt-16 grid gap-4 px-4 sm:grid-cols-3 sm:gap-6 sm:px-8 lg:px-12">
+      <div className="relative mx-auto mt-16 grid gap-6 px-4 sm:px-8 xl:grid-cols-3 xl:gap-8 xl:px-12">
         {!reduce && (
           <motion.div
             aria-hidden
-            className="absolute top-1/2 z-10 hidden h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-[0_0_20px_4px_rgba(255,255,255,0.8)] sm:block"
+            className="absolute top-1/2 z-10 hidden h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-[0_0_20px_4px_rgba(255,255,255,0.8)] xl:block"
             initial={{ left: '2%', opacity: 0 }}
             animate={{ left: ['2%', '98%'], opacity: [0, 1, 1, 0] }}
             transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut', repeatDelay: 0.8 }}
@@ -61,8 +44,8 @@ export default function BigStatement() {
         )}
 
         {/* Member app — where updates happen */}
-        <Reveal delay={0.1} className="sm:col-span-1">
-          <div className="relative flex min-h-[480px] flex-col overflow-hidden rounded-[2rem] bg-linear-to-br from-brand-400 via-brand-500 to-accent-400 p-10 pb-24 sm:min-h-[560px] sm:p-14 sm:pb-28 lg:min-h-[640px] lg:p-16 lg:pb-32">
+        <Reveal delay={0.1} className="xl:col-span-1">
+          <div className="relative flex h-[640px] flex-col overflow-hidden rounded-[2rem] bg-linear-to-br from-brand-400 via-brand-500 to-accent-400 p-10 pb-24 sm:p-14 sm:pb-28 lg:p-16 lg:pb-32">
             <div className="flex items-center gap-3.5">
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/90 text-brand-600 shadow-sm lg:h-12 lg:w-12">
                 <Smartphone className="h-5.5 w-5.5" />
@@ -110,8 +93,8 @@ export default function BigStatement() {
         </Reveal>
 
         {/* Admin dashboard — where it shows up */}
-        <Reveal delay={0.2} className="sm:col-span-2">
-          <div className="relative flex min-h-[480px] flex-col overflow-hidden rounded-[2rem] bg-linear-to-br from-accent-300 via-accent-400 to-brand-300 p-10 pb-24 sm:min-h-[560px] sm:p-14 sm:pb-28 lg:min-h-[640px] lg:p-16 lg:pb-32">
+        <Reveal delay={0.2} className="xl:col-span-2">
+          <div className="relative flex h-[640px] flex-col overflow-hidden rounded-[2rem] bg-linear-to-br from-accent-300 via-accent-400 to-brand-300 p-10 pb-24 sm:p-14 sm:pb-28 lg:p-16 lg:pb-32">
             <div className="flex items-center gap-3.5">
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/90 text-accent-700 shadow-sm lg:h-12 lg:w-12">
                 <ClipboardList className="h-5.5 w-5.5" />
