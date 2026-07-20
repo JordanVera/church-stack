@@ -16,14 +16,27 @@ build
 
 # expo
 .expo
+apps/native/ios/
+apps/native/android/
+
+# vercel
+.vercel
 
 # misc
 .DS_Store
+Thumbs.db
 *.pem
+*.jks
+*.p8
+*.p12
+*.mobileprovision
 dist
 *.tsbuildinfo
+*.db
+*.db-journal
 
 # debug
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -31,10 +44,10 @@ yarn-error.log*
 # local env files
 .env*
 !.env.example
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+
+# editors
+.idea/
+.vscode/
 
 # turbo
 .turbo
