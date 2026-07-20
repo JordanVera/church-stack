@@ -163,15 +163,19 @@ export function LineReveal({
   eager?: boolean;
 }) {
   const reduce = useReducedMotion();
-  const visible = { y: 0 };
+  // Observe the mask wrapper — not the transformed child. `whileInView` on the
+  // sliding span fails because overflow-hidden + y:115% yields zero intersection,
+  // leaving the line stuck invisible forever.
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: '-60px' });
+  const show = reduce || eager || inView;
+
   return (
-    <span className="block overflow-hidden">
+    <span ref={ref} className="block overflow-hidden">
       <motion.span
         className={`block ${className ?? ''}`}
         initial={reduce ? false : { y: '115%' }}
-        animate={eager ? (reduce ? undefined : visible) : undefined}
-        whileInView={!eager ? (reduce ? undefined : visible) : undefined}
-        viewport={eager ? undefined : { once: true, margin: '-60px' }}
+        animate={reduce ? undefined : show ? { y: 0 } : { y: '115%' }}
         transition={{ duration: 0.9, delay, ease: EASE }}
       >
         {children}
