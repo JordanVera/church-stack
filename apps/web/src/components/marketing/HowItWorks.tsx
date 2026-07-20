@@ -10,7 +10,7 @@ const steps = [
   {
     n: '01',
     title: 'Create your church',
-    body: 'Sign up, drop in your logo and colors, and Church Stack builds a branded app shell that looks like it was made in-house.',
+    body: 'Register your church, drop in your logo and colors, and Church Stack builds a branded app shell that looks like it was made in-house.',
     visual: 'brand' as const,
   },
   {

@@ -99,7 +99,7 @@ export default function PricingPage() {
                       ? 'shadow-sm shadow-brand-600/30'
                       : 'border-ink-300 text-ink-700 hover:bg-ink-50 dark:border-ink-700 dark:bg-transparent dark:text-ink-200 dark:hover:bg-ink-800'
                   }`}
-                  render={<Link href="/signup" />}
+                  render={<Link href="/onboard" />}
                 >
                   {tier.cta}
                 </Button>

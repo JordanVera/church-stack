@@ -40,6 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       suppressHydrationWarning
       className={`${sans.variable} ${display.variable} ${hero.variable}`}
+      data-scroll-behavior="smooth"
     >
       <body className="bg-white font-sans text-ink-900 antialiased transition-colors dark:bg-ink-950 dark:text-ink-100">
         <ThemeProvider>

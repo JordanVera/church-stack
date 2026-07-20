@@ -153,6 +153,122 @@ async function main() {
       });
     }
 
+    if (church.slug === 'grace') {
+      const pastorCount = await prisma.pastor.count({ where: { churchId: church.id } });
+      if (pastorCount === 0) {
+        const senior = await prisma.pastor.create({
+          data: {
+            churchId: church.id,
+            firstName: 'James',
+            lastName: 'Whitfield',
+            title: 'Senior Pastor',
+            sortOrder: 0,
+          },
+        });
+        const campus = await prisma.pastor.create({
+          data: {
+            churchId: church.id,
+            firstName: 'Maria',
+            lastName: 'Santos',
+            title: 'Campus Pastor',
+            sortOrder: 1,
+          },
+        });
+
+        const north = await prisma.location.create({
+          data: {
+            churchId: church.id,
+            name: 'Grace Church North',
+            address: '100 North Ave, Chicago, IL 60601',
+            pastorId: senior.id,
+            sortOrder: 0,
+          },
+        });
+        const south = await prisma.location.create({
+          data: {
+            churchId: church.id,
+            name: 'Grace Church South',
+            address: '200 South Blvd, Chicago, IL 60616',
+            pastorId: campus.id,
+            sortOrder: 1,
+          },
+        });
+
+        await prisma.service.createMany({
+          data: [
+            {
+              locationId: north.id,
+              name: 'Sunday Worship',
+              dayOfWeek: 0,
+              startTime: '09:00',
+              sortOrder: 0,
+            },
+            {
+              locationId: north.id,
+              name: 'Sunday Worship',
+              dayOfWeek: 0,
+              startTime: '11:00',
+              sortOrder: 1,
+            },
+            {
+              locationId: south.id,
+              name: 'Sunday Worship',
+              dayOfWeek: 0,
+              startTime: '10:30',
+              sortOrder: 0,
+            },
+          ],
+        });
+
+      }
+
+      const adminEmailCount = await prisma.churchAdminEmail.count({
+        where: { churchId: church.id },
+      });
+      if (adminEmailCount === 0) {
+        const locations = await prisma.location.findMany({
+          where: { churchId: church.id },
+          orderBy: { sortOrder: 'asc' },
+          select: { id: true, name: true },
+        });
+        const north = locations.find((l) => l.name.includes('North'));
+        const south = locations.find((l) => l.name.includes('South'));
+
+        await prisma.churchAdminEmail.createMany({
+          data: [
+            {
+              churchId: church.id,
+              email: 'admin@gracechurch.example',
+              locationId: null,
+            },
+            {
+              churchId: church.id,
+              email: 'ops@gracechurch.example',
+              locationId: null,
+            },
+            ...(north
+              ? [
+                  {
+                    churchId: church.id,
+                    email: 'north@gracechurch.example',
+                    locationId: north.id,
+                  },
+                ]
+              : []),
+            ...(south
+              ? [
+                  {
+                    churchId: church.id,
+                    email: 'south@gracechurch.example',
+                    locationId: south.id,
+                  },
+                ]
+              : []),
+          ],
+        });
+      }
+    }
+
     console.log(
       `Seeded ${church.name} (${church.slug}) — site ${church.websiteStatus}, mobile ${church.mobilePlan}/${church.mobileBuildStatus}, owner ${owner.email}`
     );

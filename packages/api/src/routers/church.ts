@@ -36,6 +36,53 @@ const churchUpdateInput = churchCreateInput.partial().extend({
   customDomain: z.string().max(253).optional().nullable(),
 });
 
+const timeSchema = z
+  .string()
+  .regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Start time must be HH:mm (24h)');
+
+const emailSchema = z.string().email().max(254);
+
+const churchOnboardInput = z.object({
+  slug: slugSchema,
+  name: z.string().min(1).max(120),
+  tagline: z.string().max(200).optional().nullable(),
+  /** Church-wide admin contact emails (at least one). */
+  adminEmails: z.array(emailSchema).min(1).max(50),
+  pastors: z
+    .array(
+      z.object({
+        clientKey: z.string().min(1),
+        firstName: z.string().min(1).max(80),
+        lastName: z.string().min(1).max(80),
+        title: z.string().min(1).max(120),
+      })
+    )
+    .min(1)
+    .max(50),
+  locations: z
+    .array(
+      z.object({
+        name: z.string().min(1).max(120),
+        address: z.string().min(1).max(300),
+        pastorClientKey: z.string().min(1).optional().nullable(),
+        /** Optional admin emails scoped to this location. */
+        adminEmails: z.array(emailSchema).max(50).default([]),
+        services: z
+          .array(
+            z.object({
+              name: z.string().min(1).max(120),
+              dayOfWeek: z.number().int().min(0).max(6),
+              startTime: timeSchema,
+            })
+          )
+          .max(50)
+          .default([]),
+      })
+    )
+    .min(1)
+    .max(50),
+});
+
 export const churchRouter = router({
   // List active churches (used by the native church picker).
   list: publicProcedure.query(async ({ ctx }) => {
@@ -132,6 +179,117 @@ export const churchRouter = router({
       }
       return church;
     }),
+
+  /**
+   * Public church signup: create church + pastors + locations/services + admin emails.
+   * Does not create Users — platform staff are provisioned manually in the User table.
+   */
+  onboard: publicProcedure.input(churchOnboardInput).mutation(async ({ ctx, input }) => {
+    const existingSlug = await ctx.prisma.church.findUnique({ where: { slug: input.slug } });
+    if (existingSlug) {
+      throw new TRPCError({ code: 'CONFLICT', message: 'Slug already in use' });
+    }
+
+    const churchAdminEmails = Array.from(
+      new Set(input.adminEmails.map((e) => e.trim().toLowerCase()))
+    );
+    if (churchAdminEmails.length < 1) {
+      throw new TRPCError({ code: 'BAD_REQUEST', message: 'Add at least one admin email' });
+    }
+
+    const pastorKeys = new Set(input.pastors.map((p) => p.clientKey));
+    if (pastorKeys.size !== input.pastors.length) {
+      throw new TRPCError({ code: 'BAD_REQUEST', message: 'Duplicate pastor keys' });
+    }
+    for (const loc of input.locations) {
+      if (loc.pastorClientKey && !pastorKeys.has(loc.pastorClientKey)) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: `Unknown pastor for location "${loc.name}"`,
+        });
+      }
+    }
+
+    return ctx.prisma.$transaction(async (tx) => {
+      const church = await tx.church.create({
+        data: {
+          slug: input.slug,
+          name: input.name,
+          tagline: input.tagline ?? null,
+          contactEmail: churchAdminEmails[0] ?? null,
+        },
+      });
+
+      await tx.churchAdminEmail.createMany({
+        data: churchAdminEmails.map((email) => ({
+          churchId: church.id,
+          email,
+          locationId: null,
+        })),
+      });
+
+      const pastorIdByKey = new Map<string, string>();
+      for (let index = 0; index < input.pastors.length; index++) {
+        const pastor = input.pastors[index]!;
+        const created = await tx.pastor.create({
+          data: {
+            churchId: church.id,
+            firstName: pastor.firstName,
+            lastName: pastor.lastName,
+            title: pastor.title,
+            sortOrder: index,
+          },
+        });
+        pastorIdByKey.set(pastor.clientKey, created.id);
+      }
+
+      for (let locIndex = 0; locIndex < input.locations.length; locIndex++) {
+        const loc = input.locations[locIndex]!;
+        const location = await tx.location.create({
+          data: {
+            churchId: church.id,
+            name: loc.name,
+            address: loc.address,
+            pastorId: loc.pastorClientKey
+              ? (pastorIdByKey.get(loc.pastorClientKey) ?? null)
+              : null,
+            sortOrder: locIndex,
+          },
+        });
+
+        if (loc.services.length > 0) {
+          await tx.service.createMany({
+            data: loc.services.map((svc, svcIndex) => ({
+              locationId: location.id,
+              name: svc.name,
+              dayOfWeek: svc.dayOfWeek,
+              startTime: svc.startTime,
+              sortOrder: svcIndex,
+            })),
+          });
+        }
+
+        const locationAdmins = Array.from(
+          new Set(loc.adminEmails.map((e) => e.trim().toLowerCase()).filter(Boolean))
+        );
+        if (locationAdmins.length > 0) {
+          await tx.churchAdminEmail.createMany({
+            data: locationAdmins.map((email) => ({
+              churchId: church.id,
+              email,
+              locationId: location.id,
+            })),
+          });
+        }
+      }
+
+      return {
+        id: church.id,
+        slug: church.slug,
+        name: church.name,
+      };
+    });
+  }),
 
   create: devProcedure.input(churchCreateInput).mutation(async ({ ctx, input }) => {
     const existing = await ctx.prisma.church.findUnique({ where: { slug: input.slug } });

@@ -62,17 +62,10 @@ export default function Header() {
         <div className="flex items-center gap-4">
           <ThemeToggle />
           <Button
-            variant="ghost"
-            className="hidden text-xs font-semibold uppercase tracking-[0.2em] text-ink-600 hover:bg-transparent hover:text-ink-900 sm:inline-flex dark:text-ink-300 dark:hover:text-white"
-            render={<Link href="/login" />}
-          >
-            Log in
-          </Button>
-          <Button
             className="rounded-full px-5 py-2.5 text-xs uppercase tracking-[0.15em] shadow-sm shadow-brand-600/30 hover:shadow-md hover:shadow-brand-600/40"
-            render={<Link href="/signup" />}
+            render={<Link href="/onboard" />}
           >
-            Get started
+            Register church
           </Button>
         </div>
       </div>

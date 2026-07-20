@@ -1,16 +1,25 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { signIn } from 'next-auth/react';
+import { signIn, signOut } from 'next-auth/react';
+import { trpc } from '@/lib/trpc-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
-export default function LoginPage() {
+function safeCallbackUrl(value: string | null) {
+  if (!value || !value.startsWith('/') || value.startsWith('//')) return '/dashboard';
+  return value;
+}
+
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = safeCallbackUrl(searchParams.get('callbackUrl'));
+  const utils = trpc.useUtils();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -21,12 +30,28 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
     const res = await signIn('credentials', { email, password, redirect: false });
-    setLoading(false);
     if (res?.error) {
+      setLoading(false);
       setError('Invalid email or password.');
       return;
     }
-    router.push('/dashboard');
+
+    try {
+      const me = await utils.auth.me.fetch();
+      const allowed = Boolean(me?.isAdmin || me?.isDev);
+      if (!allowed) {
+        await signOut({ redirect: false });
+        setError('This login is for Church Stack staff only. Churches should register instead.');
+        setLoading(false);
+        return;
+      }
+      router.push(callbackUrl);
+    } catch {
+      await signOut({ redirect: false });
+      setError('Unable to verify staff access.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -34,10 +59,10 @@ export default function LoginPage() {
       <Card className="border-ink-200 shadow-sm dark:border-ink-800">
         <CardHeader className="px-6">
           <CardTitle className="font-display text-3xl font-bold tracking-tight text-ink-900 dark:text-white">
-            Welcome back
+            Staff login
           </CardTitle>
           <CardDescription className="text-ink-600 dark:text-ink-300">
-            Log in to your Church Stack account.
+            For Church Stack admins and engineers only. Churches should register below.
           </CardDescription>
         </CardHeader>
 
@@ -78,11 +103,26 @@ export default function LoginPage() {
       </Card>
 
       <p className="mt-6 text-center text-sm text-ink-600 dark:text-ink-300">
-        Don’t have an account?{' '}
-        <Link href="/signup" className="font-semibold text-brand-600 hover:text-brand-500 dark:text-brand-400">
-          Sign up
+        Registering a church?{' '}
+        <Link
+          href="/onboard"
+          className="font-semibold text-brand-600 hover:text-brand-500 dark:text-brand-400"
+        >
+          Start church signup
         </Link>
       </p>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto max-w-md px-6 py-20 text-ink-600 dark:text-ink-300">Loading…</div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

@@ -11,7 +11,7 @@ export default function DashboardPage() {
   const { status } = useSession();
   const me = trpc.auth.me.useQuery(undefined, { enabled: status === 'authenticated' });
 
-  if (status === 'loading') {
+  if (status === 'loading' || (status === 'authenticated' && me.isLoading)) {
     return (
       <div className="mx-auto max-w-4xl px-6 py-20 text-ink-600 dark:text-ink-300">Loading…</div>
     );
@@ -20,14 +20,36 @@ export default function DashboardPage() {
   if (status === 'unauthenticated') {
     return (
       <div className="mx-auto max-w-4xl px-6 py-20">
-        <h1 className="text-2xl font-bold text-ink-900 dark:text-white">You’re signed out</h1>
+        <h1 className="text-2xl font-bold text-ink-900 dark:text-white">Staff only</h1>
         <p className="mt-2 text-ink-600 dark:text-ink-300">
-          Please{' '}
-          <Link href="/login" className="font-semibold text-brand-600 dark:text-brand-400">
-            log in
+          This area is for Church Stack staff.{' '}
+          <Link href="/onboard" className="font-semibold text-brand-600 dark:text-brand-400">
+            Register your church
           </Link>{' '}
-          to view your dashboard.
+          if you’re getting started.
         </p>
+      </div>
+    );
+  }
+
+  if (!me.data?.isAdmin && !me.data?.isDev) {
+    return (
+      <div className="mx-auto max-w-4xl px-6 py-20">
+        <h1 className="text-2xl font-bold text-ink-900 dark:text-white">Staff only</h1>
+        <p className="mt-2 text-ink-600 dark:text-ink-300">
+          Your account doesn’t have platform access. Churches register via{' '}
+          <Link href="/onboard" className="font-semibold text-brand-600 dark:text-brand-400">
+            church signup
+          </Link>
+          .
+        </p>
+        <Button
+          className="mt-6"
+          variant="outline"
+          onClick={() => signOut({ callbackUrl: '/' })}
+        >
+          Sign out
+        </Button>
       </div>
     );
   }
@@ -94,8 +116,8 @@ export default function DashboardPage() {
             </Card>
           ))
         ) : (
-          <p className="text-sm text-ink-600 dark:text-ink-300">
-            You’re not part of any church yet.
+          <p className="text-sm text-ink-600 dark:text-ink-300 sm:col-span-2">
+            No church memberships on this staff account.
           </p>
         )}
       </div>

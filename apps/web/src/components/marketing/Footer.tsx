@@ -14,11 +14,8 @@ const columns = [
     ],
   },
   {
-    title: 'Account',
-    links: [
-      { href: '/login', label: 'Log in' },
-      { href: '/signup', label: 'Get started' },
-    ],
+    title: 'Get started',
+    links: [{ href: '/onboard', label: 'Register church' }],
   },
   {
     title: 'Follow',

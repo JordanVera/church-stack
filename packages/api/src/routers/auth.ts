@@ -1,11 +1,13 @@
 import { z } from 'zod';
-import bcrypt from 'bcryptjs';
 import { TRPCError } from '@trpc/server';
 import { router, publicProcedure, protectedProcedure } from '../trpc';
 import { isPlatformDev } from '../platform-dev';
 
 export const authRouter = router({
-  // Register a new user and optionally attach them to a church as a MEMBER.
+  /**
+   * Public self-serve user registration is disabled.
+   * Platform admins/devs are created manually in the User table; churches sign up via church.onboard.
+   */
   register: publicProcedure
     .input(
       z.object({
@@ -15,30 +17,11 @@ export const authRouter = router({
         churchSlug: z.string().optional(),
       })
     )
-    .mutation(async ({ ctx, input }) => {
-      const existing = await ctx.prisma.user.findUnique({ where: { email: input.email } });
-      if (existing) {
-        throw new TRPCError({ code: 'CONFLICT', message: 'Email already in use.' });
-      }
-
-      const password = await bcrypt.hash(input.password, 10);
-      const user = await ctx.prisma.user.create({
-        data: { name: input.name, email: input.email, password },
+    .mutation(async () => {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'User signup is disabled. Register your church instead.',
       });
-
-      if (input.churchSlug) {
-        const church = await ctx.prisma.church.findUnique({
-          where: { slug: input.churchSlug },
-          select: { id: true },
-        });
-        if (church) {
-          await ctx.prisma.membership.create({
-            data: { userId: user.id, churchId: church.id },
-          });
-        }
-      }
-
-      return { id: user.id, email: user.email, name: user.name };
     }),
 
   // Current user + the churches they belong to.
