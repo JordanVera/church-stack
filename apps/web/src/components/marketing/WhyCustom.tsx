@@ -64,7 +64,6 @@ export default function WhyCustom() {
               {!reduce && (
                 <motion.p
                   className="mt-6 font-mono text-xs tracking-[0.2em] text-brand-300 uppercase"
-                  animate={{ opacity: [0.55, 1, 0.55] }}
                   transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
                 >
                   Indexable · Fast · Owned

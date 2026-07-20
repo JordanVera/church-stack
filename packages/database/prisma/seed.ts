@@ -219,7 +219,6 @@ async function main() {
             },
           ],
         });
-
       }
 
       const adminEmailCount = await prisma.churchAdminEmail.count({
