@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { Gauge, Lock, Search, Server, Shield, Sparkles, FileCode2 } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion';
 
 const seoPoints = [
