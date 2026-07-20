@@ -88,11 +88,11 @@ export default function WhyCustom() {
               <p className="text-[11px] font-semibold tracking-[0.2em] text-white/40 uppercase">
                 Wix &amp; WordPress
               </p>
-              <ul className="mt-5 space-y-3 text-sm leading-relaxed text-white/50">
-                <li>Shared themes and plugins that look — and rank — like everyone else</li>
-                <li>Bloated scripts that hurt Core Web Vitals and mobile rankings</li>
-                <li>Limited or opaque control over crawl rules, schema, and canonicals</li>
-                <li>SEO equity tied to a platform stack you don’t fully own</li>
+              <ul className="mt-5 space-y-1 text-sm leading-relaxed text-white/50">
+                <li>1) Shared themes and plugins that look — and rank — like everyone else</li>
+                <li>2) Bloated scripts that hurt Core Web Vitals and mobile rankings</li>
+                <li>3) Limited or opaque control over crawl rules, schema, and canonicals</li>
+                <li>4) SEO equity tied to a platform stack you don’t fully own</li>
               </ul>
             </div>
           </Reveal>
@@ -101,11 +101,11 @@ export default function WhyCustom() {
               <p className="text-[11px] font-semibold tracking-[0.2em] text-brand-300 uppercase">
                 Custom Next.js
               </p>
-              <ul className="mt-5 space-y-3 text-sm leading-relaxed text-brand-100/85">
-                <li>Server-rendered pages search engines can index on contact</li>
-                <li>Full control of metadata, sitemaps, redirects, and structured data</li>
-                <li>Lean bundles tuned for Core Web Vitals and local search</li>
-                <li>Your domain, your code, your rankings — year after year</li>
+              <ul className="mt-5 space-y-1 text-sm leading-relaxed text-brand-100/85">
+                <li>1) Server-rendered pages search engines can index on contact</li>
+                <li>2) Full control of metadata, sitemaps, redirects, and structured data</li>
+                <li>3) Lean bundles tuned for Core Web Vitals and local search</li>
+                <li>4) Your domain, your code, your rankings — year after year</li>
               </ul>
             </div>
           </Reveal>
