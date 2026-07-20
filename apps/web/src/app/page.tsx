@@ -5,7 +5,6 @@ import Features from '@/components/marketing/Features';
 import Showcase from '@/components/marketing/Showcase';
 import HowItWorks from '@/components/marketing/HowItWorks';
 import CTA from '@/components/marketing/CTA';
-import Footer from '@/components/marketing/Footer';
 
 export default function HomePage() {
   return (
@@ -17,7 +16,6 @@ export default function HomePage() {
       <Showcase />
       <HowItWorks />
       <CTA />
-      <Footer />
     </div>
   );
 }

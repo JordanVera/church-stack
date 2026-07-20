@@ -5,6 +5,7 @@ import SessionProvider from '@/components/SessionProvider';
 import ThemeProvider from '@/components/ThemeProvider';
 import Header from '@/components/Header';
 import '@/styles/global.css';
+import Footer from '@/components/marketing/Footer';
 
 const sans = Inter({
   subsets: ['latin'],
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <TRPCProvider>
               <Header />
               <main>{children}</main>
+              <Footer />
             </TRPCProvider>
           </SessionProvider>
         </ThemeProvider>

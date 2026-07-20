@@ -42,7 +42,7 @@ export default function Header() {
             width={220}
             height={110}
             priority
-            className="h-24 w-auto transition-transform duration-300 group-hover:scale-[1.03]"
+            className="h-24 w-auto transition-transform duration-300 group-hover:scale-[1.03] brightness-0 dark:invert"
           />
         </Link>
 
