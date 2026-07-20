@@ -1,12 +1,4 @@
-import { redirect } from 'next/navigation';
-import z from 'zod';
-
-/** Church signup lives at /onboard — keep /signup as a stable marketing URL. */
-// export default function SignupPage() {
-//   redirect('/onboard');
-// }
-
-('use client');
+'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
