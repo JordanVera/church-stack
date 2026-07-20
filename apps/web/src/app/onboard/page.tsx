@@ -2,19 +2,20 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { trpc } from '@/lib/trpc-client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChurchStep } from '@/components/onboard/ChurchStep';
 import { PastorsStep } from '@/components/onboard/PastorsStep';
 import { LocationsStep } from '@/components/onboard/LocationsStep';
-import { AdminsStep } from '@/components/onboard/AdminsStep';
 import { ReviewStep } from '@/components/onboard/ReviewStep';
 import { StepIndicator } from '@/components/onboard/StepIndicator';
 import {
   STEPS,
   createInitialDraft,
   isValidEmail,
+  isValidOptionalUrl,
   type OnboardDraft,
 } from '@/components/onboard/types';
 
@@ -23,6 +24,21 @@ function validateStep(step: number, draft: OnboardDraft): string | null {
     if (!draft.name.trim()) return 'Church name is required.';
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(draft.slug) || draft.slug.length < 2) {
       return 'Enter a valid slug (lowercase letters, numbers, hyphens).';
+    }
+    const emails = draft.adminEmails.map((e) => e.trim()).filter(Boolean);
+    if (emails.length < 1) return 'Add at least one admin email.';
+    for (const email of emails) {
+      if (!isValidEmail(email)) return 'Enter valid admin email addresses.';
+    }
+    for (const [label, value] of [
+      ['Facebook', draft.facebookUrl],
+      ['Instagram', draft.instagramUrl],
+      ['YouTube', draft.youtubeUrl],
+      ['Threads', draft.threadsUrl],
+    ] as const) {
+      if (!isValidOptionalUrl(value)) {
+        return `${label} link must be a full URL (https://…), or leave it blank.`;
+      }
     }
     return null;
   }
@@ -54,18 +70,11 @@ function validateStep(step: number, draft: OnboardDraft): string | null {
     }
     return null;
   }
-  if (step === 3) {
-    const emails = draft.adminEmails.map((e) => e.trim()).filter(Boolean);
-    if (emails.length < 1) return 'Add at least one church admin email.';
-    for (const email of emails) {
-      if (!isValidEmail(email)) return 'Enter valid admin email addresses.';
-    }
-    return null;
-  }
   return null;
 }
 
 export default function OnboardPage() {
+  const reduce = useReducedMotion();
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState<OnboardDraft>(() => createInitialDraft());
   const [error, setError] = useState<string | null>(null);
@@ -79,17 +88,31 @@ export default function OnboardPage() {
 
   if (done) {
     return (
-      <div className="mx-auto max-w-2xl px-6 py-20">
-        <h1 className="font-display text-3xl font-bold tracking-tight text-ink-900 dark:text-white">
-          You’re all set
-        </h1>
-        <p className="mt-3 text-ink-600 dark:text-ink-300">
-          <span className="font-medium text-ink-800 dark:text-ink-100">{done.name}</span> (
-          /{done.slug}) has been submitted. We’ll follow up with your admin contacts next.
-        </p>
-        <Button className="mt-8" render={<Link href="/" />}>
-          Back to home
-        </Button>
+      <div className="relative overflow-hidden">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--color-brand-100)_0%,_transparent_55%),radial-gradient(ellipse_at_bottom_right,_var(--color-accent-100)_0%,_transparent_45%)] dark:bg-[radial-gradient(ellipse_at_top,_rgba(26,139,189,0.18)_0%,_transparent_55%),radial-gradient(ellipse_at_bottom_right,_rgba(132,220,207,0.12)_0%,_transparent_45%)]"
+        />
+        <div className="relative mx-auto flex min-h-[70vh] max-w-xl flex-col justify-center px-6 py-20 text-center">
+          <motion.div
+            initial={reduce ? false : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <CheckCircle2 className="mx-auto size-12 text-brand-600 dark:text-brand-400" />
+            <h1 className="font-display mt-6 text-4xl font-bold tracking-tight text-ink-900 dark:text-white">
+              You’re all set
+            </h1>
+            <p className="mt-3 text-base leading-relaxed text-ink-600 dark:text-ink-300">
+              <span className="font-semibold text-ink-800 dark:text-ink-100">{done.name}</span>{' '}
+              <span className="text-ink-400">/{done.slug}</span> has been submitted. We’ll follow
+              up with your admin contacts next.
+            </p>
+            <Button className="mt-8 h-11 px-6" render={<Link href="/" />}>
+              Back to home
+            </Button>
+          </motion.div>
+        </div>
       </div>
     );
   }
@@ -111,10 +134,7 @@ export default function OnboardPage() {
 
   const submit = () => {
     const validationError =
-      validateStep(0, draft) ||
-      validateStep(1, draft) ||
-      validateStep(2, draft) ||
-      validateStep(3, draft);
+      validateStep(0, draft) || validateStep(1, draft) || validateStep(2, draft);
     if (validationError) {
       setError(validationError);
       return;
@@ -125,6 +145,10 @@ export default function OnboardPage() {
       name: draft.name.trim(),
       tagline: draft.tagline.trim() || null,
       adminEmails: draft.adminEmails.map((e) => e.trim()).filter(Boolean),
+      facebookUrl: draft.facebookUrl.trim() || null,
+      instagramUrl: draft.instagramUrl.trim() || null,
+      youtubeUrl: draft.youtubeUrl.trim() || null,
+      threadsUrl: draft.threadsUrl.trim() || null,
       pastors: draft.pastors.map((p) => ({
         clientKey: p.clientKey,
         firstName: p.firstName.trim(),
@@ -145,57 +169,95 @@ export default function OnboardPage() {
     });
   };
 
+  const current = STEPS[step]!;
+
   return (
-    <div className="mx-auto max-w-2xl px-6 py-12">
-      <Card className="border-ink-200 shadow-sm dark:border-ink-800">
-        <CardHeader className="px-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-500 dark:text-ink-400">
+    <div className="relative overflow-hidden">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_10%_-10%,_var(--color-brand-100)_0%,_transparent_55%),radial-gradient(ellipse_60%_40%_at_100%_0%,_var(--color-accent-100)_0%,_transparent_50%),linear-gradient(to_bottom,_transparent,_var(--color-ink-50))] dark:bg-[radial-gradient(ellipse_80%_50%_at_10%_-10%,_rgba(26,139,189,0.2)_0%,_transparent_55%),radial-gradient(ellipse_60%_40%_at_100%_0%,_rgba(132,220,207,0.12)_0%,_transparent_50%),linear-gradient(to_bottom,_transparent,_var(--color-ink-950))]"
+      />
+
+      <div className="relative mx-auto max-w-3xl px-6 py-12 sm:py-16">
+        <header className="mb-10">
+          <p className="text-xs font-semibold tracking-[0.22em] text-brand-600 uppercase dark:text-brand-400">
             Church signup
           </p>
-          <CardTitle className="font-display mt-2 text-3xl font-bold tracking-tight text-ink-900 dark:text-white">
+          <h1 className="font-display mt-3 text-4xl font-bold tracking-tight text-ink-900 sm:text-5xl dark:text-white">
             Register your church
-          </CardTitle>
-          <CardDescription className="text-ink-600 dark:text-ink-300">
-            Tell us about your church, pastors, campuses, and admin contacts.
-          </CardDescription>
-          <div className="mt-4">
-            <StepIndicator current={step} />
-          </div>
-        </CardHeader>
-        <CardContent className="px-6 pb-6">
-          {step === 0 ? <ChurchStep draft={draft} onChange={setDraft} /> : null}
-          {step === 1 ? <PastorsStep draft={draft} onChange={setDraft} /> : null}
-          {step === 2 ? <LocationsStep draft={draft} onChange={setDraft} /> : null}
-          {step === 3 ? <AdminsStep draft={draft} onChange={setDraft} /> : null}
-          {step === 4 ? <ReviewStep draft={draft} /> : null}
+          </h1>
+          <p className="mt-3 max-w-xl text-base leading-relaxed text-ink-600 dark:text-ink-300">
+            A short guided setup — church basics, pastors, campuses, then review.
+          </p>
+        </header>
 
-          {(error || onboard.error) && (
-            <p className="mt-4 text-sm text-red-600 dark:text-red-400">
-              {error || onboard.error?.message}
+        <div className="mb-8 rounded-2xl border border-ink-200/80 bg-white/70 px-4 py-5 shadow-sm backdrop-blur-md dark:border-ink-800 dark:bg-ink-900/60 sm:px-6">
+          <StepIndicator current={step} />
+        </div>
+
+        <div className="overflow-hidden rounded-3xl border border-ink-200/80 bg-white/85 shadow-[0_20px_60px_-28px_rgba(34,24,28,0.35)] backdrop-blur-md dark:border-ink-800 dark:bg-ink-900/75 dark:shadow-[0_20px_60px_-28px_rgba(0,0,0,0.55)]">
+          <div className="border-b border-ink-100 px-6 py-5 dark:border-ink-800 sm:px-8">
+            <p className="text-xs font-semibold tracking-[0.18em] text-ink-400 uppercase">
+              Step {step + 1} of {STEPS.length}
             </p>
-          )}
-
-          <div className="mt-8 flex items-center justify-between gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={goBack}
-              disabled={step === 0 || onboard.isPending}
-            >
-              Back
-            </Button>
-            {step < STEPS.length - 1 ? (
-              <Button type="button" onClick={goNext}>
-                Continue
-              </Button>
-            ) : (
-              <Button type="button" onClick={submit} disabled={onboard.isPending}>
-                {onboard.isPending ? 'Submitting…' : 'Submit church'}
-              </Button>
-            )}
+            <h2 className="font-display mt-1 text-2xl font-semibold tracking-tight text-ink-900 dark:text-white">
+              {current.label}
+            </h2>
+            <p className="mt-1 text-sm text-ink-500 dark:text-ink-400">{current.blurb}</p>
           </div>
-        </CardContent>
-      </Card>
+
+          <div className="px-6 py-7 sm:px-8">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={step}
+                initial={reduce ? false : { opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={reduce ? undefined : { opacity: 0, y: -8 }}
+                transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+              >
+                {step === 0 ? <ChurchStep draft={draft} onChange={setDraft} /> : null}
+                {step === 1 ? <PastorsStep draft={draft} onChange={setDraft} /> : null}
+                {step === 2 ? <LocationsStep draft={draft} onChange={setDraft} /> : null}
+                {step === 3 ? <ReviewStep draft={draft} /> : null}
+              </motion.div>
+            </AnimatePresence>
+
+            {(error || onboard.error) && (
+              <p className="mt-6 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+                {error || onboard.error?.message}
+              </p>
+            )}
+
+            <div className="mt-10 flex items-center justify-between gap-3 border-t border-ink-100 pt-6 dark:border-ink-800">
+              <Button
+                type="button"
+                variant="outline"
+                className="h-11 gap-1.5 px-4"
+                onClick={goBack}
+                disabled={step === 0 || onboard.isPending}
+              >
+                <ArrowLeft className="size-3.5" />
+                Back
+              </Button>
+              {step < STEPS.length - 1 ? (
+                <Button type="button" className="h-11 gap-1.5 px-5" onClick={goNext}>
+                  Continue
+                  <ArrowRight className="size-3.5" />
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  className="h-11 px-5"
+                  onClick={submit}
+                  disabled={onboard.isPending}
+                >
+                  {onboard.isPending ? 'Submitting…' : 'Submit church'}
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

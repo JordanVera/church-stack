@@ -27,6 +27,10 @@ export type OnboardDraft = {
   tagline: string;
   slugTouched: boolean;
   adminEmails: string[];
+  facebookUrl: string;
+  instagramUrl: string;
+  youtubeUrl: string;
+  threadsUrl: string;
   pastors: OnboardPastor[];
   locations: OnboardLocation[];
 };
@@ -41,7 +45,12 @@ export const DAY_OPTIONS = [
   { value: 6, label: 'Saturday' },
 ] as const;
 
-export const STEPS = ['Church', 'Pastors', 'Locations', 'Admins', 'Review'] as const;
+export const STEPS = [
+  { id: 'church', label: 'Church', blurb: 'Basics & admins' },
+  { id: 'pastors', label: 'Pastors', blurb: 'Leadership' },
+  { id: 'locations', label: 'Locations', blurb: 'Campuses & times' },
+  { id: 'review', label: 'Review', blurb: 'Confirm & submit' },
+] as const;
 
 export function newClientKey(prefix: string) {
   return `${prefix}-${Math.random().toString(36).slice(2, 10)}`;
@@ -63,6 +72,10 @@ export function createInitialDraft(): OnboardDraft {
     tagline: '',
     slugTouched: false,
     adminEmails: [''],
+    facebookUrl: '',
+    instagramUrl: '',
+    youtubeUrl: '',
+    threadsUrl: '',
     pastors: [
       {
         clientKey: newClientKey('pastor'),
@@ -107,4 +120,15 @@ export function formatTime(hhmm: string) {
 
 export function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+
+export function isValidOptionalUrl(value: string) {
+  const v = value.trim();
+  if (!v) return true;
+  try {
+    const u = new URL(v);
+    return u.protocol === 'http:' || u.protocol === 'https:';
+  } catch {
+    return false;
+  }
 }

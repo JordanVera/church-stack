@@ -43,12 +43,25 @@ const timeSchema = z
 
 const emailSchema = z.string().email().max(254);
 
+/** Empty string / null → null; otherwise must be a valid URL. */
+const optionalUrlSchema = z
+  .union([z.string().url().max(500), z.literal(''), z.null()])
+  .optional()
+  .transform((v) => {
+    if (v === undefined || v === null || v === '') return null;
+    return v;
+  });
+
 const churchOnboardInput = z.object({
   slug: slugSchema,
   name: z.string().min(1).max(120),
   tagline: z.string().max(200).optional().nullable(),
   /** Church-wide admin contact emails (at least one). */
   adminEmails: z.array(emailSchema).min(1).max(50),
+  facebookUrl: optionalUrlSchema,
+  instagramUrl: optionalUrlSchema,
+  youtubeUrl: optionalUrlSchema,
+  threadsUrl: optionalUrlSchema,
   pastors: z
     .array(
       z.object({
@@ -244,6 +257,10 @@ export const churchRouter = router({
           name: input.name,
           tagline: input.tagline ?? null,
           contactEmail: churchAdminEmails[0] ?? null,
+          facebookUrl: input.facebookUrl ?? null,
+          instagramUrl: input.instagramUrl ?? null,
+          youtubeUrl: input.youtubeUrl ?? null,
+          threadsUrl: input.threadsUrl ?? null,
         },
       });
 

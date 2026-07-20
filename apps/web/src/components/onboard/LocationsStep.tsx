@@ -1,12 +1,17 @@
+import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { FieldSection } from './FieldSection';
 import { PlanningCenterImport } from './PlanningCenterImport';
 import type { OnboardDraft } from './types';
 import { DAY_OPTIONS, newClientKey } from './types';
 
 const selectClassName =
-  'flex h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:border-brand-500 focus-visible:ring-3 focus-visible:ring-brand-200 dark:focus-visible:ring-brand-500/30';
+  'flex h-11 w-full rounded-lg border border-ink-200 bg-white/80 px-3 text-sm outline-none focus-visible:border-brand-500 focus-visible:ring-3 focus-visible:ring-brand-200 dark:border-ink-700 dark:bg-ink-950/60 dark:focus-visible:ring-brand-500/25';
+
+const inputClass =
+  'h-11 border-ink-200 bg-white/80 shadow-none focus-visible:border-brand-500 focus-visible:ring-brand-200 dark:border-ink-700 dark:bg-ink-950/60 dark:focus-visible:ring-brand-500/25';
 
 type Props = {
   draft: OnboardDraft;
@@ -16,17 +21,20 @@ type Props = {
 export function LocationsStep({ draft, onChange }: Props) {
   return (
     <div className="space-y-8">
-      <p className="text-sm text-ink-600 dark:text-ink-300">
-        Add each campus or site, optionally assign a pastor, and list weekly services.
-      </p>
-      <PlanningCenterImport draft={draft} onChange={onChange} />
+      <FieldSection
+        title="Campuses & service times"
+        description="Add each campus, optionally assign a pastor, and list weekly services — or import from Planning Center."
+      >
+        <PlanningCenterImport draft={draft} onChange={onChange} />
+      </FieldSection>
+
       {draft.locations.map((location, locIndex) => (
         <div
           key={location.key}
-          className="space-y-4 border-t border-ink-200 pt-6 first:border-t-0 first:pt-0 dark:border-ink-800"
+          className="space-y-4 rounded-2xl border border-ink-200/90 bg-gradient-to-br from-white to-ink-50/40 p-5 dark:border-ink-700 dark:from-ink-900 dark:to-ink-950"
         >
           <div className="flex items-center justify-between gap-2">
-            <p className="text-sm font-medium text-ink-800 dark:text-ink-200">
+            <p className="text-xs font-semibold tracking-[0.14em] text-ink-400 uppercase">
               Location {locIndex + 1}
             </p>
             {draft.locations.length > 1 ? (
@@ -59,7 +67,7 @@ export function LocationsStep({ draft, onChange }: Props) {
                   onChange({ ...draft, locations });
                 }}
                 placeholder="Grace Church North"
-                className="h-10"
+                className={inputClass}
               />
             </div>
             <div className="sm:col-span-2">
@@ -74,7 +82,7 @@ export function LocationsStep({ draft, onChange }: Props) {
                   onChange({ ...draft, locations });
                 }}
                 placeholder="123 Main St, City, ST 00000"
-                className="h-10"
+                className={inputClass}
               />
             </div>
             <div className="sm:col-span-2">
@@ -129,7 +137,7 @@ export function LocationsStep({ draft, onChange }: Props) {
                         onChange({ ...draft, locations });
                       }}
                       placeholder="campus-admin@yourchurch.org"
-                      className="h-10"
+                      className={inputClass}
                     />
                     {location.adminEmails.length > 1 ? (
                       <Button
@@ -181,7 +189,7 @@ export function LocationsStep({ draft, onChange }: Props) {
             {location.services.map((service, svcIndex) => (
               <div
                 key={service.key}
-                className="grid gap-3 rounded-lg border border-ink-200 p-3 dark:border-ink-800 sm:grid-cols-[1fr_8rem_7rem_auto]"
+                className="grid gap-3 rounded-xl border border-ink-200/80 bg-white/70 p-3 dark:border-ink-700 dark:bg-ink-950/40 sm:grid-cols-[1fr_8rem_7rem_auto]"
               >
                 <div>
                   <Label className="mb-1 text-ink-700 dark:text-ink-300">Name</Label>
@@ -201,7 +209,7 @@ export function LocationsStep({ draft, onChange }: Props) {
                       );
                       onChange({ ...draft, locations });
                     }}
-                    className="h-10"
+                    className={inputClass}
                   />
                 </div>
                 <div>
@@ -252,7 +260,7 @@ export function LocationsStep({ draft, onChange }: Props) {
                       );
                       onChange({ ...draft, locations });
                     }}
-                    className="h-10"
+                    className={inputClass}
                   />
                 </div>
                 <div className="flex items-end">
@@ -314,6 +322,7 @@ export function LocationsStep({ draft, onChange }: Props) {
       <Button
         type="button"
         variant="outline"
+        className="gap-1.5"
         onClick={() =>
           onChange({
             ...draft,
@@ -338,6 +347,7 @@ export function LocationsStep({ draft, onChange }: Props) {
           })
         }
       >
+        <Plus className="size-3.5" />
         Add location
       </Button>
     </div>

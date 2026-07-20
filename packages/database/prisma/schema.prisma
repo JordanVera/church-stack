@@ -56,6 +56,12 @@ model Church {
   timezone       String   @default("America/Chicago")
   isActive       Boolean  @default(true)
 
+  // Public social links (optional)
+  facebookUrl  String?
+  instagramUrl String?
+  youtubeUrl   String?
+  threadsUrl   String?
+
   // Feature flags (whitelabel toggles per church)
   givingEnabled   Boolean @default(true)
   eventsEnabled   Boolean @default(true)
