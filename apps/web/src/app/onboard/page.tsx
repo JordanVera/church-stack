@@ -89,11 +89,7 @@ export default function OnboardPage() {
   if (done) {
     return (
       <div className="relative overflow-hidden">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--color-brand-100)_0%,_transparent_55%),radial-gradient(ellipse_at_bottom_right,_var(--color-accent-100)_0%,_transparent_45%)] dark:bg-[radial-gradient(ellipse_at_top,_rgba(26,139,189,0.18)_0%,_transparent_55%),radial-gradient(ellipse_at_bottom_right,_rgba(132,220,207,0.12)_0%,_transparent_45%)]"
-        />
-        <div className="relative mx-auto flex min-h-[70vh] max-w-xl flex-col justify-center px-6 py-20 text-center">
+        <div className="relative mx-auto flex min-h-[70vh]  flex-col justify-center px-6 py-20 text-center">
           <motion.div
             initial={reduce ? false : { opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -105,8 +101,8 @@ export default function OnboardPage() {
             </h1>
             <p className="mt-3 text-base leading-relaxed text-ink-600 dark:text-ink-300">
               <span className="font-semibold text-ink-800 dark:text-ink-100">{done.name}</span>{' '}
-              <span className="text-ink-400">/{done.slug}</span> has been submitted. We’ll follow
-              up with your admin contacts next.
+              <span className="text-ink-400">/{done.slug}</span> has been submitted. We’ll follow up
+              with your admin contacts next.
             </p>
             <Button className="mt-8 h-11 px-6" render={<Link href="/" />}>
               Back to home
@@ -173,11 +169,6 @@ export default function OnboardPage() {
 
   return (
     <div className="relative overflow-hidden">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_10%_-10%,_var(--color-brand-100)_0%,_transparent_55%),radial-gradient(ellipse_60%_40%_at_100%_0%,_var(--color-accent-100)_0%,_transparent_50%),linear-gradient(to_bottom,_transparent,_var(--color-ink-50))] dark:bg-[radial-gradient(ellipse_80%_50%_at_10%_-10%,_rgba(26,139,189,0.2)_0%,_transparent_55%),radial-gradient(ellipse_60%_40%_at_100%_0%,_rgba(132,220,207,0.12)_0%,_transparent_50%),linear-gradient(to_bottom,_transparent,_var(--color-ink-950))]"
-      />
-
       <div className="relative mx-auto max-w-3xl px-6 py-12 sm:py-16">
         <header className="mb-10">
           <p className="text-xs font-semibold tracking-[0.22em] text-brand-600 uppercase dark:text-brand-400">
