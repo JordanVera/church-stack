@@ -4,6 +4,7 @@ import { TRPCProvider } from '@/lib/trpc-provider';
 import SessionProvider from '@/components/SessionProvider';
 import ThemeProvider from '@/components/ThemeProvider';
 import Header from '@/components/Header';
+import { Toaster } from '@/components/ui/toaster';
 import '@/styles/global.css';
 import Footer from '@/components/marketing/Footer';
 
@@ -49,6 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Header />
               <main>{children}</main>
               <Footer />
+              <Toaster />
             </TRPCProvider>
           </SessionProvider>
         </ThemeProvider>

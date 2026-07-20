@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PlanningCenterImport } from './PlanningCenterImport';
 import type { OnboardDraft } from './types';
 import { DAY_OPTIONS, newClientKey } from './types';
 
@@ -18,6 +19,7 @@ export function LocationsStep({ draft, onChange }: Props) {
       <p className="text-sm text-ink-600 dark:text-ink-300">
         Add each campus or site, optionally assign a pastor, and list weekly services.
       </p>
+      <PlanningCenterImport draft={draft} onChange={onChange} />
       {draft.locations.map((location, locIndex) => (
         <div
           key={location.key}

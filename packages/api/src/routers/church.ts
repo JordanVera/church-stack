@@ -4,6 +4,7 @@ import { toTenantBranding } from '@repo/config';
 import { router, publicProcedure, devProcedure } from '../trpc';
 import { provisionChurchWebsite } from '../provision/vercel';
 import { queueWhiteLabelBuild, setMobilePlan } from '../provision/eas';
+import { fetchCampusesWithServiceTimes } from '../planning-center/client';
 
 const slugSchema = z
   .string()
@@ -108,6 +109,32 @@ export const churchRouter = router({
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       return ctx.prisma.church.findUnique({ where: { id: input.id } });
+    }),
+
+  /**
+   * Preview-import campuses + weekly service times from Planning Center People API.
+   * Does not write to the DB — used to prefill the onboard Locations step.
+   */
+  previewPlanningCenterCampuses: publicProcedure
+    .input(
+      z.object({
+        applicationId: z.string().min(1).max(2000),
+        secret: z.string().min(1).max(2000),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const locations = await fetchCampusesWithServiceTimes(
+        input.applicationId.trim(),
+        input.secret.trim()
+      );
+      if (locations.length === 0) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message:
+            'Connected to Planning Center successfully, but no campuses were found. In Planning Center People, add at least one Campus (with optional service times), then try importing again. You can also enter locations manually below.',
+        });
+      }
+      return { locations };
     }),
 
   /** Public site payload for `apps/church-site` (branding + content). */
