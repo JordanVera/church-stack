@@ -21,10 +21,7 @@ export default function CTA() {
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(34,24,28,0.08)_1px,transparent_0)] bg-size-[28px_28px] opacity-60 dark:bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.14)_1px,transparent_0)] dark:opacity-[0.35]"
       />
-      <Particles
-        className="pointer-events-none absolute inset-0 text-brand-500 dark:text-brand-300/45"
-        density={10000}
-      />
+      <Particles className="pointer-events-none absolute inset-0" density={10000} />
 
       {!reduce && (
         <>

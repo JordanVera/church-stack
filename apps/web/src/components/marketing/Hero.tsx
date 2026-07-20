@@ -22,10 +22,7 @@ export default function Hero() {
     <section className="relative overflow-hidden bg-white pt-24 pb-14 sm:pt-28 lg:pt-20 lg:pb-10 dark:bg-ink-950">
       {/* Dotted grid + constellation particles behind everything */}
       <div className="absolute inset-0 -z-20 bg-grid text-ink-900/4 dark:text-white/5" />
-      <Particles
-        className="pointer-events-none absolute inset-0 -z-10 text-brand-500/70 dark:text-brand-300/50"
-        density={8500}
-      />
+      <Particles className="pointer-events-none absolute inset-0 -z-10" density={8500} />
 
       {/* Ambient brand glows, matching the rest of the site's language */}
       {!reduce && (
@@ -68,7 +65,7 @@ export default function Hero() {
           <Reveal delay={0.05}>
             <Badge
               variant="outline"
-              className="h-auto gap-2 rounded-full border-ink-200 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-ink-600 shadow-sm backdrop-blur-sm dark:border-ink-800 dark:bg-ink-900/60 dark:text-ink-300"
+              className="h-auto mb-2 gap-2 rounded-full border-ink-200 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-ink-600 shadow-sm backdrop-blur-sm dark:border-ink-800 dark:bg-ink-900/60 dark:text-ink-300"
             >
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-500 opacity-75" />

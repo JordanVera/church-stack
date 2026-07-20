@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import {
   Particles as TsParticles,
   ParticlesProvider,
@@ -15,53 +15,68 @@ const initParticles: ParticlesPluginRegistrar = async (engine: Engine) => {
   await loadSlim(engine);
 };
 
+const LIGHT_COLOR = '#105675'; // brand-700 — readable on pale backgrounds
+const DARK_COLOR = '#8ad0ef'; // brand-300
+
 /**
  * Soft drifting particle field powered by tsParticles (no link web).
- * Color is inherited from Tailwind `text-*` classes on `className`
- * (e.g. `text-brand-500/70 dark:text-brand-300/50`).
+ * Colors use brand theme tokens — not computed `text-*` styles — so they
+ * stay correct under Tailwind v4 (oklch / color-mix) in light and dark mode.
  */
 export default function Particles({
   className,
   density = 9000,
+  lightColor = LIGHT_COLOR,
+  darkColor = DARK_COLOR,
 }: {
   className?: string;
   density?: number;
+  /** Hex color used in light mode. */
+  lightColor?: string;
+  /** Hex color used in dark mode. */
+  darkColor?: string;
 }) {
   return (
     <ParticlesProvider init={initParticles}>
-      <ParticlesField className={className} density={density} />
+      <ParticlesField
+        className={className}
+        density={density}
+        lightColor={lightColor}
+        darkColor={darkColor}
+      />
     </ParticlesProvider>
   );
 }
 
-function ParticlesField({ className, density }: { className?: string; density: number }) {
+function ParticlesField({
+  className,
+  density,
+  lightColor,
+  darkColor,
+}: {
+  className?: string;
+  density: number;
+  lightColor: string;
+  darkColor: string;
+}) {
   const reactId = useId().replace(/:/g, '');
-  const hostRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
-  const [color, setColor] = useState('rgba(26, 139, 189, 0.7)');
+  const [isDark, setIsDark] = useState(false);
 
-  // Keep particle color in sync with theme / Tailwind text color on the host.
   useEffect(() => {
-    const el = hostRef.current;
-    if (!el) return;
-
-    const read = () => setColor(getComputedStyle(el).color);
+    const read = () => setIsDark(document.documentElement.classList.contains('dark'));
     read();
 
     const observer = new MutationObserver(read);
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['class', 'style'],
+      attributeFilter: ['class'],
     });
 
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    mq.addEventListener('change', read);
-
-    return () => {
-      observer.disconnect();
-      mq.removeEventListener('change', read);
-    };
+    return () => observer.disconnect();
   }, []);
+
+  const color = isDark ? darkColor : lightColor;
 
   const options = useMemo<ISourceOptions>(() => {
     const count = Math.min(90, Math.max(28, Math.round(700_000 / density)));
@@ -73,7 +88,9 @@ function ParticlesField({ className, density }: { className?: string; density: n
       detectRetina: true,
       pauseOnBlur: true,
       particles: {
-        color: { value: color },
+        // tsParticles v4 moved particle color under `paint.color`;
+        // the old top-level `color` key is silently ignored (defaults to white).
+        paint: { color: { value: color } },
         links: { enable: false },
         move: {
           enable: !reduce,
@@ -88,7 +105,7 @@ function ParticlesField({ className, density }: { className?: string; density: n
           value: count,
         },
         opacity: {
-          value: { min: 0.25, max: 0.75 },
+          value: isDark ? { min: 0.35, max: 0.75 } : { min: 0.55, max: 0.95 },
           animation: {
             enable: !reduce,
             speed: 0.6,
@@ -97,7 +114,7 @@ function ParticlesField({ className, density }: { className?: string; density: n
           },
         },
         shape: { type: 'circle' },
-        size: { value: { min: 1, max: 3.2 } },
+        size: { value: { min: 1.2, max: 3.4 } },
       },
       interactivity: {
         detectsOn: 'window',
@@ -118,11 +135,16 @@ function ParticlesField({ className, density }: { className?: string; density: n
         },
       },
     };
-  }, [color, density, reduce]);
+  }, [color, density, isDark, reduce]);
 
   return (
-    <div ref={hostRef} aria-hidden className={className}>
-      <TsParticles id={`particles-${reactId}`} className="h-full w-full" options={options} />
+    <div aria-hidden className={className}>
+      <TsParticles
+        key={color}
+        id={`particles-${reactId}-${isDark ? 'dark' : 'light'}`}
+        className="h-full w-full"
+        options={options}
+      />
     </div>
   );
 }
