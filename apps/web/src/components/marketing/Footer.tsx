@@ -32,7 +32,7 @@ const columns = [
 
 export default function Footer() {
   return (
-    <footer className="relative overflow-hidden bg-ink-950 pt-20 pb-10 text-white">
+    <footer className="relative overflow-hidden bg-white pt-20 pb-10 text-ink-950 dark:bg-ink-950 dark:text-white">
       <div className="mx-auto max-w-6xl px-6">
         <Stagger className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <StaggerItem>
@@ -41,9 +41,9 @@ export default function Footer() {
               alt="Church Stack"
               width={220}
               height={110}
-              className="h-24 w-auto brightness-0 invert"
+              className="h-24 w-auto brightness-0 dark:invert"
             />
-            <p className="mt-5 max-w-xs text-sm leading-relaxed text-white/50">
+            <p className="mt-5 max-w-xs text-sm leading-relaxed text-ink-500 dark:text-white/50">
               Software that empowers ministry — whitelabel iOS and Android apps for churches of
               every size.
             </p>
@@ -51,7 +51,7 @@ export default function Footer() {
 
           {columns.map((col) => (
             <StaggerItem key={col.title}>
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-white/40">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-ink-400 dark:text-white/40">
                 {col.title}
               </p>
               <nav className="mt-5 flex flex-col gap-3">
@@ -59,7 +59,7 @@ export default function Footer() {
                   <Link
                     key={l.label}
                     href={l.href}
-                    className="text-sm font-medium text-white/70 transition hover:text-white"
+                    className="text-sm font-medium text-ink-600 transition hover:text-ink-950 dark:text-white/70 dark:hover:text-white"
                   >
                     {l.label}
                   </Link>
@@ -69,7 +69,7 @@ export default function Footer() {
           ))}
         </Stagger>
 
-        <Reveal className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-xs text-white/40 sm:flex-row">
+        <Reveal className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-ink-200 pt-8 text-xs text-ink-500 sm:flex-row dark:border-white/10 dark:text-white/40">
           <p>© {new Date().getFullYear()} Church Stack. Software that empowers ministry.</p>
           <p>Made for churches, by churches.</p>
         </Reveal>
