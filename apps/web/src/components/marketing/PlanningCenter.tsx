@@ -29,12 +29,12 @@ export default function PlanningCenter() {
   return (
     <section
       id="planning-center"
-      className="relative scroll-mt-24 overflow-hidden bg-brand-50 py-28 text-ink-900 dark:bg-ink-950 dark:text-white"
+      className="relative scroll-mt-24 overflow-hidden bg-brand-50 py-12 text-ink-900 dark:bg-ink-950 dark:text-white"
     >
       {/* Atmosphere */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(26,139,189,0.18),transparent_55%),radial-gradient(ellipse_at_90%_80%,rgba(132,220,207,0.16),transparent_50%)] dark:bg-[radial-gradient(ellipse_at_20%_0%,rgba(26,139,189,0.35),transparent_55%),radial-gradient(ellipse_at_90%_80%,rgba(132,220,207,0.18),transparent_50%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(26,139,189,0.18),transparent_55%),radial-gradient(ellipse_at_90%_80%,rgba(245,176,122,0.22),transparent_50%)] dark:bg-[radial-gradient(ellipse_at_20%_0%,rgba(26,139,189,0.35),transparent_55%),radial-gradient(ellipse_at_90%_80%,rgba(245,176,122,0.2),transparent_50%)]"
       />
       <div
         aria-hidden
@@ -50,7 +50,7 @@ export default function PlanningCenter() {
           />
           <motion.div
             aria-hidden
-            className="absolute -right-16 bottom-0 h-80 w-80 rounded-full bg-accent-400/25 blur-3xl dark:bg-accent-400/15"
+            className="absolute -right-16 bottom-0 h-80 w-80 rounded-full bg-[#f5b07a]/30 blur-3xl dark:bg-[#f5b07a]/20"
             animate={{ opacity: [0.25, 0.5, 0.25], scale: [1.1, 1, 1.1] }}
             transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }}
           />
@@ -137,14 +137,14 @@ export default function PlanningCenter() {
                   />
                 </div>
 
-                <div className="mt-6 flex items-center gap-2 rounded-full border border-accent-500/30 bg-accent-100 px-3.5 py-2 dark:border-accent-400/25 dark:bg-accent-400/10">
+                <div className="mt-6 flex items-center gap-2 rounded-full border border-pink-600/30 bg-orange-100 px-3.5 py-2 dark:border-orange-400/25 dark:bg-orange-400/10">
                   {!reduce && (
                     <span className="relative flex h-1.5 w-1.5">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-600 opacity-70 dark:bg-accent-400" />
-                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent-600 dark:bg-accent-400" />
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-600 opacity-70 dark:bg-orange-400" />
+                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-orange-600 dark:bg-orange-400" />
                     </span>
                   )}
-                  <span className="text-xs font-semibold text-accent-800 dark:text-accent-200">
+                  <span className="text-xs font-semibold text-orange-600 dark:text-orange-400">
                     Live sync · update once, publish everywhere
                   </span>
                 </div>
