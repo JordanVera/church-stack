@@ -18,30 +18,36 @@ import {
 import type { ReactNode } from 'react';
 import { Reveal } from '@/components/motion';
 
-const dotGrid =
-  'bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.12)_1px,transparent_0)] bg-size-[24px_24px]';
+const dotGridLight =
+  'bg-[radial-gradient(circle_at_1px_1px,rgba(34,24,28,0.1)_1px,transparent_0)] bg-size-[24px_24px]';
+const dotGridDark =
+  'dark:bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.12)_1px,transparent_0)]';
 
 export default function BigStatement() {
   const reduce = useReducedMotion();
 
   return (
-    <section className="relative overflow-hidden bg-ink-950 py-28 text-white sm:py-36">
+    <section className="relative overflow-hidden bg-white py-12 text-ink-900  dark:bg-ink-950 dark:text-white">
       <div className="relative mx-auto max-w-6xl px-6">
         <Reveal
-          delay={0.35}
-          as="p"
-          className="mx-auto mt-6 max-w-xl text-center text-lg leading-relaxed text-white/70"
+          delay={0.2}
+          as="h2"
+          className="mx-auto mt-10 max-w-3xl text-center font-display text-4xl font-bold leading-snug tracking-tight text-brand-500 dark:text-brand-400"
         >
-          Every profile update, form submission, and gift is captured the moment it happens — no
-          exports, no manual entry, no waiting.
+          <span className="bg-gradient-to-r from-brand-500 via-accent-500 to-brand-400 bg-clip-text text-transparent">
+            Instantly see every update, form, and gift
+          </span>
+          <span className="block  text-ink-900 dark:text-white font-normal">
+            no exports, no manual entry, no waiting.
+          </span>
         </Reveal>
       </div>
 
-      <div className="relative mx-auto mt-16 grid max-w-6xl gap-6 px-4 sm:px-8 xl:grid-cols-3 xl:gap-8 xl:px-12">
+      <div className="relative mx-auto mt-16 grid gap-6 px-4 sm:px-8 xl:grid-cols-3 xl:gap-8 xl:px-12">
         {!reduce && (
           <motion.div
             aria-hidden
-            className="absolute top-1/2 z-10 hidden h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-[0_0_20px_4px_rgba(255,255,255,0.8)] xl:block"
+            className="absolute top-1/2 z-10 hidden h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-500 shadow-[0_0_20px_4px_rgba(26,139,189,0.55)] xl:block dark:bg-white dark:shadow-[0_0_20px_4px_rgba(255,255,255,0.8)]"
             initial={{ left: '2%', opacity: 0 }}
             animate={{ left: ['2%', '98%'], opacity: [0, 1, 1, 0] }}
             transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut', repeatDelay: 0.8 }}
@@ -63,6 +69,7 @@ export default function BigStatement() {
               animate={reduce ? undefined : { rotate: [-4, -2, -4], y: [0, -8, 0] }}
               transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
             >
+              {/* Phone mock stays dark in both themes */}
               <div className="overflow-hidden rounded-[1.75rem] border border-white/15 bg-ink-950 shadow-[0_24px_80px_-12px_rgba(0,0,0,0.55)] ring-1 ring-white/10">
                 <div className="flex items-center justify-between px-5 pt-4 text-[10px] font-semibold text-white/55">
                   <span>9:41</span>
@@ -109,7 +116,7 @@ export default function BigStatement() {
               animate={reduce ? undefined : { y: [0, -8, 0] }}
               transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
             >
-              <div className="overflow-hidden rounded-2xl border border-white/20 bg-white text-ink-900 shadow-[0_24px_80px_-12px_rgba(0,0,0,0.45)] ring-1 ring-white/30">
+              <div className="overflow-hidden rounded-2xl border border-ink-200 bg-white text-ink-900 shadow-[0_24px_80px_-12px_rgba(0,0,0,0.18)] ring-1 ring-ink-100 dark:border-white/20 dark:shadow-[0_24px_80px_-12px_rgba(0,0,0,0.45)] dark:ring-white/30">
                 <div className="flex items-center gap-2 border-b border-ink-100 bg-ink-50/80 px-4 py-2.5">
                   <span className="h-2.5 w-2.5 rounded-full bg-red-400/90" />
                   <span className="h-2.5 w-2.5 rounded-full bg-amber-400/90" />
@@ -194,18 +201,23 @@ function StatementCard({
 
   return (
     <div
-      className={`relative flex h-[640px] flex-col overflow-hidden rounded-[2rem] border p-8 sm:p-10 ${
+      className={`relative flex h-[640px] flex-col overflow-hidden rounded-[2rem] border p-8 shadow-xl sm:p-10 ${
         isBrand
-          ? 'border-brand-400/25 bg-linear-to-br from-brand-700 via-brand-800 to-ink-950'
-          : 'border-accent-400/25 bg-linear-to-br from-accent-700/90 via-brand-800 to-ink-950'
+          ? 'border-brand-300 bg-linear-to-br from-brand-200 via-brand-100 to-brand-50 shadow-brand-500/15 dark:border-brand-400/25 dark:from-brand-700 dark:via-brand-800 dark:to-ink-950 dark:shadow-none'
+          : 'border-accent-300 bg-linear-to-br from-accent-200 via-accent-100 to-brand-50 shadow-accent-500/20 dark:border-accent-400/25 dark:from-accent-700/90 dark:via-brand-800 dark:to-ink-950 dark:shadow-none'
       }`}
     >
-      <div aria-hidden className={`pointer-events-none absolute inset-0 opacity-40 ${dotGrid}`} />
+      <div
+        aria-hidden
+        className={`pointer-events-none absolute inset-0 opacity-40 dark:opacity-40 ${dotGridLight} ${dotGridDark}`}
+      />
       {!reduce && (
         <div
           aria-hidden
-          className={`pointer-events-none absolute -right-16 top-1/4 h-48 w-48 rounded-full blur-3xl ${
-            isBrand ? 'bg-brand-400/30' : 'bg-accent-400/25'
+          className={`pointer-events-none absolute -right-16 top-1/4 h-56 w-56 rounded-full blur-3xl ${
+            isBrand
+              ? 'bg-brand-400/45 dark:bg-brand-400/30'
+              : 'bg-accent-400/40 dark:bg-accent-400/25'
           }`}
         />
       )}
@@ -214,24 +226,26 @@ function StatementCard({
         <div>
           <div className="flex items-center gap-3">
             <div
-              className={`flex h-11 w-11 items-center justify-center rounded-2xl shadow-lg ring-1 ring-white/20 ${
-                isBrand ? 'bg-white/95 text-brand-600' : 'bg-white/95 text-accent-700'
+              className={`flex h-11 w-11 items-center justify-center rounded-2xl shadow-lg ring-1 ${
+                isBrand
+                  ? 'bg-white text-brand-600 ring-brand-200 dark:bg-white/95 dark:ring-white/20'
+                  : 'bg-white text-accent-700 ring-accent-200 dark:bg-white/95 dark:ring-white/20'
               }`}
             >
               <Icon className="h-5 w-5" strokeWidth={2} />
             </div>
-            <span className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
+            <span className="font-display text-2xl font-bold tracking-tight text-ink-900 sm:text-3xl dark:text-white">
               {title}
             </span>
           </div>
-          <p className="mt-2 text-base font-medium text-white/75">{subtitle}</p>
+          <p className="mt-2 text-base font-medium text-ink-600 dark:text-white/75">{subtitle}</p>
         </div>
 
-        <div className="shrink-0 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-white/90 backdrop-blur-sm">
+        <div className="shrink-0 rounded-full border border-ink-200 bg-white/80 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-ink-700 backdrop-blur-sm dark:border-white/15 dark:bg-white/10 dark:text-white/90">
           {!reduce && (
             <span className="relative mr-2 inline-flex h-1.5 w-1.5 align-middle">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-60" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-500 opacity-60 dark:bg-white" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand-500 dark:bg-white" />
             </span>
           )}
           {syncLabel}
@@ -265,11 +279,7 @@ function Field({
       }`}
     >
       <p className="text-[9px] font-semibold uppercase tracking-wider text-white/45">{label}</p>
-      <p
-        className={`font-semibold text-white ${compact ? 'text-xs' : 'text-sm'} ${
-          active ? 'mt-0.5' : 'mt-0.5'
-        }`}
-      >
+      <p className={`mt-0.5 font-semibold text-white ${compact ? 'text-xs' : 'text-sm'}`}>
         {value}
         {active && !reduce && (
           <motion.span
