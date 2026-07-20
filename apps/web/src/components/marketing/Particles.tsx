@@ -42,7 +42,7 @@ export default function Particles({
 
     const toRgba = (color: string, alpha: number) => {
       const nums = color.match(/[\d.]+/g);
-      if (!nums) return `rgba(239, 98, 108, ${alpha})`;
+      if (!nums) return `rgba(26, 139, 189, ${alpha})`;
       const [r, g, b] = nums;
       return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     };

@@ -162,7 +162,7 @@ export default function BigStatement() {
                 <HelpCircle className="h-5 w-5 text-ink-400" />
                 <span className="relative">
                   <Bell className="h-5 w-5 text-ink-400" />
-                  <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-brand-600" />
+                  <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-red-500" />
                 </span>
                 <MessageSquare className="h-5 w-5 text-ink-400" />
                 <ClipboardList className="h-5 w-5 text-ink-400" />

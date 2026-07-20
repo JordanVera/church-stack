@@ -58,8 +58,8 @@ export default function AppPreviewCard() {
         <div className="mt-5 space-y-2.5 px-4 pb-6">
           <div className="flex items-center gap-3 rounded-2xl bg-white/5 p-3">
             <span className="relative flex h-2 w-2 shrink-0">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-500 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-500" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
             </span>
             <p className="text-xs font-semibold uppercase tracking-wide text-white/80">
               Live now &middot; Sunday Service

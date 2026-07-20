@@ -12,20 +12,20 @@
   --font-display: var(--font-display), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   --font-hero: var(--font-hero), var(--font-display), sans-serif;
 
-  /* Brand — coral drawn from the Church Stack palette. */
-  --color-brand-50: #fef1f2;
-  --color-brand-100: #fcdfe1;
-  --color-brand-200: #f8babe;
-  --color-brand-300: #f3878e;
-  --color-brand-400: #ed4f5a;
-  --color-brand-500: #ef626c;
-  --color-brand-600: #e92533;
-  --color-brand-700: #be131f;
-  --color-brand-800: #8d0e17;
-  --color-brand-900: #620a10;
-  --color-brand-950: #3d060a;
+  /* Brand — azure blue sampled from the Church Stack logo. */
+  --color-brand-50: #f2fafd;
+  --color-brand-100: #e0f2fb;
+  --color-brand-200: #bce4f6;
+  --color-brand-300: #8ad0ef;
+  --color-brand-400: #55bae8;
+  --color-brand-500: #1a8bbd;
+  --color-brand-600: #156f97;
+  --color-brand-700: #105675;
+  --color-brand-800: #0c4057;
+  --color-brand-900: #082c3c;
+  --color-brand-950: #051c26;
 
-  /* Accent — mint, the cool counterpoint to the coral brand. */
+  /* Accent — mint, the cool counterpoint to the blue brand. */
   --color-accent-50: #f3fcfa;
   --color-accent-100: #e3f7f4;
   --color-accent-200: #c3eee8;
@@ -71,9 +71,9 @@
   --popover-foreground:
     var(--color-ink-950);
   --primary:
-    var(--color-brand-500);
+    var(--color-brand-600);
   --primary-foreground:
-    var(--color-ink-950);
+    #ffffff;
   --secondary:
     var(--color-ink-100);
   --secondary-foreground:
@@ -87,7 +87,7 @@
   --accent-foreground:
     var(--color-ink-950);
   --destructive:
-    var(--color-brand-700);
+    #dc2626;
   --border:
     var(--color-ink-200);
   --input:
@@ -111,9 +111,9 @@
   --sidebar-foreground:
     var(--color-ink-950);
   --sidebar-primary:
-    var(--color-brand-500);
+    var(--color-brand-600);
   --sidebar-primary-foreground:
-    var(--color-ink-950);
+    #ffffff;
   --sidebar-accent:
     var(--color-ink-100);
   --sidebar-accent-foreground:
@@ -139,7 +139,7 @@
   --popover-foreground:
     var(--color-ink-50);
   --primary:
-    var(--color-brand-500);
+    var(--color-brand-400);
   --primary-foreground:
     var(--color-ink-950);
   --secondary:
@@ -155,7 +155,7 @@
   --accent-foreground:
     var(--color-accent-300);
   --destructive:
-    var(--color-brand-400);
+    #f87171;
   --border:
     oklch(1 0 0 / 10%);
   --input:
@@ -177,7 +177,7 @@
   --sidebar-foreground:
     var(--color-ink-50);
   --sidebar-primary:
-    var(--color-brand-500);
+    var(--color-brand-400);
   --sidebar-primary-foreground:
     var(--color-ink-950);
   --sidebar-accent:

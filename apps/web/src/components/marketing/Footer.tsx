@@ -41,7 +41,7 @@ export default function Footer() {
               alt="Church Stack"
               width={220}
               height={110}
-              className="h-11 w-auto brightness-0 invert"
+              className="h-24 w-auto brightness-0 invert"
             />
             <p className="mt-5 max-w-xs text-sm leading-relaxed text-white/50">
               Software that empowers ministry — whitelabel iOS and Android apps for churches of

@@ -22,7 +22,7 @@ export default function SelectChurch() {
       <Text style={styles.subtitle}>Select your church to personalize the app.</Text>
 
       {churches.isLoading ? (
-        <ActivityIndicator style={{ marginTop: 40 }} color="#ef626c" />
+        <ActivityIndicator style={{ marginTop: 40 }} color="#1a8bbd" />
       ) : churches.error ? (
         <Text style={styles.error}>
           Could not load churches. Is the API running at the configured URL?
