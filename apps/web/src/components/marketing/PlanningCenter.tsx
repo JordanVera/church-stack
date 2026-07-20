@@ -29,42 +29,16 @@ export default function PlanningCenter() {
   return (
     <section
       id="planning-center"
-      className="relative scroll-mt-24 overflow-hidden bg-brand-50 py-12 text-ink-900 dark:bg-ink-950 dark:text-white"
+      className="relative scroll-mt-24 overflow-hidden bg-brand-50 pt-12 pb-24 text-ink-900 dark:bg-ink-950 dark:text-white"
     >
-      {/* Atmosphere */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(26,139,189,0.18),transparent_55%),radial-gradient(ellipse_at_90%_80%,rgba(245,176,122,0.22),transparent_50%)] dark:bg-[radial-gradient(ellipse_at_20%_0%,rgba(26,139,189,0.35),transparent_55%),radial-gradient(ellipse_at_90%_80%,rgba(245,176,122,0.2),transparent_50%)]"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(34,24,28,0.08)_1px,transparent_0)] bg-size-[28px_28px] opacity-60 dark:bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.14)_1px,transparent_0)] dark:opacity-[0.35]"
-      />
-      {!reduce && (
-        <>
-          <motion.div
-            aria-hidden
-            className="absolute -left-24 top-10 h-72 w-72 rounded-full bg-brand-400/30 blur-3xl dark:bg-brand-500/25"
-            animate={{ opacity: [0.35, 0.6, 0.35], scale: [1, 1.12, 1] }}
-            transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
-          />
-          <motion.div
-            aria-hidden
-            className="absolute -right-16 bottom-0 h-80 w-80 rounded-full bg-[#f5b07a]/30 blur-3xl dark:bg-[#f5b07a]/20"
-            animate={{ opacity: [0.25, 0.5, 0.25], scale: [1.1, 1, 1.1] }}
-            transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }}
-          />
-        </>
-      )}
-
       <div className="relative mx-auto max-w-6xl px-6">
         <Reveal className="mx-auto max-w-3xl text-center">
+          <p className="mb-8 text-sm font-medium uppercase tracking-[0.25em] text-brand-500 dark:text-brand-300">
+            Native integration
+          </p>
           <div className="flex justify-center">
             <PlanningCenterLogo className="h-8 w-auto sm:h-10" alt="Planning Center" />
           </div>
-          <p className="mt-8 text-sm font-medium uppercase tracking-[0.25em] text-brand-500 dark:text-brand-300">
-            Native integration
-          </p>
           <h2 className="mt-4 font-display text-4xl font-bold tracking-tight text-ink-900 sm:text-5xl dark:text-white">
             Add it once in Planning Center
           </h2>

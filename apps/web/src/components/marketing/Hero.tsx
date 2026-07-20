@@ -25,7 +25,6 @@ export default function Hero() {
       <Particles
         className="pointer-events-none absolute inset-0 -z-10 text-brand-500/70 dark:text-brand-300/50"
         density={8500}
-        maxLinkDistance={130}
       />
 
       {/* Ambient brand glows, matching the rest of the site's language */}
