@@ -15,244 +15,350 @@ import {
   User,
   Users,
 } from 'lucide-react';
-import type { ReactNode } from 'react';
-import { Reveal } from '@/components/motion';
+import { LineReveal, Reveal } from '@/components/motion';
 
-const dotGridLight =
-  'bg-[radial-gradient(circle_at_1px_1px,rgba(34,24,28,0.1)_1px,transparent_0)] bg-size-[24px_24px]';
-const dotGridDark =
-  'dark:bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.12)_1px,transparent_0)]';
+const CYCLE = 4.2;
+
+const packets = [
+  { label: 'Address', delay: 0 },
+  { label: '$50 gift', delay: 1.4 },
+  { label: 'Form reply', delay: 2.8 },
+];
 
 export default function BigStatement() {
   const reduce = useReducedMotion();
 
   return (
-    <section className="relative overflow-hidden bg-white py-12 text-ink-900  dark:bg-ink-950 dark:text-white">
+    <section className="relative overflow-hidden bg-ink-950 py-18 text-white">
       <div className="relative mx-auto max-w-6xl px-6">
-        <Reveal delay={0.2} className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-medium uppercase tracking-[0.25em] text-brand-500 dark:text-brand-400">
-            Live sync
-          </p>
-          <h2 className="mt-4 font-display text-4xl font-bold tracking-tight text-ink-900 sm:text-5xl dark:text-white">
-            Instantly see every update, form, and gift
-          </h2>
-          <p className="mt-4 text-lg text-ink-600 dark:text-ink-300">
-            No exports, no manual entry, no waiting — every profile change and gift is captured the
-            moment it happens.
-          </p>
-        </Reveal>
-      </div>
+        {/* Asymmetric editorial header — type is the composition */}
+        <div className="grid items-end gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
+          <div>
+            <Reveal>
+              <p className="text-sm font-medium uppercase tracking-[0.28em] text-brand-300">
+                Live sync
+              </p>
+            </Reveal>
+            <h2 className="mt-5 font-hero text-[clamp(2.75rem,8vw,5.75rem)] leading-[0.88] tracking-tight uppercase">
+              <LineReveal>The moment</LineReveal>
+              <LineReveal delay={0.08} className="text-brand-400">
+                they tap save —
+              </LineReveal>
+              <LineReveal delay={0.16}>it&apos;s already there.</LineReveal>
+            </h2>
+          </div>
 
-      <div className="relative mx-auto mt-16 grid gap-6 px-4 sm:px-8 xl:grid-cols-3 xl:gap-8 xl:px-12">
-        {!reduce && (
-          <motion.div
-            aria-hidden
-            className="absolute top-1/2 z-10 hidden h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-500 shadow-[0_0_20px_4px_rgba(26,139,189,0.55)] xl:block dark:bg-white dark:shadow-[0_0_20px_4px_rgba(255,255,255,0.8)]"
-            initial={{ left: '2%', opacity: 0 }}
-            animate={{ left: ['2%', '98%'], opacity: [0, 1, 1, 0] }}
-            transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut', repeatDelay: 0.8 }}
-          />
-        )}
-
-        {/* Member app — where updates happen */}
-        <Reveal delay={0.1} className="xl:col-span-1">
-          <StatementCard
-            tone="brand"
-            icon={Smartphone}
-            title="your church"
-            subtitle="Updates happen here…"
-            syncLabel="Live sync"
-          >
-            <motion.div
-              className="relative mx-auto mt-8 w-full max-w-[17rem] sm:mt-10 xl:max-w-[18rem]"
-              initial={reduce ? undefined : { rotate: -4 }}
-              animate={reduce ? undefined : { rotate: [-4, -2, -4], y: [0, -8, 0] }}
-              transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
-            >
-              {/* Phone mock stays dark in both themes */}
-              <div className="overflow-hidden rounded-[1.75rem] border border-white/15 bg-ink-950 shadow-[0_24px_80px_-12px_rgba(0,0,0,0.55)] ring-1 ring-white/10">
-                <div className="flex items-center justify-between px-5 pt-4 text-[10px] font-semibold text-white/55">
-                  <span>9:41</span>
-                  <div className="flex items-center gap-1">
-                    <span className="h-1 w-3.5 rounded-full bg-white/45" />
-                    <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 px-4 pb-1 pt-3 text-white/80">
-                  <ArrowLeft className="h-4 w-4 text-white/50" strokeWidth={2} />
-                  <span className="text-sm font-semibold">Your profile</span>
-                </div>
-
-                <div className="space-y-2.5 px-4 pb-5 pt-2">
-                  <Field label="Name" value="Hannah Barnes" />
-                  <Field label="Address" value="1472 Alderwood Ln" active reduce={reduce} />
-                  <div className="grid grid-cols-3 gap-2">
-                    <Field label="City" value="Portland" compact />
-                    <Field label="State" value="OR" compact />
-                    <Field label="Zip" value="97209" compact />
-                  </div>
-                  <div className="mt-3 rounded-xl bg-brand-500 py-2.5 text-center text-xs font-bold text-white shadow-lg shadow-brand-900/40">
-                    Save changes
-                  </div>
-                </div>
+          <Reveal delay={0.25} className="lg:pb-3">
+            <p className="max-w-sm text-lg leading-relaxed text-white/60 lg:ml-auto lg:text-right">
+              Profile edits, gifts, and form replies land in your dashboard the instant they happen
+              — no exports, no paste jobs, no waiting until Monday.
+            </p>
+            {!reduce && (
+              <div className="mt-6 flex items-center gap-3 lg:justify-end">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-400 opacity-70" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-400" />
+                </span>
+                <motion.p
+                  className="font-mono text-xs tracking-[0.2em] text-brand-300 uppercase"
+                  animate={{ opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+                >
+                  Latency · 0.3s
+                </motion.p>
               </div>
-            </motion.div>
-          </StatementCard>
-        </Reveal>
+            )}
+          </Reveal>
+        </div>
 
-        {/* Admin dashboard — where it shows up */}
-        <Reveal delay={0.2} className="xl:col-span-2">
-          <StatementCard
-            tone="accent"
-            icon={LayoutDashboard}
-            title="dashboard"
-            subtitle="Shows up here."
-            syncLabel="Updated just now"
-          >
-            <motion.div
-              className="relative mx-auto mt-8 w-full max-w-lg sm:mt-10"
-              initial={reduce ? undefined : { y: 0 }}
-              animate={reduce ? undefined : { y: [0, -8, 0] }}
-              transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
+        {/* Product stage — floating UIs, no enclosing cards */}
+        <div className="relative mt-16 sm:mt-20 lg:mt-24">
+          {/* Traveling sync packets (desktop) */}
+          {!reduce && (
+            <div
+              aria-hidden
+              className="pointer-events-none absolute top-[42%] right-[8%] left-[28%] z-30 hidden h-0 lg:block"
             >
-              <div className="overflow-hidden rounded-2xl border border-ink-200 bg-white text-ink-900 shadow-[0_24px_80px_-12px_rgba(0,0,0,0.18)] ring-1 ring-ink-100 dark:border-white/20 dark:shadow-[0_24px_80px_-12px_rgba(0,0,0,0.45)] dark:ring-white/30">
-                <div className="flex items-center gap-2 border-b border-ink-100 bg-ink-50/80 px-4 py-2.5">
-                  <span className="h-2.5 w-2.5 rounded-full bg-red-400/90" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-amber-400/90" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/90" />
-                  <span className="ml-2 truncate text-[11px] font-medium text-ink-500">
-                    People · Hannah Barnes
+              <svg className="absolute inset-x-0 -top-8 h-16 w-full overflow-visible" fill="none">
+                <defs>
+                  <linearGradient id="sync-beam" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="rgba(85,186,232,0)" />
+                    <stop offset="50%" stopColor="rgba(85,186,232,0.55)" />
+                    <stop offset="100%" stopColor="rgba(245,176,122,0)" />
+                  </linearGradient>
+                </defs>
+                <path
+                  d="M0 32 C 120 8, 280 8, 400 32 S 680 56, 820 32"
+                  stroke="url(#sync-beam)"
+                  strokeWidth="1.5"
+                  strokeDasharray="6 10"
+                />
+              </svg>
+              {packets.map((p) => (
+                <motion.div
+                  key={p.label}
+                  className="absolute top-0 -translate-x-1/2 -translate-y-1/2"
+                  initial={{ left: '0%', opacity: 0, y: 0 }}
+                  animate={{
+                    left: ['0%', '100%'],
+                    opacity: [0, 1, 1, 0],
+                    y: [0, -18, 8, 0],
+                  }}
+                  transition={{
+                    duration: CYCLE,
+                    repeat: Infinity,
+                    ease: [0.4, 0, 0.2, 1],
+                    delay: p.delay,
+                    times: [0, 0.15, 0.8, 1],
+                  }}
+                >
+                  <span className="rounded-full border border-brand-300/40 bg-ink-900/90 px-3 py-1 text-[10px] font-semibold tracking-wide whitespace-nowrap text-brand-200 shadow-[0_0_24px_rgba(26,139,189,0.45)] backdrop-blur-sm">
+                    {p.label}
                   </span>
-                </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
 
-                <div className="flex min-h-[220px]">
-                  <aside className="hidden w-[4.5rem] shrink-0 flex-col items-center gap-4 border-r border-ink-100 bg-ink-50/60 py-5 sm:flex">
-                    <NavIcon icon={LayoutDashboard} />
-                    <NavIcon icon={Users} active />
-                    <NavIcon icon={ClipboardList} />
-                    <NavIcon icon={MessageSquare} />
-                    <NavIcon icon={Bell} badge />
-                  </aside>
-
-                  <div className="flex-1 p-5 sm:p-6">
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-linear-to-br from-brand-400 to-brand-600 text-sm font-bold text-white shadow-md">
-                          HB
-                        </div>
-                        <div>
-                          <p className="text-base font-semibold text-ink-900">Hannah Barnes</p>
-                          <p className="text-xs text-ink-500">Member since 2019</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1.5 rounded-lg border border-ink-200 bg-white px-2.5 py-1.5 text-xs font-medium text-ink-600 shadow-sm">
-                        Actions <ChevronDown className="h-3.5 w-3.5" />
-                      </div>
-                    </div>
-
-                    <div className="mt-5 space-y-2">
-                      <DetailRow icon={Mail} muted />
-                      <DetailRow icon={Phone} muted short />
-                      <DetailRow
-                        icon={MapPin}
-                        highlight
-                        text="1472 Alderwood Ln, Portland OR 97209"
-                      />
-                    </div>
-
-                    <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-accent-100 px-3 py-1 text-[11px] font-semibold text-accent-800">
-                      {!reduce && (
-                        <span className="relative flex h-1.5 w-1.5">
-                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-500 opacity-70" />
-                          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent-600" />
-                        </span>
-                      )}
-                      Address synced from app
-                    </div>
-                  </div>
-                </div>
+          <div className="grid items-center gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-24">
+            {/* Phone — source of truth for the member */}
+            <Reveal
+              y={40}
+              className="relative z-20 mx-auto w-full max-w-[17.5rem] lg:mx-0 lg:justify-self-end"
+            >
+              <div className="mb-4 flex justify-center lg:justify-start">
+                <span className="inline-flex items-center gap-2 rounded-full border border-brand-300/45 bg-brand-500/25 px-4 py-1.5 text-xs font-bold tracking-[0.18em] text-brand-100 uppercase shadow-[0_0_24px_rgba(26,139,189,0.3)] backdrop-blur-sm">
+                  <Smartphone className="h-3.5 w-3.5" strokeWidth={2.25} />
+                  Member app
+                </span>
               </div>
-            </motion.div>
-          </StatementCard>
-        </Reveal>
+              <motion.div
+                animate={reduce ? undefined : { y: [0, -12, 0], rotate: [-3, -1.5, -3] }}
+                transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                {!reduce && (
+                  <motion.div
+                    aria-hidden
+                    className="absolute -inset-10 rounded-[3rem] bg-brand-500/30 blur-3xl"
+                    animate={{ opacity: [0.25, 0.55, 0.25] }}
+                    transition={{ duration: CYCLE, repeat: Infinity, ease: 'easeInOut' }}
+                  />
+                )}
+                <PhoneMock reduce={reduce} />
+              </motion.div>
+            </Reveal>
+
+            {/* Dashboard — where staff see it */}
+            <Reveal delay={0.15} y={40} className="relative z-10 w-full">
+              <div className="mb-4 flex justify-center lg:justify-end">
+                <span className="inline-flex items-center gap-2 rounded-full border border-accent-300/50 bg-accent-400/25 px-4 py-1.5 text-xs font-bold tracking-[0.18em] text-accent-100 uppercase shadow-[0_0_24px_rgba(245,176,122,0.28)] backdrop-blur-sm">
+                  <LayoutDashboard className="h-3.5 w-3.5" strokeWidth={2.25} />
+                  Your dashboard
+                </span>
+              </div>
+              <motion.div
+                animate={reduce ? undefined : { y: [0, -8, 0] }}
+                transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+              >
+                {!reduce && (
+                  <motion.div
+                    aria-hidden
+                    className="absolute -inset-8 rounded-[2.5rem] bg-accent-400/20 blur-3xl"
+                    animate={{ opacity: [0.15, 0.4, 0.15] }}
+                    transition={{
+                      duration: CYCLE,
+                      repeat: Infinity,
+                      ease: 'easeInOut',
+                      delay: 1.8,
+                    }}
+                  />
+                )}
+                <DashboardMock reduce={reduce} />
+              </motion.div>
+            </Reveal>
+          </div>
+
+          {/* Mobile packet trail — vertical */}
+          {!reduce && (
+            <div
+              aria-hidden
+              className="pointer-events-none absolute top-[38%] left-1/2 z-30 flex -translate-x-1/2 flex-col items-center gap-2 lg:hidden"
+            >
+              <motion.span
+                className="rounded-full border border-brand-300/40 bg-ink-900/90 px-3 py-1 text-[10px] font-semibold text-brand-200 shadow-lg"
+                animate={{ y: [0, 48], opacity: [0, 1, 1, 0] }}
+                transition={{
+                  duration: 2.2,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  repeatDelay: 1.2,
+                }}
+              >
+                Address
+              </motion.span>
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );
 }
 
-function StatementCard({
-  tone,
-  icon: Icon,
-  title,
-  subtitle,
-  syncLabel,
-  children,
-}: {
-  tone: 'brand' | 'accent';
-  icon: typeof Smartphone;
-  title: string;
-  subtitle: string;
-  syncLabel: string;
-  children: ReactNode;
-}) {
-  const reduce = useReducedMotion();
-  const isBrand = tone === 'brand';
-
+function PhoneMock({ reduce }: { reduce: boolean | null }) {
   return (
-    <div
-      className={`relative flex h-[640px] flex-col overflow-hidden rounded-[2rem] border p-8 shadow-xl sm:p-10 ${
-        isBrand
-          ? 'border-brand-300 bg-linear-to-br from-brand-200 via-brand-100 to-brand-50 shadow-brand-500/15 dark:border-brand-400/25 dark:from-brand-700 dark:via-brand-800 dark:to-ink-950 dark:shadow-none'
-          : 'border-accent-300 bg-linear-to-br from-accent-200 via-accent-100 to-brand-50 shadow-accent-500/20 dark:border-accent-400/25 dark:from-accent-700/90 dark:via-brand-800 dark:to-ink-950 dark:shadow-none'
-      }`}
-    >
-      <div
-        aria-hidden
-        className={`pointer-events-none absolute inset-0 opacity-40 dark:opacity-40 ${dotGridLight} ${dotGridDark}`}
-      />
-      {!reduce && (
-        <div
-          aria-hidden
-          className={`pointer-events-none absolute -right-16 top-1/4 h-56 w-56 rounded-full blur-3xl ${
-            isBrand
-              ? 'bg-brand-400/45 dark:bg-brand-400/30'
-              : 'bg-accent-400/40 dark:bg-accent-400/25'
-          }`}
-        />
-      )}
-
-      <div className="relative flex items-start justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-3">
-            <div
-              className={`flex h-11 w-11 items-center justify-center rounded-2xl shadow-lg ring-1 ${
-                isBrand
-                  ? 'bg-white text-brand-600 ring-brand-200 dark:bg-white/95 dark:ring-white/20'
-                  : 'bg-white text-accent-700 ring-accent-200 dark:bg-white/95 dark:ring-white/20'
-              }`}
-            >
-              <Icon className="h-5 w-5" strokeWidth={2} />
-            </div>
-            <span className="font-display text-2xl font-bold tracking-tight text-ink-900 sm:text-3xl dark:text-white">
-              {title}
-            </span>
-          </div>
-          <p className="mt-2 text-base font-medium text-ink-600 dark:text-white/75">{subtitle}</p>
-        </div>
-
-        <div className="shrink-0 rounded-full border border-ink-200 bg-white/80 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-ink-700 backdrop-blur-sm dark:border-white/15 dark:bg-white/10 dark:text-white/90">
-          {!reduce && (
-            <span className="relative mr-2 inline-flex h-1.5 w-1.5 align-middle">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-500 opacity-60 dark:bg-white" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand-500 dark:bg-white" />
-            </span>
-          )}
-          {syncLabel}
+    <div className="relative overflow-hidden rounded-[1.85rem] border border-white/15 bg-ink-900 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.85)] ring-1 ring-white/10">
+      <div className="flex items-center justify-between px-5 pt-4 text-[10px] font-semibold text-white/50">
+        <span>9:41</span>
+        <div className="flex items-center gap-1">
+          <span className="h-1 w-3.5 rounded-full bg-white/40" />
+          <span className="h-1.5 w-1.5 rounded-full bg-white/65" />
         </div>
       </div>
 
-      <div className="relative flex flex-1 flex-col justify-end">{children}</div>
+      <div className="flex items-center gap-2 px-4 pb-1 pt-3 text-white/80">
+        <ArrowLeft className="h-4 w-4 text-white/45" strokeWidth={2} />
+        <span className="text-sm font-semibold">Your profile</span>
+      </div>
+
+      <div className="space-y-2.5 px-4 pb-5 pt-2">
+        <Field label="Name" value="Hannah Barnes" />
+        <Field label="Address" value="1472 Alderwood Ln" active reduce={reduce} />
+        <div className="grid grid-cols-3 gap-2">
+          <Field label="City" value="Portland" compact />
+          <Field label="State" value="OR" compact />
+          <Field label="Zip" value="97209" compact />
+        </div>
+        <motion.div
+          className="mt-3 rounded-xl bg-brand-500 py-2.5 text-center text-xs font-bold text-white"
+          animate={
+            reduce
+              ? undefined
+              : {
+                  scale: [1, 1.03, 1],
+                  boxShadow: [
+                    '0 0 0 0 rgba(85,186,232,0)',
+                    '0 0 0 8px rgba(85,186,232,0.25)',
+                    '0 0 0 0 rgba(85,186,232,0)',
+                  ],
+                }
+          }
+          transition={{
+            duration: CYCLE,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            times: [0, 0.12, 0.28],
+          }}
+        >
+          Save changes
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+
+function DashboardMock({ reduce }: { reduce: boolean | null }) {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-white/12 bg-white text-ink-900 shadow-[0_40px_100px_-24px_rgba(0,0,0,0.7)] ring-1 ring-white/20">
+      <div className="flex items-center gap-2 border-b border-ink-100 bg-ink-50/90 px-4 py-2.5">
+        <span className="h-2.5 w-2.5 rounded-full bg-red-400/90" />
+        <span className="h-2.5 w-2.5 rounded-full bg-amber-400/90" />
+        <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/90" />
+        <span className="ml-2 truncate text-[11px] font-medium text-ink-500">
+          People · Hannah Barnes
+        </span>
+        {!reduce && (
+          <motion.span
+            className="ml-auto rounded-full bg-accent-100 px-2 py-0.5 text-[9px] font-bold tracking-wide text-accent-800 uppercase"
+            animate={{ opacity: [0.4, 1, 1, 0.4], scale: [0.96, 1.05, 1, 0.96] }}
+            transition={{
+              duration: CYCLE,
+              repeat: Infinity,
+              ease: 'easeInOut',
+              times: [0, 0.55, 0.7, 1],
+              delay: 1.6,
+            }}
+          >
+            Just now
+          </motion.span>
+        )}
+      </div>
+
+      <div className="flex min-h-[220px]">
+        <aside className="hidden w-[4.5rem] shrink-0 flex-col items-center gap-4 border-r border-ink-100 bg-ink-50/70 py-5 sm:flex">
+          <NavIcon icon={LayoutDashboard} />
+          <NavIcon icon={Users} active />
+          <NavIcon icon={ClipboardList} />
+          <NavIcon icon={MessageSquare} />
+          <NavIcon icon={Bell} badge />
+        </aside>
+
+        <div className="flex-1 p-5 sm:p-6">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-linear-to-br from-brand-400 to-brand-600 text-sm font-bold text-white shadow-md">
+                HB
+              </div>
+              <div>
+                <p className="text-base font-semibold text-ink-900">Hannah Barnes</p>
+                <p className="text-xs text-ink-500">Member since 2019</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 rounded-lg border border-ink-200 bg-white px-2.5 py-1.5 text-xs font-medium text-ink-600 shadow-sm">
+              Actions <ChevronDown className="h-3.5 w-3.5" />
+            </div>
+          </div>
+
+          <div className="mt-5 space-y-2">
+            <DetailRow icon={Mail} />
+            <DetailRow icon={Phone} short />
+            <motion.div
+              className="flex items-start gap-3 rounded-xl border border-accent-300/80 bg-accent-50 px-3 py-2.5"
+              animate={
+                reduce
+                  ? undefined
+                  : {
+                      boxShadow: [
+                        '0 0 0 0 rgba(245,176,122,0)',
+                        '0 0 0 6px rgba(245,176,122,0.3)',
+                        '0 0 0 0 rgba(245,176,122,0)',
+                      ],
+                    }
+              }
+              transition={{
+                duration: CYCLE,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                delay: 1.7,
+                times: [0, 0.2, 0.45],
+              }}
+            >
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent-700" />
+              <p className="text-sm font-semibold text-ink-800">
+                1472 Alderwood Ln, Portland OR 97209
+              </p>
+            </motion.div>
+          </div>
+
+          <motion.div
+            className="mt-4 inline-flex items-center gap-2 rounded-full bg-ink-900 px-3 py-1 text-[11px] font-semibold text-white"
+            animate={
+              reduce
+                ? undefined
+                : { opacity: [0, 1, 1, 0], y: [6, 0, 0, 0], scale: [0.95, 1.02, 1, 1] }
+            }
+            transition={{
+              duration: CYCLE,
+              repeat: Infinity,
+              ease: 'easeInOut',
+              times: [0, 0.55, 0.85, 1],
+              delay: 1.65,
+            }}
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-brand-400" />
+            Synced from app
+          </motion.div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -271,14 +377,30 @@ function Field({
   reduce?: boolean | null;
 }) {
   return (
-    <div
-      className={`rounded-xl border px-3 transition-colors ${compact ? 'py-2' : 'py-2.5'} ${
+    <motion.div
+      className={`rounded-xl border px-3 ${compact ? 'py-2' : 'py-2.5'} ${
         active
-          ? 'border-brand-400/70 bg-brand-500/15 ring-2 ring-brand-400/35'
+          ? 'border-brand-400/70 bg-brand-500/15 ring-2 ring-brand-400/30'
           : 'border-white/10 bg-white/5'
       }`}
+      animate={
+        active && !reduce
+          ? {
+              boxShadow: [
+                '0 0 0 0 rgba(85,186,232,0)',
+                '0 0 0 4px rgba(85,186,232,0.3)',
+                '0 0 0 0 rgba(85,186,232,0)',
+              ],
+            }
+          : undefined
+      }
+      transition={
+        active && !reduce
+          ? { duration: CYCLE, repeat: Infinity, ease: 'easeInOut', times: [0, 0.15, 0.35] }
+          : undefined
+      }
     >
-      <p className="text-[9px] font-semibold uppercase tracking-wider text-white/45">{label}</p>
+      <p className="text-[9px] font-semibold tracking-wider text-white/40 uppercase">{label}</p>
       <p className={`mt-0.5 font-semibold text-white ${compact ? 'text-xs' : 'text-sm'}`}>
         {value}
         {active && !reduce && (
@@ -290,7 +412,7 @@ function Field({
           />
         )}
       </p>
-    </div>
+    </motion.div>
   );
 }
 
@@ -306,10 +428,8 @@ function NavIcon({
   return (
     <span className="relative">
       <span
-        className={`flex h-9 w-9 items-center justify-center rounded-xl transition-colors ${
-          active
-            ? 'bg-brand-500 text-white shadow-md shadow-brand-600/30'
-            : 'text-ink-400 hover:bg-ink-100'
+        className={`flex h-9 w-9 items-center justify-center rounded-xl ${
+          active ? 'bg-brand-500 text-white shadow-md shadow-brand-600/30' : 'text-ink-400'
         }`}
       >
         <Icon className="h-4 w-4" strokeWidth={2} />
@@ -321,28 +441,7 @@ function NavIcon({
   );
 }
 
-function DetailRow({
-  icon: Icon,
-  text,
-  muted,
-  short,
-  highlight,
-}: {
-  icon: typeof Mail;
-  text?: string;
-  muted?: boolean;
-  short?: boolean;
-  highlight?: boolean;
-}) {
-  if (highlight) {
-    return (
-      <div className="flex items-start gap-3 rounded-xl border border-accent-300/80 bg-accent-50 px-3 py-2.5 shadow-sm">
-        <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent-700" />
-        <p className="text-sm font-semibold text-ink-800">{text}</p>
-      </div>
-    );
-  }
-
+function DetailRow({ icon: Icon, short }: { icon: typeof Mail; short?: boolean }) {
   return (
     <div className="flex items-center gap-3 rounded-lg px-1 py-1 text-sm text-ink-500">
       <Icon className="h-4 w-4 shrink-0 text-ink-400" />
