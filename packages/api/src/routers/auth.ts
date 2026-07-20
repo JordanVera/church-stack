@@ -2,6 +2,7 @@ import { z } from 'zod';
 import bcrypt from 'bcryptjs';
 import { TRPCError } from '@trpc/server';
 import { router, publicProcedure, protectedProcedure } from '../trpc';
+import { isPlatformDev } from '../platform-dev';
 
 export const authRouter = router({
   // Register a new user and optionally attach them to a church as a MEMBER.
@@ -43,7 +44,7 @@ export const authRouter = router({
   // Current user + the churches they belong to.
   me: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.session.user!.id;
-    return ctx.prisma.user.findUnique({
+    const user = await ctx.prisma.user.findUnique({
       where: { id: userId },
       select: {
         id: true,
@@ -58,5 +59,10 @@ export const authRouter = router({
         },
       },
     });
+    if (!user) return null;
+    return {
+      ...user,
+      isDev: isPlatformDev(user.email),
+    };
   }),
 });

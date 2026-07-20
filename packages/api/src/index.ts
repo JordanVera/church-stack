@@ -9,10 +9,12 @@ export {
   router,
   publicProcedure,
   protectedProcedure,
+  devProcedure,
   tenantProcedure,
   middleware,
   createCallerFactory,
 } from './trpc';
+export { isPlatformDev } from './platform-dev';
 
 /** Server-side caller (useful for RSC / scripts). */
 export const createCaller = createCallerFactory(appRouter);

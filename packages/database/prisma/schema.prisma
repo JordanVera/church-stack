@@ -19,6 +19,28 @@ enum MembershipRole {
   MEMBER
 }
 
+enum WebsiteStatus {
+  NONE
+  PENDING
+  DEPLOYING
+  LIVE
+  FAILED
+}
+
+enum MobilePlan {
+  SHARED
+  WHITELABEL
+}
+
+enum MobileBuildStatus {
+  NONE
+  QUEUED
+  BUILDING
+  SUBMITTED
+  LIVE
+  FAILED
+}
+
 // Tenant + its whitelabel branding.
 model Church {
   id             String   @id @default(cuid())
@@ -38,6 +60,21 @@ model Church {
   givingEnabled   Boolean @default(true)
   eventsEnabled   Boolean @default(true)
   sermonsEnabled  Boolean @default(true)
+
+  // Website provisioning (per-church Next.js / Vercel project)
+  websiteStatus       WebsiteStatus @default(NONE)
+  websiteUrl          String?
+  customDomain        String?
+  vercelProjectId     String?
+  vercelDeploymentId  String?
+
+  // Mobile: shared App Store app by default; white-label EAS for paid tier
+  mobilePlan         MobilePlan        @default(SHARED)
+  mobileBuildStatus  MobileBuildStatus @default(NONE)
+
+  // Optional Planning Center Personal Access Token credentials
+  planningCenterApiKey    String? @db.Text
+  planningCenterSecretKey String? @db.Text
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

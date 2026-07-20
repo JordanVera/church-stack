@@ -42,6 +42,15 @@ export default function DashboardPage() {
           <p className="mt-1 text-ink-600 dark:text-ink-300">Signed in as {me.data?.email}</p>
         </div>
         <div className="flex items-center gap-2">
+          {me.data?.isDev ? (
+            <Button
+              variant="outline"
+              className="border-ink-300 text-sm font-medium text-ink-700 dark:border-ink-700 dark:bg-transparent dark:text-ink-200 dark:hover:bg-ink-800"
+              render={<Link href="/dev" />}
+            >
+              Dev
+            </Button>
+          ) : null}
           {me.data?.isAdmin ? (
             <Button
               variant="outline"

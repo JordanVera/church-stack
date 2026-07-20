@@ -6,10 +6,11 @@ A Turborepo monorepo for building and shipping whitelabel apps for small-to-medi
 
 ```
 apps/
-  web/       Next.js 16 marketing site + tRPC HTTP handler + next-auth
-  native/    Expo (expo-router) mobile app with runtime tenant theming
+  web/          Next.js 16 platform (marketing, auth, /admin, /dev, tRPC)
+  church-site/  Per-church Next.js public site template (one Vercel project each)
+  native/       Expo mobile app — shared picker by default, EAS white-label optional
 packages/
-  api/               Shared tRPC router + context (consumed by web and native)
+  api/               Shared tRPC router + context + provision helpers
   database/          Prisma client + multi-tenant MySQL schema + seed
   config/            Shared whitelabel/tenant branding types and defaults
   typescript-config/ Shared tsconfig presets
@@ -18,12 +19,16 @@ packages/
 ## Architecture
 
 - **Shared API** – The tRPC router lives in `@repo/api` and is imported by both `apps/web`
-  (which hosts the HTTP handler at `/api/trpc`) and `apps/native` (which calls it over HTTP).
+  (which hosts the HTTP handler at `/api/trpc`) and `apps/native` / `apps/church-site`
+  (which call it over HTTP).
 - **Multi-tenant backend** – Every domain row is keyed by `churchId`. A `Church` row holds
-  each tenant's branding (name, colors, logo).
-- **Hybrid whitelabel** – The native app resolves its tenant at runtime (church picker), but
-  reads an `EXPO_PUBLIC_TENANT` hook first, so a per-church branded EAS build can be produced
-  later by only setting env/config, without code changes.
+  each tenant's branding (name, colors, logo) plus website/mobile provisioning state.
+- **Websites** – Separate Next.js deploy per church from `apps/church-site`, locked via
+  `CHURCH_SLUG`. Provision from `/dev` when Vercel credentials are set.
+- **Hybrid mobile** – Shared App Store app by default; white-label EAS builds (`eas.json`
+  profile `whitelabel`) for paid churches. See [`apps/native/WHITELABEL.md`](apps/native/WHITELABEL.md).
+- **`/dev` console** – Engineer tools gated by `PLATFORM_DEV_EMAILS` (no DB flag). Product
+  ops stay on `/admin` via `User.isAdmin`.
 
 ## Getting started
 
@@ -53,7 +58,8 @@ packages/
    npm run dev
    ```
 
-   - Web: http://localhost:3000
+   - Web (platform): http://localhost:3000
+   - Church site template: `npm run dev --workspace=church-site` → http://localhost:3001?slug=grace
    - Native: press `w`/`i`/`a` in the Expo CLI, or scan the QR code.
 
 ## Useful scripts
@@ -69,9 +75,22 @@ packages/
 
 ## Whitelabel / tenant resolution
 
-- **Web** is the neutral SaaS marketing brand (not per-church).
+- **Web (`apps/web`)** is the neutral SaaS platform brand (not per-church).
+- **Church site (`apps/church-site`)** resolves tenant from `CHURCH_SLUG` (or `?slug=` locally).
 - **Native** resolves a tenant slug in this order:
-  1. `EXPO_PUBLIC_TENANT` (build-time — used for per-church store builds later)
+  1. `EXPO_PUBLIC_TENANT` (build-time — used for per-church store builds)
   2. A previously selected church (persisted)
   3. The in-app church picker
   Once resolved, it fetches `church.getBranding` and themes the whole app via `TenantProvider`.
+
+## /dev access
+
+Set in `.env`:
+
+```bash
+PLATFORM_DEV_EMAILS="you@example.com"
+# Or for local only when the list is empty:
+ALLOW_DEV_CONSOLE=true
+```
+
+Sign in with a matching email, then open http://localhost:3000/dev

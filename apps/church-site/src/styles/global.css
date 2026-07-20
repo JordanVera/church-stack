@@ -1,0 +1,25 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
+  --font-display: Georgia, 'Times New Roman', serif;
+}
+
+:root {
+  --church-primary: #1a8bbd;
+  --church-secondary: #84dccf;
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: #1c1917;
+  background: #fafaf9;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
