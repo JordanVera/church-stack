@@ -18,6 +18,7 @@ export { isPlatformDev } from './platform-dev';
 export { applyStripeSubscriptionToChurch } from './routers/billing';
 export { getStripe, isStripeConfigured, planTierForPriceId } from './billing/stripe';
 export { churchDefaultsForPlanTier } from './plans';
+export { provisionChurchWebsite } from './provision/vercel';
 
 /** Server-side caller (useful for RSC / scripts). */
 export const createCaller = createCallerFactory(appRouter);

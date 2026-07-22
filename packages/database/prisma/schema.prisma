@@ -78,6 +78,8 @@ model Church {
   // Product plan + feature flags (whitelabel toggles per church)
   planTier        PlanTier @default(SITE)
   givingEnabled   Boolean  @default(false)
+  /// External giving link (Tithe.ly, Pushpay, etc.). Public Give UI only when set.
+  givingUrl       String?
   eventsEnabled   Boolean  @default(true)
   sermonsEnabled  Boolean  @default(true)
 

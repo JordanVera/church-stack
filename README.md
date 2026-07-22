@@ -17,6 +17,8 @@ packages/
   typescript-config/ Shared tsconfig presets
 docs/
   custom-site-delivery.md
+  positioning.md         Competitive positioning & ICP matrices
+  fulfillment-checklist.md  Post-checkout ops runbook (dogfood)
 ```
 
 ## Architecture
@@ -72,14 +74,14 @@ docs/
 
 ## Useful scripts
 
-| Command             | Description                                     |
-| ------------------- | ----------------------------------------------- |
-| `npm run dev`       | Run web + native + package watchers via Turbo   |
-| `npm run build`     | Build all apps/packages                         |
-| `npm run db:push`   | Push the Prisma schema to the database          |
-| `npm run db:seed`   | Seed demo churches + owner users                |
-| `npm run db:studio` | Open Prisma Studio                              |
-| `npm run format`    | Prettier across the repo                        |
+| Command             | Description                                   |
+| ------------------- | --------------------------------------------- |
+| `npm run dev`       | Run web + native + package watchers via Turbo |
+| `npm run build`     | Build all apps/packages                       |
+| `npm run db:push`   | Push the Prisma schema to the database        |
+| `npm run db:seed`   | Seed demo churches + owner users              |
+| `npm run db:studio` | Open Prisma Studio                            |
+| `npm run format`    | Prettier across the repo                      |
 
 ## Whitelabel / tenant resolution
 
@@ -89,7 +91,7 @@ docs/
   1. `EXPO_PUBLIC_TENANT` (build-time — used for per-church store builds)
   2. A previously selected church (persisted)
   3. The in-app church picker
-  Once resolved, it fetches `church.getBranding` and themes the whole app via `TenantProvider`.
+     Once resolved, it fetches `church.getBranding` and themes the whole app via `TenantProvider`.
 
 ## /dev access
 

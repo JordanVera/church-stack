@@ -31,6 +31,9 @@ export type OnboardDraft = {
   instagramUrl: string;
   youtubeUrl: string;
   threadsUrl: string;
+  /** Set when Planning Center import succeeds; persisted on church.create via onboard. */
+  planningCenterApiKey: string | null;
+  planningCenterSecretKey: string | null;
   pastors: OnboardPastor[];
   locations: OnboardLocation[];
 };
@@ -76,6 +79,8 @@ export function createInitialDraft(): OnboardDraft {
     instagramUrl: '',
     youtubeUrl: '',
     threadsUrl: '',
+    planningCenterApiKey: null,
+    planningCenterSecretKey: null,
     pastors: [
       {
         clientKey: newClientKey('pastor'),

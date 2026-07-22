@@ -22,6 +22,7 @@ async function main() {
       timezone: 'America/Chicago',
       planTier: PlanTier.SITE,
       givingEnabled: false,
+      givingUrl: null as string | null,
       // Typical new church: white-label mobile, site not provisioned yet
       websiteStatus: WebsiteStatus.NONE,
       websiteUrl: null as string | null,
@@ -42,6 +43,7 @@ async function main() {
       timezone: 'America/Denver',
       planTier: PlanTier.GROWTH,
       givingEnabled: true,
+      givingUrl: 'https://example.com/give/hillside' as string | null,
       // Demo of a paid white-label path + local site preview URL
       websiteStatus: WebsiteStatus.LIVE,
       websiteUrl: 'http://localhost:3001?slug=hillside',
@@ -82,6 +84,7 @@ async function main() {
       isActive: true,
       planTier: c.planTier,
       givingEnabled: c.givingEnabled,
+      givingUrl: c.givingUrl,
       eventsEnabled: true,
       sermonsEnabled: true,
       websiteStatus: c.websiteStatus,

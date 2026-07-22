@@ -54,7 +54,20 @@ export const authRouter = router({
         memberships: {
           select: {
             role: true,
-            church: { select: { id: true, slug: true, name: true } },
+            church: {
+              select: {
+                id: true,
+                slug: true,
+                name: true,
+                planTier: true,
+                websiteStatus: true,
+                websiteUrl: true,
+                givingUrl: true,
+                customDomain: true,
+                mobilePlan: true,
+                mobileBuildStatus: true,
+              },
+            },
           },
         },
       },

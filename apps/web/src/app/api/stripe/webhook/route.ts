@@ -1,5 +1,6 @@
 import { prisma } from '@repo/database';
-import { applyStripeSubscriptionToChurch, getStripe } from '@repo/api';
+import { getPlan } from '@repo/config';
+import { applyStripeSubscriptionToChurch, getStripe, provisionChurchWebsite } from '@repo/api';
 import type Stripe from 'stripe';
 
 export const runtime = 'nodejs';
@@ -16,6 +17,27 @@ function churchIdFromMetadata(
 ): string | null {
   const id = metadata?.churchId;
   return typeof id === 'string' && id.length > 0 ? id : null;
+}
+
+async function maybeAutoProvisionWebsite(churchId: string) {
+  try {
+    const church = await prisma.church.findUnique({ where: { id: churchId } });
+    if (!church) return;
+
+    const needsProvision =
+      church.websiteStatus === 'NONE' ||
+      (church.websiteStatus === 'FAILED' && !church.vercelProjectId);
+    if (!needsProvision) return;
+
+    if (!getPlan(church.planTier).entitlements.whiteLabelSite) return;
+
+    const result = await provisionChurchWebsite(prisma, church);
+    if (!result.ok) {
+      console.error('[stripe webhook] auto-provision failed:', result.error);
+    }
+  } catch (err) {
+    console.error('[stripe webhook] auto-provision error', err);
+  }
 }
 
 export async function POST(req: Request) {
@@ -61,7 +83,7 @@ export async function POST(req: Request) {
           priceFromTierEnv = process.env.STRIPE_PRICE_CUSTOM ?? null;
         const resolvedPriceId = priceId ?? priceFromTierEnv;
 
-        await applyStripeSubscriptionToChurch(prisma, {
+        const churchId = await applyStripeSubscriptionToChurch(prisma, {
           churchId: churchIdFromMetadata(session.metadata),
           customerId:
             typeof session.customer === 'string' ? session.customer : session.customer?.id,
@@ -69,6 +91,10 @@ export async function POST(req: Request) {
           priceId: resolvedPriceId,
           status: subscription.status,
         });
+
+        if (churchId) {
+          await maybeAutoProvisionWebsite(churchId);
+        }
         break;
       }
       case 'customer.subscription.updated':

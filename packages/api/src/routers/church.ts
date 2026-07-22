@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { planTierDefaults, toTenantBranding } from '@repo/config';
-import { router, publicProcedure, devProcedure } from '../trpc';
+import { planAllowsGiving, planTierDefaults, toTenantBranding } from '@repo/config';
+import { router, publicProcedure, protectedProcedure, devProcedure } from '../trpc';
+import { isPlatformDev } from '../platform-dev';
 import {
   attachCustomDomainToProject,
   provisionChurchWebsite,
@@ -18,32 +19,6 @@ const slugSchema = z
   .max(48)
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be lowercase letters, numbers, and hyphens');
 
-const churchCreateInput = z.object({
-  slug: slugSchema,
-  name: z.string().min(1).max(120),
-  tagline: z.string().max(200).optional().nullable(),
-  logoUrl: z.string().url().optional().nullable(),
-  primaryColor: z.string().min(4).max(9).optional(),
-  secondaryColor: z.string().min(4).max(9).optional(),
-  contactEmail: z.string().email().optional().nullable(),
-  phone: z.string().max(40).optional().nullable(),
-  address: z.string().max(300).optional().nullable(),
-  timezone: z.string().min(1).optional(),
-  planTier: planTierSchema.optional(),
-  givingEnabled: z.boolean().optional(),
-  eventsEnabled: z.boolean().optional(),
-  sermonsEnabled: z.boolean().optional(),
-  isActive: z.boolean().optional(),
-  ownerEmail: z.string().email().optional().nullable(),
-  planningCenterApiKey: z.string().max(2000).optional().nullable(),
-  planningCenterSecretKey: z.string().max(2000).optional().nullable(),
-});
-
-const churchUpdateInput = churchCreateInput.partial().extend({
-  id: z.string().min(1),
-  customDomain: z.string().max(253).optional().nullable(),
-});
-
 const timeSchema = z
   .string()
   .regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Start time must be HH:mm (24h)');
@@ -59,6 +34,33 @@ const optionalUrlSchema = z
     return v;
   });
 
+const churchCreateInput = z.object({
+  slug: slugSchema,
+  name: z.string().min(1).max(120),
+  tagline: z.string().max(200).optional().nullable(),
+  logoUrl: z.string().url().optional().nullable(),
+  primaryColor: z.string().min(4).max(9).optional(),
+  secondaryColor: z.string().min(4).max(9).optional(),
+  contactEmail: z.string().email().optional().nullable(),
+  phone: z.string().max(40).optional().nullable(),
+  address: z.string().max(300).optional().nullable(),
+  timezone: z.string().min(1).optional(),
+  planTier: planTierSchema.optional(),
+  givingEnabled: z.boolean().optional(),
+  givingUrl: optionalUrlSchema,
+  eventsEnabled: z.boolean().optional(),
+  sermonsEnabled: z.boolean().optional(),
+  isActive: z.boolean().optional(),
+  ownerEmail: z.string().email().optional().nullable(),
+  planningCenterApiKey: z.string().max(2000).optional().nullable(),
+  planningCenterSecretKey: z.string().max(2000).optional().nullable(),
+});
+
+const churchUpdateInput = churchCreateInput.partial().extend({
+  id: z.string().min(1),
+  customDomain: z.string().max(253).optional().nullable(),
+});
+
 const churchOnboardInput = z.object({
   slug: slugSchema,
   name: z.string().min(1).max(120),
@@ -69,6 +71,8 @@ const churchOnboardInput = z.object({
   instagramUrl: optionalUrlSchema,
   youtubeUrl: optionalUrlSchema,
   threadsUrl: optionalUrlSchema,
+  planningCenterApiKey: z.string().max(2000).optional().nullable(),
+  planningCenterSecretKey: z.string().max(2000).optional().nullable(),
   pastors: z
     .array(
       z.object({
@@ -274,6 +278,9 @@ export const churchRouter = router({
 
     return ctx.prisma.$transaction(async (tx) => {
       const siteDefaults = planTierDefaults('SITE');
+      const pcoKey = input.planningCenterApiKey?.trim() || null;
+      const pcoSecret = input.planningCenterSecretKey?.trim() || null;
+
       const church = await tx.church.create({
         data: {
           slug: input.slug,
@@ -284,6 +291,8 @@ export const churchRouter = router({
           instagramUrl: input.instagramUrl ?? null,
           youtubeUrl: input.youtubeUrl ?? null,
           threadsUrl: input.threadsUrl ?? null,
+          planningCenterApiKey: pcoKey,
+          planningCenterSecretKey: pcoSecret,
           ...siteDefaults,
         },
       });
@@ -382,6 +391,7 @@ export const churchRouter = router({
         timezone: data.timezone,
         ...tierDefaults,
         givingEnabled: data.givingEnabled ?? tierDefaults.givingEnabled,
+        givingUrl: data.givingUrl ?? null,
         eventsEnabled: data.eventsEnabled ?? tierDefaults.eventsEnabled,
         sermonsEnabled: data.sermonsEnabled ?? tierDefaults.sermonsEnabled,
         isActive: data.isActive ?? true,
@@ -435,6 +445,7 @@ export const churchRouter = router({
           data.givingEnabled !== undefined
             ? data.givingEnabled
             : (tierPatch?.givingEnabled ?? undefined),
+        givingUrl: data.givingUrl === undefined ? undefined : data.givingUrl,
         eventsEnabled:
           data.eventsEnabled !== undefined
             ? data.eventsEnabled
@@ -456,6 +467,48 @@ export const churchRouter = router({
       },
     });
   }),
+
+  ownerUpdateGivingUrl: protectedProcedure
+    .input(
+      z.object({
+        churchId: z.string().min(1),
+        givingUrl: optionalUrlSchema,
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const user = ctx.session.user!;
+      const church = await ctx.prisma.church.findUnique({ where: { id: input.churchId } });
+      if (!church) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Church not found' });
+      }
+
+      const isStaff = Boolean(user.isAdmin) || isPlatformDev(user.email);
+      if (!isStaff) {
+        const membership = await ctx.prisma.membership.findUnique({
+          where: { userId_churchId: { userId: user.id, churchId: input.churchId } },
+        });
+        if (!membership || (membership.role !== 'OWNER' && membership.role !== 'ADMIN')) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Not allowed for this church' });
+        }
+      }
+
+      if (!planAllowsGiving(church.planTier)) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'Giving URL is available on Growth and Custom plans.',
+        });
+      }
+
+      return ctx.prisma.church.update({
+        where: { id: church.id },
+        data: { givingUrl: input.givingUrl ?? null },
+        select: {
+          id: true,
+          slug: true,
+          givingUrl: true,
+        },
+      });
+    }),
 
   setPlanTier: devProcedure
     .input(

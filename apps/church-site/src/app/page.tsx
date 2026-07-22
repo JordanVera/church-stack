@@ -5,6 +5,26 @@ type PageProps = {
   searchParams: Promise<{ slug?: string }>;
 };
 
+const DAY_LABELS = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+] as const;
+
+function formatServiceTime(startTime: string) {
+  const [hRaw, mRaw] = startTime.split(':');
+  const hours = Number(hRaw);
+  const minutes = Number(mRaw);
+  if (Number.isNaN(hours) || Number.isNaN(minutes)) return startTime;
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const hour12 = hours % 12 === 0 ? 12 : hours % 12;
+  return `${hour12}:${String(minutes).padStart(2, '0')} ${period}`;
+}
+
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
   const params = await searchParams;
   const slug = resolveChurchSlug(params.slug);
@@ -52,9 +72,10 @@ export default async function ChurchHomePage({ searchParams }: PageProps) {
     );
   }
 
-  const { branding, contact, events, announcements, sermonSeries } = site;
+  const { branding, contact, events, announcements, sermonSeries, locations } = site;
   const primary = branding.primaryColor;
   const secondary = branding.secondaryColor;
+  const givingUrl = branding.givingUrl?.trim() || null;
 
   return (
     <main>
@@ -81,9 +102,11 @@ export default async function ChurchHomePage({ searchParams }: PageProps) {
           <p className="mt-5 max-w-xl text-lg text-white/85">
             Join us for worship, community, and life together.
           </p>
-          {branding.features.giving ? (
+          {givingUrl ? (
             <a
-              href="#give"
+              href={givingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="mt-8 inline-flex rounded-md px-5 py-3 text-sm font-semibold text-stone-900"
               style={{ backgroundColor: secondary }}
             >
@@ -92,6 +115,37 @@ export default async function ChurchHomePage({ searchParams }: PageProps) {
           ) : null}
         </div>
       </section>
+
+      {locations.length > 0 ? (
+        <section className="mx-auto max-w-4xl px-6 py-16">
+          <h2 className="font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight">
+            Locations &amp; service times
+          </h2>
+          <ul className="mt-8 space-y-8">
+            {locations.map((location) => (
+              <li key={location.id} className="border-t border-stone-200 pt-6">
+                <h3 className="text-xl font-semibold">{location.name}</h3>
+                {location.address ? (
+                  <p className="mt-1 text-stone-600">{location.address}</p>
+                ) : null}
+                {location.services.length > 0 ? (
+                  <ul className="mt-4 space-y-2">
+                    {location.services.map((service) => (
+                      <li key={service.id} className="text-sm text-stone-700">
+                        <span className="font-medium" style={{ color: primary }}>
+                          {DAY_LABELS[service.dayOfWeek] ?? 'Weekly'}
+                        </span>
+                        {' · '}
+                        {service.name} at {formatServiceTime(service.startTime)}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {announcements.length > 0 ? (
         <section className="mx-auto max-w-4xl px-6 py-16">
@@ -159,16 +213,24 @@ export default async function ChurchHomePage({ searchParams }: PageProps) {
         </section>
       ) : null}
 
-      {branding.features.giving ? (
+      {givingUrl ? (
         <section id="give" className="border-t border-stone-200 bg-stone-100">
           <div className="mx-auto max-w-4xl px-6 py-16">
             <h2 className="font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight">
               Give
             </h2>
             <p className="mt-3 max-w-xl text-stone-600">
-              Online giving will connect here. For now, contact the church office to support the
-              mission.
+              Support the mission with a secure gift through our online giving partner.
             </p>
+            <a
+              href={givingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 inline-flex rounded-md px-5 py-3 text-sm font-semibold text-white"
+              style={{ backgroundColor: primary }}
+            >
+              Give online
+            </a>
           </div>
         </section>
       ) : null}

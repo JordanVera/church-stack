@@ -33,6 +33,9 @@ export const metadata: Metadata = {
   title: 'Church Stack — Whitelabel apps for churches',
   description:
     'Launch a beautiful, branded mobile app for your church in days, not months. Built for small and medium churches.',
+  icons: {
+    icon: '/brand/favico-logo.ico',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

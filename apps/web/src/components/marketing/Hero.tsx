@@ -103,7 +103,7 @@ export default function Hero() {
             <Button
               size="lg"
               className="group h-auto rounded-full px-7 py-3.5 text-sm uppercase tracking-widest shadow-lg shadow-brand-600/30 hover:shadow-xl hover:shadow-brand-600/40"
-              render={<Link href="/onboard" />}
+              render={<Link href="/pricing" />}
             >
               <Sparkles className="h-4 w-4 transition-transform group-hover:rotate-12" />
               Start building

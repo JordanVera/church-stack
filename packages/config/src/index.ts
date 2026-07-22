@@ -25,6 +25,8 @@ export interface TenantBranding {
   primaryColor: string;
   secondaryColor: string;
   contactEmail: string | null;
+  /** External giving URL when configured; public Give UI only when set. */
+  givingUrl: string | null;
   features: TenantFeatures;
 }
 
@@ -43,6 +45,7 @@ export const DEFAULT_BRANDING: TenantBranding = {
   primaryColor: '#1a8bbd',
   secondaryColor: '#84dccf',
   contactEmail: null,
+  givingUrl: null,
   features: {
     giving: true,
     events: true,
@@ -59,6 +62,7 @@ export interface ChurchBrandingSource {
   primaryColor?: string | null;
   secondaryColor?: string | null;
   contactEmail?: string | null;
+  givingUrl?: string | null;
   givingEnabled?: boolean;
   eventsEnabled?: boolean;
   sermonsEnabled?: boolean;
@@ -73,6 +77,7 @@ export function toTenantBranding(church: ChurchBrandingSource): TenantBranding {
     primaryColor: church.primaryColor ?? DEFAULT_BRANDING.primaryColor,
     secondaryColor: church.secondaryColor ?? DEFAULT_BRANDING.secondaryColor,
     contactEmail: church.contactEmail ?? null,
+    givingUrl: church.givingUrl ?? null,
     features: {
       giving: church.givingEnabled ?? true,
       events: church.eventsEnabled ?? true,

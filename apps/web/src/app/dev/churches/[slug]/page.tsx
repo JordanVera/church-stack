@@ -26,6 +26,7 @@ export default function DevChurchDetailPage() {
   const [planningCenterSecretKey, setPlanningCenterSecretKey] = useState('');
   const [planTier, setPlanTier] = useState<'SITE' | 'GROWTH' | 'CUSTOM'>('SITE');
   const [givingEnabled, setGivingEnabled] = useState(false);
+  const [givingUrl, setGivingUrl] = useState('');
   const [eventsEnabled, setEventsEnabled] = useState(true);
   const [sermonsEnabled, setSermonsEnabled] = useState(true);
   const [isActive, setIsActive] = useState(true);
@@ -44,6 +45,7 @@ export default function DevChurchDetailPage() {
     setPlanningCenterSecretKey(c.planningCenterSecretKey ?? '');
     setPlanTier(c.planTier);
     setGivingEnabled(c.givingEnabled);
+    setGivingUrl(c.givingUrl ?? '');
     setEventsEnabled(c.eventsEnabled);
     setSermonsEnabled(c.sermonsEnabled);
     setIsActive(c.isActive);
@@ -217,6 +219,7 @@ export default function DevChurchDetailPage() {
             planningCenterSecretKey: planningCenterSecretKey.trim() || null,
             planTier,
             givingEnabled,
+            givingUrl: givingUrl.trim() || null,
             eventsEnabled,
             sermonsEnabled,
             isActive,
@@ -280,6 +283,19 @@ export default function DevChurchDetailPage() {
               placeholder="www.grace.church"
             />
           </div>
+          <div className="space-y-2 sm:col-span-2">
+            <Label htmlFor="givingUrl">Giving URL</Label>
+            <Input
+              id="givingUrl"
+              type="url"
+              value={givingUrl}
+              onChange={(e) => setGivingUrl(e.target.value)}
+              placeholder="https://tithe.ly/… or Pushpay link"
+            />
+            <p className="text-xs text-ink-500 dark:text-ink-400">
+              Public Give UI only appears when this URL is set.
+            </p>
+          </div>
           <div className="space-y-2">
             <Label htmlFor="pcApiKey">Planning Center API key</Label>
             <Input
@@ -318,7 +334,7 @@ export default function DevChurchDetailPage() {
               checked={givingEnabled}
               onChange={(e) => setGivingEnabled(e.target.checked)}
             />
-            Giving
+            Giving enabled
           </label>
           <label className="flex items-center gap-2">
             <input
@@ -467,8 +483,9 @@ export default function DevChurchDetailPage() {
               Product tier & Planning Center
             </CardTitle>
             <CardDescription className="text-ink-500 dark:text-ink-400">
-              Manual comps / offline deals: apply Site / Growth / Custom feature gates without Stripe.
-              Or pull locations, events, and life groups from Planning Center into the shared DB.
+              Manual comps / offline deals: apply Site / Growth / Custom feature gates without
+              Stripe. Or pull locations, events, and life groups from Planning Center into the
+              shared DB.
             </CardDescription>
             <div className="mt-4 flex flex-wrap gap-2">
               {(['SITE', 'GROWTH', 'CUSTOM'] as const).map((tier) => (

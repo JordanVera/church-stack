@@ -95,7 +95,7 @@ export default function CTA() {
           <Button
             size="lg"
             className="group h-auto rounded-full px-8 py-4 text-sm uppercase tracking-widest shadow-lg shadow-brand-600/25 hover:shadow-xl hover:shadow-brand-600/35"
-            render={<Link href="/onboard" />}
+            render={<Link href="/pricing" />}
           >
             <Sparkles className="h-4 w-4 transition-transform group-hover:rotate-12" />
             Get started free

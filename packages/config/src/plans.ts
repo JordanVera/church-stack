@@ -40,7 +40,8 @@ export const PLAN_TIERS: Record<PlanTierId, PlanDefinition> = {
     priceMonthlyUsd: 129,
     priceLabel: '$129',
     period: '/mo',
-    description: 'White-label website and church-named mobile apps, with your content hosted for you.',
+    description:
+      'White-label website and church-named mobile apps, with your content hosted for you.',
     features: [
       'White-label website on your domain',
       'White-label iOS & Android apps',
@@ -49,7 +50,7 @@ export const PLAN_TIERS: Record<PlanTierId, PlanDefinition> = {
       'Planning Center sync (optional)',
       'Email support',
     ],
-    cta: 'Start free trial',
+    cta: 'Choose Site',
     highlighted: false,
     maxCampuses: 2,
     entitlements: {

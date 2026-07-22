@@ -8,7 +8,14 @@ import { trpc } from '@/lib/trpc-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from '@/components/ui/card';
 
 function safeCallbackUrl(value: string | null) {
   if (!value || !value.startsWith('/') || value.startsWith('//')) return '/dashboard';
@@ -40,10 +47,14 @@ function LoginForm() {
       const billingReturn = callbackUrl.startsWith('/billing/');
       if (!billingReturn) {
         const me = await utils.auth.me.fetch();
-        const allowed = Boolean(me?.isAdmin || me?.isDev);
+        const allowed = Boolean(
+          me?.isAdmin || me?.isDev || (me?.memberships && me.memberships.length > 0)
+        );
         if (!allowed) {
           await signOut({ redirect: false });
-          setError('This login is for Church Stack staff only. Churches should register instead.');
+          setError(
+            'No church access on this account. Register your church from pricing, or use a staff account.'
+          );
           setLoading(false);
           return;
         }
@@ -62,10 +73,10 @@ function LoginForm() {
       <Card className="border-ink-200 shadow-sm dark:border-ink-800">
         <CardHeader className="px-6">
           <CardTitle className="font-display text-3xl font-bold tracking-tight text-ink-900 dark:text-white">
-            Staff login
+            Sign in
           </CardTitle>
           <CardDescription className="text-ink-600 dark:text-ink-300">
-            For Church Stack admins and engineers only. Churches should register below.
+            Church owners and Church Stack staff. New churches start from pricing.
           </CardDescription>
         </CardHeader>
 
@@ -103,12 +114,17 @@ function LoginForm() {
             </Button>
           </form>
         </CardContent>
+
+        <CardFooter className="flex flex-col items-center justify-center gap-2">
+          <p className="text-sm text-yellow-300">admin@churchstack.example</p>
+          <p className="text-sm text-yellow-300">password123</p>
+        </CardFooter>
       </Card>
 
       <p className="mt-6 text-center text-sm text-ink-600 dark:text-ink-300">
         Registering a church?{' '}
         <Link
-          href="/onboard"
+          href="/pricing"
           className="font-semibold text-brand-600 hover:text-brand-500 dark:text-brand-400"
         >
           Start church signup

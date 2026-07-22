@@ -65,11 +65,16 @@ export function PlanningCenterImport({ draft, onChange }: Props) {
     onSuccess: (data) => {
       const locations = toOnboardLocations(data.locations);
       const serviceCount = data.locations.reduce((n, loc) => n + loc.services.length, 0);
-      onChange({ ...draft, locations });
+      onChange({
+        ...draft,
+        locations,
+        planningCenterApiKey: applicationId.trim(),
+        planningCenterSecretKey: secret.trim(),
+      });
       setOpen(false);
       setSecret('');
       toast.success('Imported from Planning Center', {
-        description: `${data.locations.length} campus${data.locations.length === 1 ? '' : 'es'} and ${serviceCount} service time${serviceCount === 1 ? '' : 's'} loaded. Review and edit the fields below before continuing.`,
+        description: `${data.locations.length} campus${data.locations.length === 1 ? '' : 'es'} and ${serviceCount} service time${serviceCount === 1 ? '' : 's'} loaded. We’ll save your token so we can sync events and groups after signup.`,
         duration: 7000,
       });
     },
@@ -102,6 +107,11 @@ export function PlanningCenterImport({ draft, onChange }: Props) {
           </div>
           <p className="mt-1 text-xs text-ink-500 dark:text-ink-400">
             Pull campuses and weekly service times from PC. You can edit everything after import.
+            {draft.planningCenterApiKey ? (
+              <span className="mt-1 block font-medium text-brand-700 dark:text-brand-300">
+                Planning Center token saved for post-signup sync.
+              </span>
+            ) : null}
           </p>
         </div>
         {open ? (
@@ -184,8 +194,8 @@ export function PlanningCenterImport({ draft, onChange }: Props) {
               and we’ll help you connect. You can also skip import and enter locations manually.
             </p>
             <p className="text-ink-500 dark:text-ink-400">
-              Credentials are used only for this import request and are not saved to your church
-              record.
+              We’ll save these credentials on your church record so we can sync events and groups
+              after signup. You can rotate the token in Planning Center anytime.
             </p>
           </div>
 

@@ -1,10 +1,9 @@
 'use client';
 
-import { Suspense, useState } from 'react';
-import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { PLAN_TIERS, type PlanTierId } from '@repo/config';
 import { trpc } from '@/lib/trpc-client';
 import { Button } from '@/components/ui/button';
@@ -21,9 +20,9 @@ import {
   type OnboardDraft,
 } from '@/components/onboard/types';
 
-function parsePlan(value: string | null): PlanTierId {
+function parsePlan(value: string | null): PlanTierId | null {
   if (value === 'SITE' || value === 'GROWTH' || value === 'CUSTOM') return value;
-  return 'SITE';
+  return null;
 }
 
 function validateStep(step: number, draft: OnboardDraft): string | null {
@@ -81,60 +80,38 @@ function validateStep(step: number, draft: OnboardDraft): string | null {
 }
 
 function OnboardForm() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const planTier = parsePlan(searchParams.get('plan'));
-  const plan = PLAN_TIERS[planTier];
   const reduce = useReducedMotion();
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState<OnboardDraft>(() => createInitialDraft());
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState<{ id: string; name: string; slug: string } | null>(null);
+
+  useEffect(() => {
+    if (!planTier) {
+      router.replace('/pricing');
+    }
+  }, [planTier, router]);
 
   const onboard = trpc.church.onboard.useMutation({
     onSuccess: (church) => {
-      setDone({ id: church.id, name: church.name, slug: church.slug });
+      if (!planTier) return;
+      router.replace(
+        `/billing/subscribe?churchId=${encodeURIComponent(church.id)}&plan=${planTier}`
+      );
     },
   });
 
-  if (done) {
-    const subscribeHref = `/billing/subscribe?churchId=${encodeURIComponent(done.id)}&plan=${planTier}`;
+  if (!planTier) {
     return (
-      <div className="relative overflow-hidden">
-        <div className="relative mx-auto flex min-h-[70vh]  flex-col justify-center px-6 py-20 text-center">
-          <motion.div
-            initial={reduce ? false : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <CheckCircle2 className="mx-auto size-12 text-brand-600 dark:text-brand-400" />
-            <h1 className="font-display mt-6 text-4xl font-bold tracking-tight text-ink-900 dark:text-white">
-              You’re all set
-            </h1>
-            <p className="mt-3 text-base leading-relaxed text-ink-600 dark:text-ink-300">
-              <span className="font-semibold text-ink-800 dark:text-ink-100">{done.name}</span>{' '}
-              <span className="text-ink-400">/{done.slug}</span> has been submitted.
-            </p>
-            <p className="mt-2 text-sm text-ink-500 dark:text-ink-400">
-              Selected plan: {plan.name} ({plan.priceLabel}
-              {plan.period}). Complete payment to activate paid features.
-            </p>
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button className="h-11 px-6" render={<Link href={subscribeHref} />}>
-                Start subscription
-              </Button>
-              <Button
-                variant="outline"
-                className="h-11 px-6 border-ink-300 dark:border-ink-700 dark:bg-transparent"
-                render={<Link href="/" />}
-              >
-                Back to home
-              </Button>
-            </div>
-          </motion.div>
-        </div>
+      <div className="mx-auto max-w-3xl px-6 py-20 text-ink-600 dark:text-ink-300">
+        Redirecting to pricing…
       </div>
     );
   }
+
+  const plan = PLAN_TIERS[planTier];
 
   const goNext = () => {
     const validationError = validateStep(step, draft);
@@ -168,6 +145,8 @@ function OnboardForm() {
       instagramUrl: draft.instagramUrl.trim() || null,
       youtubeUrl: draft.youtubeUrl.trim() || null,
       threadsUrl: draft.threadsUrl.trim() || null,
+      planningCenterApiKey: draft.planningCenterApiKey,
+      planningCenterSecretKey: draft.planningCenterSecretKey,
       pastors: draft.pastors.map((p) => ({
         clientKey: p.clientKey,
         firstName: p.firstName.trim(),
@@ -189,6 +168,7 @@ function OnboardForm() {
   };
 
   const current = STEPS[step]!;
+  const submitting = onboard.isPending || onboard.isSuccess;
 
   return (
     <div className="relative overflow-hidden">
@@ -253,7 +233,7 @@ function OnboardForm() {
                 variant="outline"
                 className="h-11 gap-1.5 px-4"
                 onClick={goBack}
-                disabled={step === 0 || onboard.isPending}
+                disabled={step === 0 || submitting}
               >
                 <ArrowLeft className="size-3.5" />
                 Back
@@ -268,9 +248,13 @@ function OnboardForm() {
                   type="button"
                   className="h-11 px-5"
                   onClick={submit}
-                  disabled={onboard.isPending}
+                  disabled={submitting}
                 >
-                  {onboard.isPending ? 'Submitting…' : 'Submit church'}
+                  {onboard.isSuccess
+                    ? 'Continuing to payment…'
+                    : onboard.isPending
+                      ? 'Submitting…'
+                      : 'Submit church'}
                 </Button>
               )}
             </div>

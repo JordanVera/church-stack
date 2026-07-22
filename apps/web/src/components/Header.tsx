@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { signOut, useSession } from 'next-auth/react';
 import ThemeToggle from '@/components/ThemeToggle';
 import { Button } from '@/components/ui/button';
 
@@ -14,7 +15,9 @@ const nav = [
 ];
 
 export default function Header() {
+  const { status } = useSession();
   const [scrolled, setScrolled] = useState(false);
+  const signedIn = status === 'authenticated';
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -59,14 +62,42 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           <ThemeToggle />
-          <Button
-            className="rounded-full px-5 py-2.5 text-xs uppercase tracking-[0.15em] shadow-sm shadow-brand-600/30 hover:shadow-md hover:shadow-brand-600/40"
-            render={<Link href="/onboard" />}
-          >
-            Register church
-          </Button>
+          {signedIn ? (
+            <>
+              <Button
+                variant="ghost"
+                className="hidden rounded-full px-4 py-2.5 text-xs uppercase tracking-[0.15em] text-ink-700 sm:inline-flex dark:text-ink-200"
+                render={<Link href="/dashboard" />}
+              >
+                Dashboard
+              </Button>
+              <Button
+                variant="outline"
+                className="rounded-full border-ink-300 px-4 py-2.5 text-xs uppercase tracking-[0.15em] dark:border-ink-600"
+                onClick={() => signOut({ callbackUrl: '/' })}
+              >
+                Log out
+              </Button>
+            </>
+          ) : status !== 'loading' ? (
+            <Button
+              variant="ghost"
+              className="rounded-full px-4 py-2.5 text-xs uppercase tracking-[0.15em] text-ink-700 dark:text-ink-200"
+              render={<Link href="/login?callbackUrl=/dashboard" />}
+            >
+              Log in
+            </Button>
+          ) : null}
+          {!signedIn ? (
+            <Button
+              className="rounded-full px-5 py-2.5 text-xs uppercase tracking-[0.15em] shadow-sm shadow-brand-600/30 hover:shadow-md hover:shadow-brand-600/40"
+              render={<Link href="/pricing" />}
+            >
+              Register church
+            </Button>
+          ) : null}
         </div>
       </div>
     </motion.header>

@@ -29,6 +29,17 @@ export type PublicSitePayload = {
     description: string | null;
     imageUrl: string | null;
   }>;
+  locations: Array<{
+    id: string;
+    name: string;
+    address: string | null;
+    services: Array<{
+      id: string;
+      name: string;
+      dayOfWeek: number;
+      startTime: string;
+    }>;
+  }>;
 };
 
 function apiBase(): string {

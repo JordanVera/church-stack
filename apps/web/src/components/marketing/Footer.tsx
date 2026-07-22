@@ -15,7 +15,7 @@ const columns = [
   },
   {
     title: 'Get started',
-    links: [{ href: '/onboard', label: 'Register church' }],
+    links: [{ href: '/pricing', label: 'Register church' }],
   },
   {
     title: 'Follow',
