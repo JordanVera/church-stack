@@ -1,8 +1,12 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { planAllowsGiving, planTierDefaults, toTenantBranding } from '@repo/config';
-import { router, publicProcedure, protectedProcedure, devProcedure } from '../trpc';
-import { isPlatformDev } from '../platform-dev';
+import { router, publicProcedure, devProcedure, churchAdminProcedure } from '../trpc';
+import {
+  assertChurchAdmin,
+  assertChurchAdminBySlug,
+  isPlanningCenterLinked,
+} from '../church-admin';
 import {
   attachCustomDomainToProject,
   provisionChurchWebsite,
@@ -468,7 +472,7 @@ export const churchRouter = router({
     });
   }),
 
-  ownerUpdateGivingUrl: protectedProcedure
+  ownerUpdateGivingUrl: churchAdminProcedure
     .input(
       z.object({
         churchId: z.string().min(1),
@@ -476,21 +480,7 @@ export const churchRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const user = ctx.session.user!;
-      const church = await ctx.prisma.church.findUnique({ where: { id: input.churchId } });
-      if (!church) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Church not found' });
-      }
-
-      const isStaff = Boolean(user.isAdmin) || isPlatformDev(user.email);
-      if (!isStaff) {
-        const membership = await ctx.prisma.membership.findUnique({
-          where: { userId_churchId: { userId: user.id, churchId: input.churchId } },
-        });
-        if (!membership || (membership.role !== 'OWNER' && membership.role !== 'ADMIN')) {
-          throw new TRPCError({ code: 'FORBIDDEN', message: 'Not allowed for this church' });
-        }
-      }
+      const church = await assertChurchAdmin(ctx, input.churchId);
 
       if (!planAllowsGiving(church.planTier)) {
         throw new TRPCError({
@@ -508,6 +498,110 @@ export const churchRouter = router({
           givingUrl: true,
         },
       });
+    }),
+
+  /**
+   * Owner dashboard summary for a church (by slug). Never returns raw PCO secrets.
+   */
+  getOwnerDashboard: churchAdminProcedure
+    .input(z.object({ slug: z.string().min(1) }))
+    .query(async ({ ctx, input }) => {
+      const church = await assertChurchAdminBySlug(ctx, input.slug);
+      const planningCenterLinked = isPlanningCenterLinked(church);
+
+      const [pastorCount, locationCount, eventCount, announcementCount, lifeGroupCount] =
+        await Promise.all([
+          ctx.prisma.pastor.count({ where: { churchId: church.id } }),
+          ctx.prisma.location.count({ where: { churchId: church.id } }),
+          ctx.prisma.event.count({ where: { churchId: church.id } }),
+          ctx.prisma.announcement.count({ where: { churchId: church.id } }),
+          ctx.prisma.lifeGroup.count({ where: { churchId: church.id } }),
+        ]);
+
+      return {
+        id: church.id,
+        slug: church.slug,
+        name: church.name,
+        planTier: church.planTier,
+        websiteStatus: church.websiteStatus,
+        websiteUrl: church.websiteUrl,
+        customDomain: church.customDomain,
+        mobilePlan: church.mobilePlan,
+        mobileBuildStatus: church.mobileBuildStatus,
+        givingUrl: church.givingUrl,
+        givingEnabled: church.givingEnabled,
+        canEditGiving: planAllowsGiving(church.planTier),
+        planningCenterLinked,
+        counts: {
+          pastors: pastorCount,
+          locations: locationCount,
+          events: eventCount,
+          announcements: announcementCount,
+          lifeGroups: lifeGroupCount,
+        },
+      };
+    }),
+
+  connectPlanningCenter: churchAdminProcedure
+    .input(
+      z.object({
+        churchId: z.string().min(1),
+        applicationId: z.string().min(1).max(2000),
+        secret: z.string().min(1).max(2000),
+        /** When true, run a full sync after saving credentials. */
+        syncAfterConnect: z.boolean().optional().default(true),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await assertChurchAdmin(ctx, input.churchId);
+
+      const applicationId = input.applicationId.trim();
+      const secret = input.secret.trim();
+
+      // Validate credentials before persisting.
+      const campuses = await fetchCampusesWithServiceTimes(applicationId, secret);
+      if (campuses.length === 0) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message:
+            'Connected successfully, but no campuses were found in Planning Center. Add a Campus in People, then try again.',
+        });
+      }
+
+      await ctx.prisma.church.update({
+        where: { id: input.churchId },
+        data: {
+          planningCenterApiKey: applicationId,
+          planningCenterSecretKey: secret,
+        },
+      });
+
+      let sync = null;
+      if (input.syncAfterConnect) {
+        sync = await syncPlanningCenterForChurch(ctx.prisma, input.churchId);
+      }
+
+      return {
+        planningCenterLinked: true,
+        campusCount: campuses.length,
+        sync,
+      };
+    }),
+
+  disconnectPlanningCenter: churchAdminProcedure
+    .input(z.object({ churchId: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      await assertChurchAdmin(ctx, input.churchId);
+
+      await ctx.prisma.church.update({
+        where: { id: input.churchId },
+        data: {
+          planningCenterApiKey: null,
+          planningCenterSecretKey: null,
+        },
+      });
+
+      return { planningCenterLinked: false };
     }),
 
   setPlanTier: devProcedure
@@ -576,9 +670,10 @@ export const churchRouter = router({
       return result;
     }),
 
-  syncPlanningCenter: devProcedure
+  syncPlanningCenter: churchAdminProcedure
     .input(z.object({ churchId: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
+      await assertChurchAdmin(ctx, input.churchId);
       return syncPlanningCenterForChurch(ctx.prisma, input.churchId);
     }),
 

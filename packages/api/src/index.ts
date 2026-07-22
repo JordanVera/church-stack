@@ -9,12 +9,20 @@ export {
   router,
   publicProcedure,
   protectedProcedure,
+  churchAdminProcedure,
   devProcedure,
   tenantProcedure,
   middleware,
   createCallerFactory,
 } from './trpc';
 export { isPlatformDev } from './platform-dev';
+export {
+  assertChurchAdmin,
+  assertChurchAdminBySlug,
+  assertManualCmsMode,
+  assertEditableContentRow,
+  isPlanningCenterLinked,
+} from './church-admin';
 export { applyStripeSubscriptionToChurch } from './routers/billing';
 export { getStripe, isStripeConfigured, planTierForPriceId } from './billing/stripe';
 export { churchDefaultsForPlanTier } from './plans';

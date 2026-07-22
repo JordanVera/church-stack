@@ -1,36 +1,26 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { router, tenantProcedure, churchAdminProcedure } from '../trpc';
+import { router, churchAdminProcedure } from '../trpc';
 import {
   assertChurchAdmin,
   assertManualCmsMode,
   assertEditableContentRow,
 } from '../church-admin';
 
-export const eventsRouter = router({
-  // Public / app: upcoming events for the current tenant.
-  upcoming: tenantProcedure.query(async ({ ctx }) => {
-    return ctx.prisma.event.findMany({
-      where: { churchId: ctx.churchId, startsAt: { gte: new Date() } },
-      orderBy: { startsAt: 'asc' },
-    });
-  }),
+const timeSchema = z
+  .string()
+  .regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Start time must be HH:mm (24h)')
+  .optional()
+  .nullable();
 
-  list: tenantProcedure.query(async ({ ctx }) => {
-    return ctx.prisma.event.findMany({
-      where: { churchId: ctx.churchId },
-      orderBy: { startsAt: 'desc' },
-    });
-  }),
-
-  /** Owner CMS list (includes all sources; edits gated on MANUAL + !PCO linked). */
-  adminList: churchAdminProcedure
+export const lifeGroupsRouter = router({
+  list: churchAdminProcedure
     .input(z.object({ churchId: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
       await assertChurchAdmin(ctx, input.churchId);
-      return ctx.prisma.event.findMany({
+      return ctx.prisma.lifeGroup.findMany({
         where: { churchId: input.churchId },
-        orderBy: { startsAt: 'desc' },
+        orderBy: { name: 'asc' },
       });
     }),
 
@@ -38,25 +28,25 @@ export const eventsRouter = router({
     .input(
       z.object({
         churchId: z.string().min(1),
-        title: z.string().min(1).max(200),
-        description: z.string().max(10000).optional().nullable(),
+        name: z.string().min(1).max(120),
+        description: z.string().max(5000).optional().nullable(),
         location: z.string().max(300).optional().nullable(),
-        startsAt: z.coerce.date(),
-        endsAt: z.coerce.date().optional().nullable(),
+        meetingDay: z.number().int().min(0).max(6).optional().nullable(),
+        meetingTime: timeSchema,
       })
     )
     .mutation(async ({ ctx, input }) => {
       const church = await assertChurchAdmin(ctx, input.churchId);
       assertManualCmsMode(church);
 
-      return ctx.prisma.event.create({
+      return ctx.prisma.lifeGroup.create({
         data: {
           churchId: input.churchId,
-          title: input.title.trim(),
+          name: input.name.trim(),
           description: input.description?.trim() || null,
           location: input.location?.trim() || null,
-          startsAt: input.startsAt,
-          endsAt: input.endsAt ?? null,
+          meetingDay: input.meetingDay ?? null,
+          meetingTime: input.meetingTime ?? null,
           source: 'MANUAL',
         },
       });
@@ -67,34 +57,34 @@ export const eventsRouter = router({
       z.object({
         churchId: z.string().min(1),
         id: z.string().min(1),
-        title: z.string().min(1).max(200).optional(),
-        description: z.string().max(10000).optional().nullable(),
+        name: z.string().min(1).max(120).optional(),
+        description: z.string().max(5000).optional().nullable(),
         location: z.string().max(300).optional().nullable(),
-        startsAt: z.coerce.date().optional(),
-        endsAt: z.coerce.date().optional().nullable(),
+        meetingDay: z.number().int().min(0).max(6).optional().nullable(),
+        meetingTime: timeSchema,
       })
     )
     .mutation(async ({ ctx, input }) => {
       const church = await assertChurchAdmin(ctx, input.churchId);
       assertManualCmsMode(church);
 
-      const existing = await ctx.prisma.event.findFirst({
+      const existing = await ctx.prisma.lifeGroup.findFirst({
         where: { id: input.id, churchId: input.churchId },
       });
       if (!existing) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Life group not found' });
       }
       assertEditableContentRow(church, existing.source);
 
-      return ctx.prisma.event.update({
+      return ctx.prisma.lifeGroup.update({
         where: { id: existing.id },
         data: {
-          title: input.title?.trim(),
+          name: input.name?.trim(),
           description:
             input.description === undefined ? undefined : input.description?.trim() || null,
           location: input.location === undefined ? undefined : input.location?.trim() || null,
-          startsAt: input.startsAt,
-          endsAt: input.endsAt === undefined ? undefined : input.endsAt,
+          meetingDay: input.meetingDay === undefined ? undefined : input.meetingDay,
+          meetingTime: input.meetingTime === undefined ? undefined : input.meetingTime,
           source: 'MANUAL',
           externalId: null,
         },
@@ -107,15 +97,15 @@ export const eventsRouter = router({
       const church = await assertChurchAdmin(ctx, input.churchId);
       assertManualCmsMode(church);
 
-      const existing = await ctx.prisma.event.findFirst({
+      const existing = await ctx.prisma.lifeGroup.findFirst({
         where: { id: input.id, churchId: input.churchId },
       });
       if (!existing) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Life group not found' });
       }
       assertEditableContentRow(church, existing.source);
 
-      await ctx.prisma.event.delete({ where: { id: existing.id } });
+      await ctx.prisma.lifeGroup.delete({ where: { id: existing.id } });
       return { ok: true };
     }),
 });

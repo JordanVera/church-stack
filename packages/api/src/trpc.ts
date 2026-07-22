@@ -31,8 +31,16 @@ export const devProcedure = protectedProcedure.use(({ ctx, next }) => {
 });
 
 /**
+ * Signed-in user who may administer a church.
+ * Handlers must call `assertChurchAdmin(ctx, churchId)` (or BySlug) before mutating.
+ * Prefer this over bare `tenantProcedure` for owner dashboard writes.
+ */
+export const churchAdminProcedure = protectedProcedure;
+
+/**
  * Requires a resolved tenant. Accepts either `x-church-id` or `x-church-slug`
  * and guarantees a non-null `churchId` downstream.
+ * Public/read surfaces only — do not use for owner CMS writes.
  */
 export const tenantProcedure = t.procedure.use(async ({ ctx, next }) => {
   let churchId = ctx.churchId;
