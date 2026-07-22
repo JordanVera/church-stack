@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { signOut, useSession } from 'next-auth/react';
+import { motion } from 'framer-motion';
 import ThemeToggle from '@/components/ThemeToggle';
 import { Button } from '@/components/ui/button';
 
@@ -68,7 +68,7 @@ export default function Header() {
             <>
               <Button
                 variant="ghost"
-                className="hidden rounded-full px-4 py-2.5 text-xs uppercase tracking-[0.15em] text-ink-700 sm:inline-flex dark:text-ink-200"
+                className="hidden px-3 text-xs font-semibold uppercase tracking-[0.15em] text-ink-600 hover:text-ink-900 sm:inline-flex dark:text-ink-300 dark:hover:text-white"
                 render={<Link href="/dashboard" />}
               >
                 Dashboard
@@ -81,23 +81,23 @@ export default function Header() {
                 Log out
               </Button>
             </>
-          ) : status !== 'loading' ? (
-            <Button
-              variant="ghost"
-              className="rounded-full px-4 py-2.5 text-xs uppercase tracking-[0.15em] text-ink-700 dark:text-ink-200"
-              render={<Link href="/login?callbackUrl=/dashboard" />}
-            >
-              Log in
-            </Button>
-          ) : null}
-          {!signedIn ? (
-            <Button
-              className="rounded-full px-5 py-2.5 text-xs uppercase tracking-[0.15em] shadow-sm shadow-brand-600/30 hover:shadow-md hover:shadow-brand-600/40"
-              render={<Link href="/pricing" />}
-            >
-              Register church
-            </Button>
-          ) : null}
+          ) : (
+            <>
+              <Button
+                variant="ghost"
+                className="px-3 text-xs font-semibold uppercase tracking-[0.15em] text-ink-600 hover:text-ink-900 dark:text-ink-300 dark:hover:text-white"
+                render={<Link href="/login?callbackUrl=/dashboard" />}
+              >
+                Log in
+              </Button>
+              <Button
+                className="rounded-full px-5 py-2.5 text-xs uppercase tracking-[0.15em] shadow-sm shadow-brand-600/30 hover:shadow-md hover:shadow-brand-600/40"
+                render={<Link href="/pricing" />}
+              >
+                Register church
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </motion.header>

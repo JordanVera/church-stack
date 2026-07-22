@@ -115,9 +115,27 @@ function LoginForm() {
           </form>
         </CardContent>
 
-        <CardFooter className="flex flex-col items-center justify-center gap-2">
-          <p className="text-sm text-yellow-300">admin@churchstack.example</p>
-          <p className="text-sm text-yellow-300">password123</p>
+        <CardFooter className="flex flex-col items-center justify-center gap-3 text-sm text-yellow-300">
+          <div className="flex flex-col items-center gap-0.5">
+            <p className="font-medium text-yellow-200">Platform</p>
+            <p>admin@churchstack.example</p>
+            <p>password123</p>
+          </div>
+          <div className="flex flex-col items-center gap-0.5">
+            <p className="font-medium text-yellow-200">Grace Community Church</p>
+            <p>admin@gracechurch.example</p>
+            <p>password123</p>
+          </div>
+          <div className="flex flex-col items-center gap-0.5">
+            <p className="font-medium text-yellow-200">Hillside Fellowship</p>
+            <p>admin@hillside.example</p>
+            <p>password123</p>
+          </div>
+          <div className="flex flex-col items-center gap-0.5">
+            <p className="font-medium text-yellow-200">Harbor Church</p>
+            <p>admin@harbor.example</p>
+            <p>password123</p>
+          </div>
         </CardFooter>
       </Card>
 

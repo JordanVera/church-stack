@@ -79,7 +79,7 @@ docs/
 | `npm run dev`       | Run web + native + package watchers via Turbo |
 | `npm run build`     | Build all apps/packages                       |
 | `npm run db:push`   | Push the Prisma schema to the database        |
-| `npm run db:seed`   | Seed demo churches + owner users              |
+| `npm run db:seed`   | Seed demo churches (Site/Growth/Custom) + users |
 | `npm run db:studio` | Open Prisma Studio                            |
 | `npm run format`    | Prettier across the repo                      |
 
