@@ -12,12 +12,13 @@ import { queueWhiteLabelBuild, setMobilePlan } from '../provision/eas';
 import { fetchCampusesWithServiceTimes } from '../planning-center/client';
 import { syncPlanningCenterForChurch } from '../planning-center/sync';
 import {
-  fetchAllPlaylistVideos,
   getPlaylistVideos,
   invalidatePlaylistCache,
   resolveToPlaylistId,
   type SermonVideo,
 } from '../youtube/playlist';
+
+const PUBLIC_SERMONS_PAGE_SIZE = 12;
 
 const planTierSchema = z.enum(['SITE', 'GROWTH', 'CUSTOM']);
 
@@ -208,17 +209,21 @@ export const churchRouter = router({
       ]);
 
       let sermons: SermonVideo[] = [];
+      let sermonsNextPageToken: string | null = null;
       if (church.sermonsEnabled && church.sermonsYoutubePlaylistId) {
         try {
-          sermons = await fetchAllPlaylistVideos(church.sermonsYoutubePlaylistId, {
-            maxTotal: 100,
+          const page = await getPlaylistVideos(church.sermonsYoutubePlaylistId, {
+            maxResults: PUBLIC_SERMONS_PAGE_SIZE,
           });
+          sermons = page.videos;
+          sermonsNextPageToken = page.nextPageToken ?? null;
         } catch (err) {
           console.error(
             `[getPublicSite] YouTube sermons failed for ${church.slug}:`,
             err instanceof Error ? err.message : err
           );
           sermons = [];
+          sermonsNextPageToken = null;
         }
       }
 
@@ -235,10 +240,52 @@ export const churchRouter = router({
         announcements,
         sermonSeries,
         sermons,
+        sermonsNextPageToken,
         sermonsYoutubePlaylistId: church.sermonsYoutubePlaylistId,
         lifeGroups,
         locations,
       };
+    }),
+
+  /**
+   * Paginated public sermons for church-site "Load more".
+   * Uses the church's saved YouTube playlist; never exposes API keys.
+   */
+  getPublicSermons: publicProcedure
+    .input(
+      z.object({
+        slug: z.string().min(1),
+        pageToken: z.string().min(1).max(500).optional(),
+        pageSize: z.number().int().min(1).max(24).optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const church = await ctx.prisma.church.findFirst({
+        where: { slug: input.slug, isActive: true },
+        select: {
+          sermonsEnabled: true,
+          sermonsYoutubePlaylistId: true,
+        },
+      });
+      if (!church || !church.sermonsEnabled || !church.sermonsYoutubePlaylistId) {
+        return { videos: [] as SermonVideo[], nextPageToken: null as string | null };
+      }
+
+      try {
+        const page = await getPlaylistVideos(church.sermonsYoutubePlaylistId, {
+          maxResults: input.pageSize ?? PUBLIC_SERMONS_PAGE_SIZE,
+          pageToken: input.pageToken,
+        });
+        return {
+          videos: page.videos,
+          nextPageToken: page.nextPageToken ?? null,
+        };
+      } catch (err) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: err instanceof Error ? err.message : 'Failed to load sermons',
+        });
+      }
     }),
 
   /** Full church list for /dev (includes inactive + provisioning state). */

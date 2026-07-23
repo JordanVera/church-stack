@@ -29,7 +29,7 @@ export type PublicSitePayload = {
     description: string | null;
     imageUrl: string | null;
   }>;
-  /** YouTube playlist videos when the church linked a sermons playlist. */
+  /** First page of YouTube playlist videos when the church linked a sermons playlist. */
   sermons: Array<{
     videoId: string;
     title: string;
@@ -38,6 +38,8 @@ export type PublicSitePayload = {
     thumbnailUrl: string;
     duration?: string;
   }>;
+  /** YouTube playlistItems nextPageToken for Load more (null when no more). */
+  sermonsNextPageToken: string | null;
   sermonsYoutubePlaylistId: string | null;
   locations: Array<{
     id: string;
