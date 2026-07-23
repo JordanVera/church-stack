@@ -1,4 +1,7 @@
-import type { ReactNode } from 'react';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 type SocialLinks = {
   facebookUrl: string | null;
@@ -21,7 +24,7 @@ type SiteChromeProps = {
     address: string | null;
   };
   social?: SocialLinks | null;
-  children: ReactNode;
+  children: React.ReactNode;
 };
 
 const SOCIAL_LABELS: Array<{ key: keyof SocialLinks; label: string }> = [
@@ -43,6 +46,15 @@ export function SiteChrome({
   social,
   children,
 }: SiteChromeProps) {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 48);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   const contactLine =
     [contact.address, contact.phone, contact.email].filter(Boolean).join(' · ') ||
     'Powered by Church Stack';
@@ -52,17 +64,25 @@ export function SiteChrome({
     return href ? [{ href, label }] : [];
   });
 
+  const onBrand = !scrolled;
+
   return (
     <>
-      <header className="site-anim-fade sticky top-0 z-40 border-b border-white/10 bg-[color-mix(in_srgb,var(--church-primary)_92%,#0f172a)] text-white backdrop-blur-md">
-        <div className="mx-auto flex h-24 max-w-5xl items-center justify-between gap-4 px-6">
+      <header
+        className={`site-anim-fade sticky top-0 z-40 border-b backdrop-blur-md transition-colors duration-300 ${
+          onBrand
+            ? 'border-white/10 bg-[color-mix(in_srgb,var(--church-primary)_88%,#0f172a)] text-white'
+            : 'border-[var(--site-line)] bg-[color-mix(in_srgb,var(--site-band)_88%,transparent)] text-[var(--site-fg)]'
+        }`}
+      >
+        <div className="mx-auto flex h-20 max-w-6xl items-center justify-between gap-4 px-6 sm:h-24">
           <a href="#top" className="flex min-w-0 items-center gap-2.5">
             {logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={logoUrl}
                 alt={name}
-                className="h-[4.5rem] w-auto max-h-[4.5rem] max-w-[280px] object-contain sm:h-20 sm:max-h-20 sm:max-w-[320px]"
+                className="h-14 w-auto max-h-14 max-w-[240px] object-contain sm:h-16 sm:max-h-16 sm:max-w-[280px]"
               />
             ) : (
               <span className="truncate font-[family-name:var(--font-display)] text-sm font-semibold tracking-tight sm:text-base">
@@ -70,11 +90,13 @@ export function SiteChrome({
               </span>
             )}
           </a>
-          <nav className="flex items-center gap-4 text-sm">
+          <nav className="flex items-center gap-3 text-sm sm:gap-4">
             {showVisit ? (
               <a
                 href="#visit"
-                className="hidden text-white/80 transition hover:text-white sm:inline"
+                className={`hidden transition sm:inline ${
+                  onBrand ? 'text-white/80 hover:text-white' : 'text-[var(--site-muted)] hover:text-[var(--site-fg)]'
+                }`}
               >
                 Visit
               </a>
@@ -82,18 +104,23 @@ export function SiteChrome({
             {showBelong ? (
               <a
                 href="#belong"
-                className="hidden text-white/80 transition hover:text-white sm:inline"
+                className={`hidden transition sm:inline ${
+                  onBrand ? 'text-white/80 hover:text-white' : 'text-[var(--site-muted)] hover:text-[var(--site-fg)]'
+                }`}
               >
                 Groups
               </a>
             ) : null}
+            <ThemeToggle onBrand={onBrand} />
             {givingUrl ? (
               <a
                 href={givingUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-md px-3 py-1.5 text-xs font-semibold text-stone-900 sm:text-sm"
-                style={{ backgroundColor: secondaryColor }}
+                className={`rounded-md px-3 py-1.5 text-xs font-semibold sm:text-sm ${
+                  onBrand ? 'text-stone-900' : 'text-white'
+                }`}
+                style={{ backgroundColor: onBrand ? secondaryColor : primaryColor }}
               >
                 Give
               </a>
@@ -104,34 +131,34 @@ export function SiteChrome({
 
       {children}
 
-      <footer className="border-t border-stone-200 bg-stone-100/80 px-6 py-12 text-sm text-stone-600">
-        <div className="mx-auto flex max-w-5xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col gap-2">
+      <footer className="border-t border-[var(--site-line)] bg-[var(--site-band-alt)] px-6 py-16 text-sm text-[var(--site-muted)]">
+        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.4fr_1fr] lg:items-end">
+          <div className="flex flex-col gap-4">
             {logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={logoUrl}
                 alt={name}
-                className="h-14 w-auto max-h-14 max-w-[220px] object-contain sm:h-16 sm:max-h-16"
+                className="h-16 w-auto max-h-16 max-w-[240px] object-contain"
               />
             ) : (
               <p
-                className="font-[family-name:var(--font-display)] text-base font-semibold text-stone-900"
+                className="font-[family-name:var(--font-display)] text-2xl font-semibold tracking-tight"
                 style={{ color: primaryColor }}
               >
                 {name}
               </p>
             )}
-            <p>{contactLine}</p>
+            <p className="max-w-md text-base leading-relaxed">{contactLine}</p>
             {socialLinks.length > 0 ? (
-              <ul className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
+              <ul className="flex flex-wrap gap-x-5 gap-y-2 pt-1">
                 {socialLinks.map((link) => (
                   <li key={link.label}>
                     <a
                       href={link.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-medium underline-offset-2 transition hover:underline"
+                      className="font-medium underline-offset-4 transition hover:underline"
                       style={{ color: primaryColor }}
                     >
                       {link.label}
@@ -141,17 +168,22 @@ export function SiteChrome({
               </ul>
             ) : null}
           </div>
-          {givingUrl ? (
-            <a
-              href={givingUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex w-fit rounded-md px-4 py-2 text-sm font-semibold text-white"
-              style={{ backgroundColor: primaryColor }}
-            >
-              Give online
-            </a>
-          ) : null}
+          <div className="flex flex-col items-start gap-4 lg:items-end">
+            {givingUrl ? (
+              <a
+                href={givingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex rounded-md px-5 py-3 text-sm font-semibold text-white"
+                style={{ backgroundColor: primaryColor }}
+              >
+                Give online
+              </a>
+            ) : null}
+            <p className="text-xs text-[var(--site-muted)]">
+              A community gathering around Jesus.
+            </p>
+          </div>
         </div>
       </footer>
     </>

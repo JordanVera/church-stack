@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { SectionShell } from '@/components/SectionShell';
 
 export type SermonCard = {
   videoId: string;
@@ -66,75 +67,80 @@ export function SermonsGrid({ slug, initialVideos, initialNextPageToken, accentC
   if (videos.length === 0) return null;
 
   return (
-    <section className="mx-auto max-w-5xl px-6 py-20">
-      <p
-        className="text-xs font-semibold uppercase tracking-[0.22em]"
-        style={{ color: accentColor }}
-      >
-        Listen
-      </p>
-      <h2 className="mt-3 font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight sm:text-4xl">
-        Sermons
-      </h2>
-      <p className="mt-3 max-w-xl text-stone-600">Recent messages to watch and share.</p>
-      <ul className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {videos.map((video) => (
-          <li key={video.videoId}>
-            <a
-              href={`https://www.youtube.com/watch?v=${video.videoId}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group block"
+    <SectionShell tone="default">
+      <div className="mx-auto max-w-6xl px-6 py-24">
+        <p
+          className="text-xs font-semibold uppercase tracking-[0.22em]"
+          style={{ color: accentColor }}
+        >
+          Listen
+        </p>
+        <h2 className="mt-4 max-w-2xl font-[family-name:var(--font-display)] text-4xl font-semibold tracking-tight sm:text-5xl md:text-6xl">
+          Sermons
+        </h2>
+        <p className="mt-5 max-w-xl text-lg text-[var(--site-muted)]">
+          Recent messages to watch and share.
+        </p>
+
+        <ul className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+          {videos.map((video) => (
+            <li key={video.videoId}>
+              <a
+                href={`https://www.youtube.com/watch?v=${video.videoId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block"
+              >
+                <div className="relative aspect-video overflow-hidden bg-[var(--site-band-alt)]">
+                  {video.thumbnailUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={video.thumbnailUrl}
+                      alt=""
+                      className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                    />
+                  ) : null}
+                  {video.duration ? (
+                    <span className="absolute right-2 bottom-2 rounded bg-black/75 px-1.5 py-0.5 text-xs font-medium text-white">
+                      {video.duration}
+                    </span>
+                  ) : null}
+                </div>
+                <div className="pt-4">
+                  <h3 className="line-clamp-2 text-lg font-semibold tracking-tight group-hover:underline">
+                    {video.title}
+                  </h3>
+                  {video.publishedAt ? (
+                    <p className="mt-1.5 text-xs uppercase tracking-[0.12em] text-[var(--site-muted)]">
+                      {new Date(video.publishedAt).toLocaleDateString(undefined, {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </p>
+                  ) : null}
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        {error ? <p className="mt-6 text-center text-sm text-red-600">{error}</p> : null}
+
+        {nextPageToken ? (
+          <div className="mt-14 flex justify-center">
+            <button
+              type="button"
+              onClick={loadMore}
+              disabled={loading}
+              className="rounded-md px-6 py-3.5 text-sm font-semibold text-white transition disabled:opacity-60"
+              style={{ backgroundColor: accentColor }}
             >
-              <div className="relative aspect-video overflow-hidden bg-stone-100">
-                {video.thumbnailUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={video.thumbnailUrl}
-                    alt=""
-                    className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02] group-hover:opacity-95"
-                  />
-                ) : null}
-                {video.duration ? (
-                  <span className="absolute right-2 bottom-2 rounded bg-black/75 px-1.5 py-0.5 text-xs font-medium text-white">
-                    {video.duration}
-                  </span>
-                ) : null}
-              </div>
-              <div className="pt-3">
-                <h3 className="line-clamp-2 text-base font-semibold group-hover:underline">
-                  {video.title}
-                </h3>
-                {video.publishedAt ? (
-                  <p className="mt-1 text-xs text-stone-500">
-                    {new Date(video.publishedAt).toLocaleDateString(undefined, {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric',
-                    })}
-                  </p>
-                ) : null}
-              </div>
-            </a>
-          </li>
-        ))}
-      </ul>
-
-      {error ? <p className="mt-6 text-center text-sm text-red-600">{error}</p> : null}
-
-      {nextPageToken ? (
-        <div className="mt-12 flex justify-center">
-          <button
-            type="button"
-            onClick={loadMore}
-            disabled={loading}
-            className="rounded-md px-5 py-3 text-sm font-semibold text-white transition disabled:opacity-60"
-            style={{ backgroundColor: accentColor }}
-          >
-            {loading ? 'Loading…' : 'Load more sermons'}
-          </button>
-        </div>
-      ) : null}
-    </section>
+              {loading ? 'Loading…' : 'Load more sermons'}
+            </button>
+          </div>
+        ) : null}
+      </div>
+    </SectionShell>
   );
 }

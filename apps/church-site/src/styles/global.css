@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 
+/* Enable class-based dark mode (next-themes toggles `.dark` on <html>). */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial,
     sans-serif;
@@ -9,7 +12,23 @@
 :root {
   --church-primary: #1a8bbd;
   --church-secondary: #84dccf;
+  --site-bg: #f7f5f2;
+  --site-fg: #1c1917;
+  --site-muted: #57534e;
+  --site-band: #ffffff;
+  --site-band-alt: #efece7;
+  --site-line: rgba(28, 25, 23, 0.12);
   color-scheme: light;
+}
+
+.dark {
+  --site-bg: #0c0f14;
+  --site-fg: #f5f5f4;
+  --site-muted: #a8a29e;
+  --site-band: #12161d;
+  --site-band-alt: #0c0f14;
+  --site-line: rgba(245, 245, 244, 0.12);
+  color-scheme: dark;
 }
 
 html {
@@ -26,8 +45,8 @@ html {
 body {
   margin: 0;
   font-family: var(--font-sans);
-  color: #1c1917;
-  background: #fafaf9;
+  color: var(--site-fg);
+  background: var(--site-bg);
 }
 
 a {
@@ -66,6 +85,16 @@ a {
   }
 }
 
+@keyframes site-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(2%, -1.5%, 0) scale(1.04);
+  }
+}
+
 .site-anim-rise {
   animation: site-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -76,6 +105,10 @@ a {
 
 .site-anim-fade {
   animation: site-fade 0.8s ease both;
+}
+
+.site-anim-drift {
+  animation: site-drift 18s ease-in-out infinite;
 }
 
 .site-anim-delay-1 {
@@ -97,7 +130,8 @@ a {
 @media (prefers-reduced-motion: reduce) {
   .site-anim-rise,
   .site-anim-logo,
-  .site-anim-fade {
+  .site-anim-fade,
+  .site-anim-drift {
     animation: none;
   }
 }
