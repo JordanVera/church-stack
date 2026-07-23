@@ -61,6 +61,7 @@ export default async function ChurchHomePage({ searchParams }: PageProps) {
   const {
     branding,
     contact,
+    social,
     events,
     announcements,
     sermonSeries,
@@ -96,6 +97,7 @@ export default async function ChurchHomePage({ searchParams }: PageProps) {
         showVisit={locations.length > 0}
         showBelong={groups.length > 0}
         contact={contact}
+        social={social}
       >
         <Hero
           name={branding.name}

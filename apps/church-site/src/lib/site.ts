@@ -10,6 +10,12 @@ export type PublicSitePayload = {
     address: string | null;
     timezone: string;
   };
+  social: {
+    facebookUrl: string | null;
+    instagramUrl: string | null;
+    youtubeUrl: string | null;
+    threadsUrl: string | null;
+  };
   events: Array<{
     id: string;
     title: string;

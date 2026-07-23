@@ -1,5 +1,12 @@
 import type { ReactNode } from 'react';
 
+type SocialLinks = {
+  facebookUrl: string | null;
+  instagramUrl: string | null;
+  youtubeUrl: string | null;
+  threadsUrl: string | null;
+};
+
 type SiteChromeProps = {
   name: string;
   logoUrl: string | null;
@@ -13,8 +20,16 @@ type SiteChromeProps = {
     phone: string | null;
     address: string | null;
   };
+  social?: SocialLinks | null;
   children: ReactNode;
 };
+
+const SOCIAL_LABELS: Array<{ key: keyof SocialLinks; label: string }> = [
+  { key: 'facebookUrl', label: 'Facebook' },
+  { key: 'instagramUrl', label: 'Instagram' },
+  { key: 'youtubeUrl', label: 'YouTube' },
+  { key: 'threadsUrl', label: 'Threads' },
+];
 
 export function SiteChrome({
   name,
@@ -25,11 +40,17 @@ export function SiteChrome({
   showVisit = false,
   showBelong = false,
   contact,
+  social,
   children,
 }: SiteChromeProps) {
   const contactLine =
     [contact.address, contact.phone, contact.email].filter(Boolean).join(' · ') ||
     'Powered by Church Stack';
+
+  const socialLinks = SOCIAL_LABELS.flatMap(({ key, label }) => {
+    const href = social?.[key]?.trim();
+    return href ? [{ href, label }] : [];
+  });
 
   return (
     <>
@@ -85,20 +106,40 @@ export function SiteChrome({
 
       <footer className="border-t border-stone-200 bg-stone-100/80 px-6 py-12 text-sm text-stone-600">
         <div className="mx-auto flex max-w-5xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col gap-2">
             {logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={logoUrl} alt="" className="h-10 w-10 object-contain" />
-            ) : null}
-            <div>
+              <img
+                src={logoUrl}
+                alt={name}
+                className="h-14 w-auto max-h-14 max-w-[220px] object-contain sm:h-16 sm:max-h-16"
+              />
+            ) : (
               <p
                 className="font-[family-name:var(--font-display)] text-base font-semibold text-stone-900"
                 style={{ color: primaryColor }}
               >
                 {name}
               </p>
-              <p className="mt-0.5">{contactLine}</p>
-            </div>
+            )}
+            <p>{contactLine}</p>
+            {socialLinks.length > 0 ? (
+              <ul className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
+                {socialLinks.map((link) => (
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium underline-offset-2 transition hover:underline"
+                      style={{ color: primaryColor }}
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </div>
           {givingUrl ? (
             <a

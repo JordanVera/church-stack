@@ -236,6 +236,12 @@ export const churchRouter = router({
           address: church.address,
           timezone: church.timezone,
         },
+        social: {
+          facebookUrl: church.facebookUrl,
+          instagramUrl: church.instagramUrl,
+          youtubeUrl: church.youtubeUrl,
+          threadsUrl: church.threadsUrl,
+        },
         events,
         announcements,
         sermonSeries,
@@ -613,6 +619,87 @@ export const churchRouter = router({
       });
     }),
 
+  /** Update public contact details shown on the white-label site. */
+  ownerUpdateContact: churchAdminProcedure
+    .input(
+      z.object({
+        churchId: z.string().min(1),
+        contactEmail: z
+          .union([z.string().email().max(254), z.literal(''), z.null()])
+          .optional()
+          .transform((v) => {
+            if (v === undefined || v === null || v === '') return null;
+            return v;
+          }),
+        phone: z
+          .union([z.string().max(40), z.literal(''), z.null()])
+          .optional()
+          .transform((v) => {
+            if (v === undefined || v === null || v === '') return null;
+            return v.trim();
+          }),
+        address: z
+          .union([z.string().max(300), z.literal(''), z.null()])
+          .optional()
+          .transform((v) => {
+            if (v === undefined || v === null || v === '') return null;
+            return v.trim();
+          }),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await assertChurchAdmin(ctx, input.churchId);
+
+      return ctx.prisma.church.update({
+        where: { id: input.churchId },
+        data: {
+          contactEmail: input.contactEmail ?? null,
+          phone: input.phone ?? null,
+          address: input.address ?? null,
+        },
+        select: {
+          id: true,
+          slug: true,
+          contactEmail: true,
+          phone: true,
+          address: true,
+        },
+      });
+    }),
+
+  /** Update public social profile URLs shown on the white-label site. */
+  ownerUpdateSocial: churchAdminProcedure
+    .input(
+      z.object({
+        churchId: z.string().min(1),
+        facebookUrl: optionalUrlSchema,
+        instagramUrl: optionalUrlSchema,
+        youtubeUrl: optionalUrlSchema,
+        threadsUrl: optionalUrlSchema,
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await assertChurchAdmin(ctx, input.churchId);
+
+      return ctx.prisma.church.update({
+        where: { id: input.churchId },
+        data: {
+          facebookUrl: input.facebookUrl ?? null,
+          instagramUrl: input.instagramUrl ?? null,
+          youtubeUrl: input.youtubeUrl ?? null,
+          threadsUrl: input.threadsUrl ?? null,
+        },
+        select: {
+          id: true,
+          slug: true,
+          facebookUrl: true,
+          instagramUrl: true,
+          youtubeUrl: true,
+          threadsUrl: true,
+        },
+      });
+    }),
+
   /**
    * Save or clear a YouTube playlist/channel URL for the public sermons grid.
    * Empty sourceUrl clears the link.
@@ -727,6 +814,13 @@ export const churchRouter = router({
         logoUrl: church.logoUrl,
         primaryColor: church.primaryColor,
         secondaryColor: church.secondaryColor,
+        contactEmail: church.contactEmail,
+        phone: church.phone,
+        address: church.address,
+        facebookUrl: church.facebookUrl,
+        instagramUrl: church.instagramUrl,
+        youtubeUrl: church.youtubeUrl,
+        threadsUrl: church.threadsUrl,
         websiteStatus: church.websiteStatus,
         websiteUrl: church.websiteUrl,
         customDomain: church.customDomain,

@@ -4,6 +4,12 @@ import { useEffect, useRef, useState } from 'react';
 import { use } from 'react';
 import { toast } from 'sonner';
 import { ChurchDashboardProvider } from '@/components/dashboard/ChurchDashboardProvider';
+import {
+  FacebookIcon,
+  InstagramIcon,
+  ThreadsIcon,
+  YoutubeIcon,
+} from '@/components/onboard/SocialIcons';
 import { trpc } from '@/lib/trpc-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,6 +41,13 @@ function SettingsPanel({ churchId, slug }: { churchId: string; slug: string }) {
   const [givingUrl, setGivingUrl] = useState('');
   const [primaryColor, setPrimaryColor] = useState('#1a8bbd');
   const [secondaryColor, setSecondaryColor] = useState('#84dccf');
+  const [contactEmail, setContactEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+  const [facebookUrl, setFacebookUrl] = useState('');
+  const [instagramUrl, setInstagramUrl] = useState('');
+  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [threadsUrl, setThreadsUrl] = useState('');
   const [logoBusy, setLogoBusy] = useState(false);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [pendingPreview, setPendingPreview] = useState<string | null>(null);
@@ -47,6 +60,24 @@ function SettingsPanel({ churchId, slug }: { churchId: string; slug: string }) {
     if (dash.data?.primaryColor) setPrimaryColor(dash.data.primaryColor);
     if (dash.data?.secondaryColor) setSecondaryColor(dash.data.secondaryColor);
   }, [dash.data?.primaryColor, dash.data?.secondaryColor]);
+
+  useEffect(() => {
+    setContactEmail(dash.data?.contactEmail ?? '');
+    setPhone(dash.data?.phone ?? '');
+    setAddress(dash.data?.address ?? '');
+  }, [dash.data?.contactEmail, dash.data?.phone, dash.data?.address]);
+
+  useEffect(() => {
+    setFacebookUrl(dash.data?.facebookUrl ?? '');
+    setInstagramUrl(dash.data?.instagramUrl ?? '');
+    setYoutubeUrl(dash.data?.youtubeUrl ?? '');
+    setThreadsUrl(dash.data?.threadsUrl ?? '');
+  }, [
+    dash.data?.facebookUrl,
+    dash.data?.instagramUrl,
+    dash.data?.youtubeUrl,
+    dash.data?.threadsUrl,
+  ]);
 
   useEffect(() => {
     return () => {
@@ -72,6 +103,22 @@ function SettingsPanel({ churchId, slug }: { churchId: string; slug: string }) {
   const saveColors = trpc.church.ownerUpdateBrandingColors.useMutation({
     onSuccess: async () => {
       toast.success('Brand colors saved');
+      await utils.church.getOwnerDashboard.invalidate({ slug });
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  const saveContact = trpc.church.ownerUpdateContact.useMutation({
+    onSuccess: async () => {
+      toast.success('Contact info saved');
+      await utils.church.getOwnerDashboard.invalidate({ slug });
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  const saveSocial = trpc.church.ownerUpdateSocial.useMutation({
+    onSuccess: async () => {
+      toast.success('Social links saved');
       await utils.church.getOwnerDashboard.invalidate({ slug });
     },
     onError: (err) => toast.error(err.message),
@@ -150,7 +197,7 @@ function SettingsPanel({ churchId, slug }: { churchId: string; slug: string }) {
       <div>
         <h2 className="font-display text-2xl font-bold text-ink-900 dark:text-white">Settings</h2>
         <p className="mt-1 text-sm text-ink-600 dark:text-ink-300">
-          Branding, billing, giving link, and support.
+          Branding, contact, social links, billing, and support.
         </p>
       </div>
 
@@ -198,6 +245,145 @@ function SettingsPanel({ churchId, slug }: { churchId: string; slug: string }) {
               </Button>
             ) : null}
           </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-ink-200 dark:border-ink-800 dark:bg-ink-900">
+        <CardHeader>
+          <CardTitle className="text-base">Contact</CardTitle>
+          <CardDescription>
+            Shown in the footer of your white-label website. Leave blank to hide a field.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <Label htmlFor="contact-email">Email</Label>
+              <Input
+                id="contact-email"
+                type="email"
+                className="mt-1 h-10"
+                placeholder="hello@yourchurch.org"
+                value={contactEmail}
+                onChange={(e) => setContactEmail(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="contact-phone">Phone</Label>
+              <Input
+                id="contact-phone"
+                type="tel"
+                className="mt-1 h-10"
+                placeholder="(555) 123-4567"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <Label htmlFor="contact-address">Address</Label>
+              <Input
+                id="contact-address"
+                className="mt-1 h-10"
+                placeholder="123 Main St, City, ST 00000"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+              />
+            </div>
+          </div>
+          <Button
+            disabled={saveContact.isPending}
+            onClick={() =>
+              saveContact.mutate({
+                churchId,
+                contactEmail: contactEmail.trim() || null,
+                phone: phone.trim() || null,
+                address: address.trim() || null,
+              })
+            }
+          >
+            {saveContact.isPending ? 'Saving…' : 'Save contact'}
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card className="border-ink-200 dark:border-ink-800 dark:bg-ink-900">
+        <CardHeader>
+          <CardTitle className="text-base">Social</CardTitle>
+          <CardDescription>
+            Full profile URLs for your site footer. Leave blank to hide a network.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            {(
+              [
+                {
+                  id: 'facebook-url',
+                  label: 'Facebook',
+                  placeholder: 'https://facebook.com/yourchurch',
+                  value: facebookUrl,
+                  onChange: setFacebookUrl,
+                  Icon: FacebookIcon,
+                },
+                {
+                  id: 'instagram-url',
+                  label: 'Instagram',
+                  placeholder: 'https://instagram.com/yourchurch',
+                  value: instagramUrl,
+                  onChange: setInstagramUrl,
+                  Icon: InstagramIcon,
+                },
+                {
+                  id: 'youtube-url',
+                  label: 'YouTube',
+                  placeholder: 'https://youtube.com/@yourchurch',
+                  value: youtubeUrl,
+                  onChange: setYoutubeUrl,
+                  Icon: YoutubeIcon,
+                },
+                {
+                  id: 'threads-url',
+                  label: 'Threads',
+                  placeholder: 'https://threads.net/@yourchurch',
+                  value: threadsUrl,
+                  onChange: setThreadsUrl,
+                  Icon: ThreadsIcon,
+                },
+              ] as const
+            ).map(({ id, label, placeholder, value, onChange, Icon }) => (
+              <div key={id}>
+                <Label
+                  htmlFor={id}
+                  className="mb-1.5 inline-flex items-center gap-2 text-ink-700 dark:text-ink-300"
+                >
+                  <Icon className="size-6 rounded-md" />
+                  {label}
+                </Label>
+                <Input
+                  id={id}
+                  type="url"
+                  className="h-10"
+                  placeholder={placeholder}
+                  value={value}
+                  onChange={(e) => onChange(e.target.value)}
+                />
+              </div>
+            ))}
+          </div>
+          <Button
+            disabled={saveSocial.isPending}
+            onClick={() =>
+              saveSocial.mutate({
+                churchId,
+                facebookUrl: facebookUrl.trim() || null,
+                instagramUrl: instagramUrl.trim() || null,
+                youtubeUrl: youtubeUrl.trim() || null,
+                threadsUrl: threadsUrl.trim() || null,
+              })
+            }
+          >
+            {saveSocial.isPending ? 'Saving…' : 'Save social links'}
+          </Button>
         </CardContent>
       </Card>
 
