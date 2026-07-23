@@ -591,6 +591,28 @@ export const churchRouter = router({
       });
     }),
 
+  /** Set or clear the church logo URL (Blob upload route persists after upload). */
+  ownerUpdateLogoUrl: churchAdminProcedure
+    .input(
+      z.object({
+        churchId: z.string().min(1),
+        logoUrl: optionalUrlSchema,
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await assertChurchAdmin(ctx, input.churchId);
+
+      return ctx.prisma.church.update({
+        where: { id: input.churchId },
+        data: { logoUrl: input.logoUrl ?? null },
+        select: {
+          id: true,
+          slug: true,
+          logoUrl: true,
+        },
+      });
+    }),
+
   /**
    * Save or clear a YouTube playlist/channel URL for the public sermons grid.
    * Empty sourceUrl clears the link.
@@ -702,6 +724,7 @@ export const churchRouter = router({
         slug: church.slug,
         name: church.name,
         planTier: church.planTier,
+        logoUrl: church.logoUrl,
         primaryColor: church.primaryColor,
         secondaryColor: church.secondaryColor,
         websiteStatus: church.websiteStatus,

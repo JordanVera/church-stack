@@ -18,12 +18,7 @@ type Props = {
   accentColor: string;
 };
 
-export function SermonsGrid({
-  slug,
-  initialVideos,
-  initialNextPageToken,
-  accentColor,
-}: Props) {
+export function SermonsGrid({ slug, initialVideos, initialNextPageToken, accentColor }: Props) {
   const [videos, setVideos] = useState(initialVideos);
   const [nextPageToken, setNextPageToken] = useState(initialNextPageToken);
   const [loading, setLoading] = useState(false);
@@ -71,26 +66,33 @@ export function SermonsGrid({
   if (videos.length === 0) return null;
 
   return (
-    <section className="mx-auto max-w-5xl px-6 py-16">
-      <h2 className="font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight">
+    <section className="mx-auto max-w-5xl px-6 py-20">
+      <p
+        className="text-xs font-semibold uppercase tracking-[0.22em]"
+        style={{ color: accentColor }}
+      >
+        Listen
+      </p>
+      <h2 className="mt-3 font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight sm:text-4xl">
         Sermons
       </h2>
-      <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <p className="mt-3 max-w-xl text-stone-600">Recent messages to watch and share.</p>
+      <ul className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {videos.map((video) => (
-          <li key={video.videoId} className="overflow-hidden rounded-lg border border-stone-200">
+          <li key={video.videoId}>
             <a
               href={`https://www.youtube.com/watch?v=${video.videoId}`}
               target="_blank"
               rel="noopener noreferrer"
               className="group block"
             >
-              <div className="relative aspect-video bg-stone-100">
+              <div className="relative aspect-video overflow-hidden bg-stone-100">
                 {video.thumbnailUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={video.thumbnailUrl}
                     alt=""
-                    className="h-full w-full object-cover transition group-hover:opacity-95"
+                    className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02] group-hover:opacity-95"
                   />
                 ) : null}
                 {video.duration ? (
@@ -99,7 +101,7 @@ export function SermonsGrid({
                   </span>
                 ) : null}
               </div>
-              <div className="p-4">
+              <div className="pt-3">
                 <h3 className="line-clamp-2 text-base font-semibold group-hover:underline">
                   {video.title}
                 </h3>
@@ -121,7 +123,7 @@ export function SermonsGrid({
       {error ? <p className="mt-6 text-center text-sm text-red-600">{error}</p> : null}
 
       {nextPageToken ? (
-        <div className="mt-10 flex justify-center">
+        <div className="mt-12 flex justify-center">
           <button
             type="button"
             onClick={loadMore}

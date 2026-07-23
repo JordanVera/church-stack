@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { use } from 'react';
 import { toast } from 'sonner';
 import { ChurchDashboardProvider } from '@/components/dashboard/ChurchDashboardProvider';
@@ -31,9 +31,13 @@ function toColorInputValue(hex: string, fallback: string) {
 function SettingsPanel({ churchId, slug }: { churchId: string; slug: string }) {
   const utils = trpc.useUtils();
   const dash = trpc.church.getOwnerDashboard.useQuery({ slug });
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [givingUrl, setGivingUrl] = useState('');
   const [primaryColor, setPrimaryColor] = useState('#1a8bbd');
   const [secondaryColor, setSecondaryColor] = useState('#84dccf');
+  const [logoBusy, setLogoBusy] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [pendingPreview, setPendingPreview] = useState<string | null>(null);
 
   useEffect(() => {
     setGivingUrl(dash.data?.givingUrl ?? '');
@@ -43,6 +47,12 @@ function SettingsPanel({ churchId, slug }: { churchId: string; slug: string }) {
     if (dash.data?.primaryColor) setPrimaryColor(dash.data.primaryColor);
     if (dash.data?.secondaryColor) setSecondaryColor(dash.data.secondaryColor);
   }, [dash.data?.primaryColor, dash.data?.secondaryColor]);
+
+  useEffect(() => {
+    return () => {
+      if (pendingPreview) URL.revokeObjectURL(pendingPreview);
+    };
+  }, [pendingPreview]);
 
   const portal = trpc.billing.createPortalSession.useMutation({
     onSuccess: (data) => {
@@ -72,6 +82,68 @@ function SettingsPanel({ churchId, slug }: { churchId: string; slug: string }) {
 
   const primaryValid = HEX_COLOR.test(primaryColor);
   const secondaryValid = HEX_COLOR.test(secondaryColor);
+  const logoPreview = pendingPreview ?? data.logoUrl ?? null;
+
+  const clearPendingFile = () => {
+    if (pendingPreview) URL.revokeObjectURL(pendingPreview);
+    setPendingFile(null);
+    setPendingPreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const onPickLogo = (file: File | null) => {
+    if (!file) {
+      clearPendingFile();
+      return;
+    }
+    if (pendingPreview) URL.revokeObjectURL(pendingPreview);
+    setPendingFile(file);
+    setPendingPreview(URL.createObjectURL(file));
+  };
+
+  const uploadLogo = async () => {
+    if (!pendingFile) return;
+    setLogoBusy(true);
+    try {
+      const form = new FormData();
+      form.set('churchId', churchId);
+      form.set('file', pendingFile);
+      const res = await fetch('/api/church/logo', { method: 'POST', body: form });
+      const body = (await res.json()) as { ok?: boolean; error?: string; logoUrl?: string | null };
+      if (!res.ok || !body.ok) {
+        throw new Error(body.error || 'Upload failed');
+      }
+      toast.success('Logo uploaded');
+      clearPendingFile();
+      await utils.church.getOwnerDashboard.invalidate({ slug });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Upload failed');
+    } finally {
+      setLogoBusy(false);
+    }
+  };
+
+  const removeLogo = async () => {
+    setLogoBusy(true);
+    try {
+      const res = await fetch('/api/church/logo', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ churchId }),
+      });
+      const body = (await res.json()) as { ok?: boolean; error?: string };
+      if (!res.ok || !body.ok) {
+        throw new Error(body.error || 'Could not remove logo');
+      }
+      toast.success('Logo removed');
+      clearPendingFile();
+      await utils.church.getOwnerDashboard.invalidate({ slug });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Could not remove logo');
+    } finally {
+      setLogoBusy(false);
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -81,6 +153,53 @@ function SettingsPanel({ churchId, slug }: { churchId: string; slug: string }) {
           Branding, billing, giving link, and support.
         </p>
       </div>
+
+      <Card className="border-ink-200 dark:border-ink-800 dark:bg-ink-900">
+        <CardHeader>
+          <CardTitle className="text-base">Logo</CardTitle>
+          <CardDescription>
+            Shown on your white-label website header and hero. PNG, JPEG, WebP, or SVG up to 2MB.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-lg border border-ink-200 bg-ink-50 dark:border-ink-700 dark:bg-ink-950">
+              {logoPreview ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={logoPreview} alt="" className="h-full w-full object-contain p-1.5" />
+              ) : (
+                <span className="px-2 text-center text-xs text-ink-400">No logo</span>
+              )}
+            </div>
+            <div className="min-w-0 flex-1 space-y-2">
+              <Label htmlFor="logo-file">Image file</Label>
+              <input
+                ref={fileInputRef}
+                id="logo-file"
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                className="mt-1 block h-10 w-full cursor-pointer rounded-lg border border-ink-200 bg-transparent px-2.5 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-ink-100 file:px-3 file:py-1 file:text-sm file:font-medium dark:border-ink-700 dark:file:bg-ink-800"
+                onChange={(e) => onPickLogo(e.target.files?.[0] ?? null)}
+              />
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button disabled={logoBusy || !pendingFile} onClick={() => void uploadLogo()}>
+              {logoBusy && pendingFile ? 'Uploading…' : 'Upload logo'}
+            </Button>
+            {data.logoUrl ? (
+              <Button variant="outline" disabled={logoBusy} onClick={() => void removeLogo()}>
+                {logoBusy && !pendingFile ? 'Removing…' : 'Remove logo'}
+              </Button>
+            ) : null}
+            {pendingFile ? (
+              <Button variant="ghost" disabled={logoBusy} onClick={clearPendingFile}>
+                Cancel
+              </Button>
+            ) : null}
+          </div>
+        </CardContent>
+      </Card>
 
       <Card className="border-ink-200 dark:border-ink-800 dark:bg-ink-900">
         <CardHeader>
@@ -155,6 +274,14 @@ function SettingsPanel({ churchId, slug }: { churchId: string; slug: string }) {
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/80">
               Preview
             </p>
+            {logoPreview ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={logoPreview}
+                alt=""
+                className="mt-3 h-12 w-auto max-w-[160px] object-contain"
+              />
+            ) : null}
             <p className="mt-2 font-display text-xl font-semibold">{data.name}</p>
             <span
               className="mt-4 inline-flex rounded-md px-3 py-1.5 text-xs font-semibold text-stone-900"

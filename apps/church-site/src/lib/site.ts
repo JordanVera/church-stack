@@ -41,6 +41,14 @@ export type PublicSitePayload = {
   /** YouTube playlistItems nextPageToken for Load more (null when no more). */
   sermonsNextPageToken: string | null;
   sermonsYoutubePlaylistId: string | null;
+  lifeGroups: Array<{
+    id: string;
+    name: string;
+    description: string | null;
+    location: string | null;
+    meetingDay: number | null;
+    meetingTime: string | null;
+  }>;
   locations: Array<{
     id: string;
     name: string;

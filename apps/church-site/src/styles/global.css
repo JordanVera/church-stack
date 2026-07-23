@@ -23,3 +23,70 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+@keyframes site-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes site-logo-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes site-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.site-anim-rise {
+  animation: site-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.site-anim-logo {
+  animation: site-logo-in 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.site-anim-fade {
+  animation: site-fade 0.8s ease both;
+}
+
+.site-anim-delay-1 {
+  animation-delay: 0.08s;
+}
+
+.site-anim-delay-2 {
+  animation-delay: 0.16s;
+}
+
+.site-anim-delay-3 {
+  animation-delay: 0.28s;
+}
+
+.site-anim-delay-4 {
+  animation-delay: 0.4s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-anim-rise,
+  .site-anim-logo,
+  .site-anim-fade {
+    animation: none;
+  }
+}
