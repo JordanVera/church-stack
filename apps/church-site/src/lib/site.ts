@@ -29,6 +29,16 @@ export type PublicSitePayload = {
     description: string | null;
     imageUrl: string | null;
   }>;
+  /** YouTube playlist videos when the church linked a sermons playlist. */
+  sermons: Array<{
+    videoId: string;
+    title: string;
+    description: string;
+    publishedAt: string;
+    thumbnailUrl: string;
+    duration?: string;
+  }>;
+  sermonsYoutubePlaylistId: string | null;
   locations: Array<{
     id: string;
     name: string;

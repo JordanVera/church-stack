@@ -82,6 +82,10 @@ model Church {
   givingUrl       String?
   eventsEnabled   Boolean  @default(true)
   sermonsEnabled  Boolean  @default(true)
+  /// Resolved YouTube playlist id for public sermons grid (PL… / UU…).
+  sermonsYoutubePlaylistId String?
+  /// Original playlist/channel URL pasted by the church owner.
+  sermonsYoutubeSourceUrl  String?
 
   // Website provisioning (per-church Next.js / Vercel project)
   websiteStatus       WebsiteStatus @default(NONE)

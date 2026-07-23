@@ -4,11 +4,11 @@ This guide covers deploying the **platform web app** (`apps/web`) to Vercel, how
 
 ## What you are deploying
 
-| App | Role | How it ships |
-| --- | --- | --- |
-| `apps/web` | SaaS platform (marketing, auth, dashboard, `/admin`, `/dev`, tRPC API) | **One** Vercel project you create manually |
-| `apps/church-site` | Per-church public website | Separate Vercel project **per church** (often from `/dev`) |
-| `apps/native` | Expo mobile app | EAS / App Store — not Vercel |
+| App                | Role                                                                   | How it ships                                               |
+| ------------------ | ---------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `apps/web`         | SaaS platform (marketing, auth, dashboard, `/admin`, `/dev`, tRPC API) | **One** Vercel project you create manually                 |
+| `apps/church-site` | Per-church public website                                              | Separate Vercel project **per church** (often from `/dev`) |
+| `apps/native`      | Expo mobile app                                                        | EAS / App Store — not Vercel                               |
 
 This document focuses on **`apps/web` only**.
 
@@ -36,12 +36,12 @@ Root Directory is what makes this project build only the platform app — not `c
 
 In the Vercel project → **Settings → Build and Deployment** (or the import wizard overrides):
 
-| Setting | Value |
-| --- | --- |
-| **Root Directory** | `apps/web` |
-| **Install Command** | `cd ../.. && npm install` |
-| **Build Command** | `npm run build` (default is fine) |
-| **Output Directory** | leave blank (Next.js default) |
+| Setting              | Value                             |
+| -------------------- | --------------------------------- |
+| **Root Directory**   | `apps/web`                        |
+| **Install Command**  | `cd ../.. && npm install`         |
+| **Build Command**    | `npm run build` (default is fine) |
+| **Output Directory** | leave blank (Next.js default)     |
 
 **Why the custom Install Command?**  
 This is an npm workspaces monorepo. The lockfile and workspace packages (`@repo/api`, `@repo/database`, `@repo/config`) live at the **repo root**. Installing only inside `apps/web` will not wire those packages correctly.
@@ -58,17 +58,18 @@ cd ../.. && npx turbo run build --filter=web
 
 Set these on the Vercel project (Production, and Preview if you use preview deploys). See [`.env.example`](.env.example) for the full list.
 
-| Variable | Required | Notes |
-| --- | --- | --- |
-| `DATABASE_URL` | Yes | Production MySQL URL (not `localhost`) |
-| `NEXTAUTH_SECRET` | Yes | Long random string |
-| `NEXTAUTH_URL` | Yes | Public URL of this deploy, e.g. `https://your-app.vercel.app` |
-| `PLATFORM_DEV_EMAILS` | Recommended | Comma-separated emails allowed into `/dev` |
-| `ALLOW_DEV_CONSOLE` | No | Prefer unset/`false` in production |
-| `PLATFORM_API_URL` | Recommended | Public tRPC base for church sites, e.g. `https://your-app.vercel.app/api/trpc` |
-| `NEXT_PUBLIC_CHURCH_SITE_PREVIEW_URL` | No | Local/dev preview helper |
-| `VERCEL_TOKEN`, `VERCEL_TEAM_ID`, `VERCEL_GIT_REPO`, … | No | Only if you use `/dev` to provision church websites |
-| `EXPO_TOKEN`, `EAS_PROJECT_ID` | No | Only if you use `/dev` for white-label mobile builds |
+| Variable                                               | Required    | Notes                                                                          |
+| ------------------------------------------------------ | ----------- | ------------------------------------------------------------------------------ |
+| `DATABASE_URL`                                         | Yes         | Production MySQL URL (not `localhost`)                                         |
+| `NEXTAUTH_SECRET`                                      | Yes         | Long random string                                                             |
+| `NEXTAUTH_URL`                                         | Yes         | Public URL of this deploy, e.g. `https://your-app.vercel.app`                  |
+| `PLATFORM_DEV_EMAILS`                                  | Recommended | Comma-separated emails allowed into `/dev`                                     |
+| `ALLOW_DEV_CONSOLE`                                    | No          | Prefer unset/`false` in production                                             |
+| `PLATFORM_API_URL`                                     | Recommended | Public tRPC base for church sites, e.g. `https://your-app.vercel.app/api/trpc` |
+| `NEXT_PUBLIC_CHURCH_SITE_PREVIEW_URL`                  | No          | Local/dev preview helper                                                       |
+| `YOUTUBE_API_KEY`                                      | Recommended | YouTube Data API v3 key for church sermons playlists                           |
+| `VERCEL_TOKEN`, `VERCEL_TEAM_ID`, `VERCEL_GIT_REPO`, … | No          | Only if you use `/dev` to provision church websites                            |
+| `EXPO_TOKEN`, `EAS_PROJECT_ID`                         | No          | Only if you use `/dev` for white-label mobile builds                           |
 
 After the first successful deploy, point `NEXTAUTH_URL` and `PLATFORM_API_URL` at the real production URL.
 
@@ -129,9 +130,9 @@ Later you can add an Ignored Build Step (e.g. `npx turbo-ignore web`) so Vercel 
 
 Per-church sites use **`apps/church-site`** as the Root Directory (see `VERCEL_CHURCH_SITE_ROOT` in `.env.example`). Those projects are separate from the platform and are often created from `/dev` when `VERCEL_TOKEN` + `VERCEL_GIT_REPO` are set.
 
-| Project | Root Directory |
-| --- | --- |
-| Platform SaaS | `apps/web` |
+| Project                  | Root Directory                                                 |
+| ------------------------ | -------------------------------------------------------------- |
+| Platform SaaS            | `apps/web`                                                     |
 | One church’s public site | `apps/church-site` (+ `CHURCH_SLUG`, `PLATFORM_API_URL`, etc.) |
 
 ---

@@ -7,13 +7,17 @@ import {
   assertChurchAdminBySlug,
   isPlanningCenterLinked,
 } from '../church-admin';
-import {
-  attachCustomDomainToProject,
-  provisionChurchWebsite,
-} from '../provision/vercel';
+import { attachCustomDomainToProject, provisionChurchWebsite } from '../provision/vercel';
 import { queueWhiteLabelBuild, setMobilePlan } from '../provision/eas';
 import { fetchCampusesWithServiceTimes } from '../planning-center/client';
 import { syncPlanningCenterForChurch } from '../planning-center/sync';
+import {
+  fetchAllPlaylistVideos,
+  getPlaylistVideos,
+  invalidatePlaylistCache,
+  resolveToPlaylistId,
+  type SermonVideo,
+} from '../youtube/playlist';
 
 const planTierSchema = z.enum(['SITE', 'GROWTH', 'CUSTOM']);
 
@@ -23,9 +27,7 @@ const slugSchema = z
   .max(48)
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be lowercase letters, numbers, and hyphens');
 
-const timeSchema = z
-  .string()
-  .regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Start time must be HH:mm (24h)');
+const timeSchema = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Start time must be HH:mm (24h)');
 
 const emailSchema = z.string().email().max(254);
 
@@ -133,11 +135,9 @@ export const churchRouter = router({
       return toTenantBranding(church);
     }),
 
-  getById: publicProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ ctx, input }) => {
-      return ctx.prisma.church.findUnique({ where: { id: input.id } });
-    }),
+  getById: publicProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+    return ctx.prisma.church.findUnique({ where: { id: input.id } });
+  }),
 
   /**
    * Preview-import campuses + weekly service times from Planning Center People API.
@@ -174,39 +174,53 @@ export const churchRouter = router({
       });
       if (!church) return null;
 
-      const [events, announcements, sermonSeries, lifeGroups, locations] =
-        await Promise.all([
-          church.eventsEnabled
-            ? ctx.prisma.event.findMany({
-                where: { churchId: church.id, startsAt: { gte: new Date() } },
-                orderBy: { startsAt: 'asc' },
-                take: 12,
-              })
-            : Promise.resolve([]),
-          ctx.prisma.announcement.findMany({
-            where: { churchId: church.id, published: true },
-            orderBy: { createdAt: 'desc' },
-            take: 8,
-          }),
-          church.sermonsEnabled
-            ? ctx.prisma.sermonSeries.findMany({
-                where: { churchId: church.id },
-                orderBy: { createdAt: 'desc' },
-                take: 8,
-              })
-            : Promise.resolve([]),
-          ctx.prisma.lifeGroup.findMany({
-            where: { churchId: church.id },
-            orderBy: { name: 'asc' },
-            take: 24,
-          }),
-          ctx.prisma.location.findMany({
-            where: { churchId: church.id },
-            orderBy: { sortOrder: 'asc' },
-            include: { services: { orderBy: { sortOrder: 'asc' } } },
-            take: 20,
-          }),
-        ]);
+      const [events, announcements, sermonSeries, lifeGroups, locations] = await Promise.all([
+        church.eventsEnabled
+          ? ctx.prisma.event.findMany({
+              where: { churchId: church.id, startsAt: { gte: new Date() } },
+              orderBy: { startsAt: 'asc' },
+              take: 12,
+            })
+          : Promise.resolve([]),
+        ctx.prisma.announcement.findMany({
+          where: { churchId: church.id, published: true },
+          orderBy: { createdAt: 'desc' },
+          take: 8,
+        }),
+        church.sermonsEnabled && !church.sermonsYoutubePlaylistId
+          ? ctx.prisma.sermonSeries.findMany({
+              where: { churchId: church.id },
+              orderBy: { createdAt: 'desc' },
+              take: 8,
+            })
+          : Promise.resolve([]),
+        ctx.prisma.lifeGroup.findMany({
+          where: { churchId: church.id },
+          orderBy: { name: 'asc' },
+          take: 24,
+        }),
+        ctx.prisma.location.findMany({
+          where: { churchId: church.id },
+          orderBy: { sortOrder: 'asc' },
+          include: { services: { orderBy: { sortOrder: 'asc' } } },
+          take: 20,
+        }),
+      ]);
+
+      let sermons: SermonVideo[] = [];
+      if (church.sermonsEnabled && church.sermonsYoutubePlaylistId) {
+        try {
+          sermons = await fetchAllPlaylistVideos(church.sermonsYoutubePlaylistId, {
+            maxTotal: 100,
+          });
+        } catch (err) {
+          console.error(
+            `[getPublicSite] YouTube sermons failed for ${church.slug}:`,
+            err instanceof Error ? err.message : err
+          );
+          sermons = [];
+        }
+      }
 
       return {
         branding: toTenantBranding(church),
@@ -220,6 +234,8 @@ export const churchRouter = router({
         events,
         announcements,
         sermonSeries,
+        sermons,
+        sermonsYoutubePlaylistId: church.sermonsYoutubePlaylistId,
         lifeGroups,
         locations,
       };
@@ -331,9 +347,7 @@ export const churchRouter = router({
             churchId: church.id,
             name: loc.name,
             address: loc.address,
-            pastorId: loc.pastorClientKey
-              ? (pastorIdByKey.get(loc.pastorClientKey) ?? null)
-              : null,
+            pastorId: loc.pastorClientKey ? (pastorIdByKey.get(loc.pastorClientKey) ?? null) : null,
             sortOrder: locIndex,
           },
         });
@@ -436,8 +450,7 @@ export const churchRouter = router({
       }
     }
 
-    const tierPatch =
-      data.planTier !== undefined ? planTierDefaults(data.planTier) : null;
+    const tierPatch = data.planTier !== undefined ? planTierDefaults(data.planTier) : null;
 
     return ctx.prisma.church.update({
       where: { id },
@@ -500,6 +513,125 @@ export const churchRouter = router({
       });
     }),
 
+  /** Update primary/secondary brand colors used on the white-label site and app. */
+  ownerUpdateBrandingColors: churchAdminProcedure
+    .input(
+      z.object({
+        churchId: z.string().min(1),
+        primaryColor: z
+          .string()
+          .regex(/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/, 'Use a hex color like #1a8bbd'),
+        secondaryColor: z
+          .string()
+          .regex(/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/, 'Use a hex color like #84dccf'),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await assertChurchAdmin(ctx, input.churchId);
+
+      return ctx.prisma.church.update({
+        where: { id: input.churchId },
+        data: {
+          primaryColor: input.primaryColor.toLowerCase(),
+          secondaryColor: input.secondaryColor.toLowerCase(),
+        },
+        select: {
+          id: true,
+          slug: true,
+          primaryColor: true,
+          secondaryColor: true,
+        },
+      });
+    }),
+
+  /**
+   * Save or clear a YouTube playlist/channel URL for the public sermons grid.
+   * Empty sourceUrl clears the link.
+   */
+  ownerUpdateSermonsPlaylist: churchAdminProcedure
+    .input(
+      z.object({
+        churchId: z.string().min(1),
+        sourceUrl: z.string().max(2000).optional().nullable(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const church = await assertChurchAdmin(ctx, input.churchId);
+
+      if (!church.sermonsEnabled) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'Sermons are disabled for this church.',
+        });
+      }
+
+      const trimmed = input.sourceUrl?.trim() || '';
+      if (!trimmed) {
+        invalidatePlaylistCache(church.sermonsYoutubePlaylistId);
+        return ctx.prisma.church.update({
+          where: { id: church.id },
+          data: {
+            sermonsYoutubePlaylistId: null,
+            sermonsYoutubeSourceUrl: null,
+          },
+          select: {
+            id: true,
+            slug: true,
+            sermonsYoutubePlaylistId: true,
+            sermonsYoutubeSourceUrl: true,
+          },
+        });
+      }
+
+      try {
+        const { playlistId, sourceUrl } = await resolveToPlaylistId(trimmed);
+        // Validate the playlist is readable before saving.
+        await getPlaylistVideos(playlistId, { maxResults: 5 });
+        invalidatePlaylistCache(church.sermonsYoutubePlaylistId);
+        invalidatePlaylistCache(playlistId);
+
+        return ctx.prisma.church.update({
+          where: { id: church.id },
+          data: {
+            sermonsYoutubePlaylistId: playlistId,
+            sermonsYoutubeSourceUrl: sourceUrl,
+          },
+          select: {
+            id: true,
+            slug: true,
+            sermonsYoutubePlaylistId: true,
+            sermonsYoutubeSourceUrl: true,
+          },
+        });
+      } catch (err) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: err instanceof Error ? err.message : 'Failed to connect YouTube playlist',
+        });
+      }
+    }),
+
+  /** Preview sermons for the owner dashboard (first page). */
+  ownerPreviewSermons: churchAdminProcedure
+    .input(z.object({ churchId: z.string().min(1) }))
+    .query(async ({ ctx, input }) => {
+      const church = await assertChurchAdmin(ctx, input.churchId);
+      if (!church.sermonsYoutubePlaylistId) {
+        return { videos: [] as SermonVideo[], playlistId: null as string | null };
+      }
+      try {
+        const { videos } = await getPlaylistVideos(church.sermonsYoutubePlaylistId, {
+          maxResults: 6,
+        });
+        return { videos, playlistId: church.sermonsYoutubePlaylistId };
+      } catch (err) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: err instanceof Error ? err.message : 'Failed to load sermon preview',
+        });
+      }
+    }),
+
   /**
    * Owner dashboard summary for a church (by slug). Never returns raw PCO secrets.
    */
@@ -523,6 +655,8 @@ export const churchRouter = router({
         slug: church.slug,
         name: church.name,
         planTier: church.planTier,
+        primaryColor: church.primaryColor,
+        secondaryColor: church.secondaryColor,
         websiteStatus: church.websiteStatus,
         websiteUrl: church.websiteUrl,
         customDomain: church.customDomain,
@@ -531,6 +665,9 @@ export const churchRouter = router({
         givingUrl: church.givingUrl,
         givingEnabled: church.givingEnabled,
         canEditGiving: planAllowsGiving(church.planTier),
+        sermonsEnabled: church.sermonsEnabled,
+        sermonsYoutubePlaylistId: church.sermonsYoutubePlaylistId,
+        sermonsYoutubeSourceUrl: church.sermonsYoutubeSourceUrl,
         planningCenterLinked,
         counts: {
           pastors: pastorCount,
@@ -652,10 +789,7 @@ export const churchRouter = router({
         });
       }
 
-      const result = await attachCustomDomainToProject(
-        church.vercelProjectId,
-        church.customDomain
-      );
+      const result = await attachCustomDomainToProject(church.vercelProjectId, church.customDomain);
 
       if (result.ok) {
         await ctx.prisma.church.update({

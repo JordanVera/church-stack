@@ -72,10 +72,14 @@ export default async function ChurchHomePage({ searchParams }: PageProps) {
     );
   }
 
-  const { branding, contact, events, announcements, sermonSeries, locations } = site;
+  const { branding, contact, events, announcements, sermonSeries, sermons, locations } = site;
   const primary = branding.primaryColor;
   const secondary = branding.secondaryColor;
   const givingUrl = branding.givingUrl?.trim() || null;
+  const youtubeSermons = sermons ?? [];
+  const showYoutubeSermons = branding.features.sermons && youtubeSermons.length > 0;
+  const showSeriesFallback =
+    branding.features.sermons && !showYoutubeSermons && sermonSeries.length > 0;
 
   return (
     <main>
@@ -195,7 +199,60 @@ export default async function ChurchHomePage({ searchParams }: PageProps) {
         </section>
       ) : null}
 
-      {branding.features.sermons && sermonSeries.length > 0 ? (
+      {showYoutubeSermons ? (
+        <section className="mx-auto max-w-5xl px-6 py-16">
+          <h2 className="font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight">
+            Sermons
+          </h2>
+          <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {youtubeSermons.map((video) => (
+              <li
+                key={video.videoId}
+                className="overflow-hidden rounded-lg border border-stone-200"
+              >
+                <a
+                  href={`https://www.youtube.com/watch?v=${video.videoId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group block"
+                >
+                  <div className="relative aspect-video bg-stone-100">
+                    {video.thumbnailUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={video.thumbnailUrl}
+                        alt=""
+                        className="h-full w-full object-cover transition group-hover:opacity-95"
+                      />
+                    ) : null}
+                    {video.duration ? (
+                      <span className="absolute right-2 bottom-2 rounded bg-black/75 px-1.5 py-0.5 text-xs font-medium text-white">
+                        {video.duration}
+                      </span>
+                    ) : null}
+                  </div>
+                  <div className="p-4">
+                    <h3 className="line-clamp-2 text-base font-semibold group-hover:underline">
+                      {video.title}
+                    </h3>
+                    {video.publishedAt ? (
+                      <p className="mt-1 text-xs text-stone-500">
+                        {new Date(video.publishedAt).toLocaleDateString(undefined, {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                      </p>
+                    ) : null}
+                  </div>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {showSeriesFallback ? (
         <section className="mx-auto max-w-4xl px-6 py-16">
           <h2 className="font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight">
             Sermon series

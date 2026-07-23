@@ -12,6 +12,7 @@ import {
   Settings,
   Users,
   UsersRound,
+  Video,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -33,6 +34,7 @@ export function dashboardNav(slug: string): NavItem[] {
     { href: `${base}/locations`, label: 'Locations', icon: MapPin, pcoOwned: true },
     { href: `${base}/events`, label: 'Events', icon: CalendarDays, pcoOwned: true },
     { href: `${base}/announcements`, label: 'Announcements', icon: Bell },
+    { href: `${base}/sermons`, label: 'Sermons', icon: Video },
     { href: `${base}/groups`, label: 'Life groups', icon: UsersRound, pcoOwned: true },
     { href: `${base}/settings`, label: 'Settings', icon: Settings },
   ];
