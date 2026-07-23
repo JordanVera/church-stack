@@ -34,19 +34,20 @@ export function SiteChrome({
   return (
     <>
       <header className="site-anim-fade sticky top-0 z-40 border-b border-white/10 bg-[color-mix(in_srgb,var(--church-primary)_92%,#0f172a)] text-white backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 px-6">
+        <div className="mx-auto flex h-24 max-w-5xl items-center justify-between gap-4 px-6">
           <a href="#top" className="flex min-w-0 items-center gap-2.5">
             {logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={logoUrl}
-                alt=""
-                className="h-8 w-8 shrink-0 rounded-sm object-contain"
+                alt={name}
+                className="h-[4.5rem] w-auto max-h-[4.5rem] max-w-[280px] object-contain sm:h-20 sm:max-h-20 sm:max-w-[320px]"
               />
-            ) : null}
-            <span className="truncate font-[family-name:var(--font-display)] text-sm font-semibold tracking-tight sm:text-base">
-              {name}
-            </span>
+            ) : (
+              <span className="truncate font-[family-name:var(--font-display)] text-sm font-semibold tracking-tight sm:text-base">
+                {name}
+              </span>
+            )}
           </a>
           <nav className="flex items-center gap-4 text-sm">
             {showVisit ? (
