@@ -98,7 +98,7 @@ function LocationsPanel({ churchId }: { churchId: string }) {
                 onChange={(e) => setPastorId(e.target.value)}
               >
                 <option value="">None</option>
-                {pastors.data?.map((p) => (
+                {pastors.data?.map((p: NonNullable<typeof pastors.data>[number]) => (
                   <option key={p.id} value={p.id}>
                     {p.firstName} {p.lastName}
                   </option>
@@ -132,10 +132,8 @@ function LocationsPanel({ churchId }: { churchId: string }) {
       </Card>
 
       <div className="space-y-4">
-        {list.data?.length === 0 ? (
-          <p className="text-sm text-ink-500">No locations yet.</p>
-        ) : null}
-        {list.data?.map((loc) => (
+        {list.data?.length === 0 ? <p className="text-sm text-ink-500">No locations yet.</p> : null}
+        {list.data?.map((loc: NonNullable<typeof list.data>[number]) => (
           <Card key={loc.id} className="border-ink-200 dark:border-ink-800 dark:bg-ink-900">
             <CardContent className="space-y-4 px-5 py-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
@@ -192,7 +190,7 @@ function LocationsPanel({ churchId }: { churchId: string }) {
                   Weekly services
                 </p>
                 <ul className="mt-2 space-y-2">
-                  {loc.services.map((svc) => (
+                  {loc.services.map((svc: (typeof loc.services)[number]) => (
                     <li
                       key={svc.id}
                       className="flex flex-wrap items-center justify-between gap-2 text-sm"

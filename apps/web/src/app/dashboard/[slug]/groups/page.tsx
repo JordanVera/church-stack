@@ -135,7 +135,7 @@ function GroupsPanel({ churchId }: { churchId: string }) {
         {list.data?.length === 0 ? (
           <p className="text-sm text-ink-500">No life groups yet.</p>
         ) : null}
-        {list.data?.map((g) => (
+        {list.data?.map((g: NonNullable<typeof list.data>[number]) => (
           <Card key={g.id} className="border-ink-200 dark:border-ink-800 dark:bg-ink-900">
             <CardContent className="flex flex-wrap items-start justify-between gap-3 px-5 py-4">
               <div>

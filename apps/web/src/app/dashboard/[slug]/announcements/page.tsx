@@ -98,7 +98,7 @@ function AnnouncementsPanel({ churchId }: { churchId: string }) {
         {list.data?.length === 0 ? (
           <p className="text-sm text-ink-500">No announcements yet.</p>
         ) : null}
-        {list.data?.map((a) => (
+        {list.data?.map((a: NonNullable<typeof list.data>[number]) => (
           <Card key={a.id} className="border-ink-200 dark:border-ink-800 dark:bg-ink-900">
             <CardContent className="space-y-3 px-5 py-4">
               <div className="flex flex-wrap items-start justify-between gap-3">

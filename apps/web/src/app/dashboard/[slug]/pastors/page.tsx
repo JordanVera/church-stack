@@ -101,7 +101,7 @@ function PastorsPanel({ churchId }: { churchId: string }) {
         {list.data?.length === 0 ? (
           <p className="text-sm text-ink-500">No pastors yet.</p>
         ) : null}
-        {list.data?.map((p) => (
+        {list.data?.map((p: NonNullable<typeof list.data>[number]) => (
           <Card key={p.id} className="border-ink-200 dark:border-ink-800 dark:bg-ink-900">
             <CardContent className="px-5 py-4">
               {editingId === p.id ? (
