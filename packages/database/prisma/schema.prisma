@@ -118,6 +118,7 @@ model Church {
   locations     Location[]
   lifeGroups    LifeGroup[]
   adminEmails   ChurchAdminEmail[]
+  visitPlans    VisitPlan[]
 
   @@index([slug])
   @@index([planTier])
@@ -348,4 +349,29 @@ model SermonSeries {
   church Church @relation(fields: [churchId], references: [id], onDelete: Cascade)
 
   @@index([churchId])
+}
+
+/// Guest visit request from the white-label site "Plan a visit" form.
+model VisitPlan {
+  id           String   @id @default(cuid())
+  churchId     String
+  firstName    String
+  lastName     String
+  email        String
+  phone        String?
+  /// Planned visit calendar date (date-only; stored as UTC midnight).
+  visitDate    DateTime @db.Date
+  locationId   String?
+  locationName String?
+  serviceId    String?
+  serviceName  String?
+  notes        String?  @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  church Church @relation(fields: [churchId], references: [id], onDelete: Cascade)
+
+  @@index([churchId])
+  @@index([visitDate])
+  @@index([createdAt])
 }

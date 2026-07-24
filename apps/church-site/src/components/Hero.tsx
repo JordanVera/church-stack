@@ -1,3 +1,6 @@
+import { PlanVisitButton } from '@/components/PlanVisitButton';
+import type { VisitLocation } from '@/components/PlanVisitModal';
+
 type HeroProps = {
   name: string;
   tagline: string | null;
@@ -5,7 +8,8 @@ type HeroProps = {
   primaryColor: string;
   secondaryColor: string;
   givingUrl: string | null;
-  showVisit: boolean;
+  slug: string;
+  locations: VisitLocation[];
 };
 
 export function Hero({
@@ -15,9 +19,11 @@ export function Hero({
   primaryColor,
   secondaryColor,
   givingUrl,
-  showVisit,
+  slug,
+  locations,
 }: HeroProps) {
   const headline = tagline?.trim() || 'Welcome';
+  const showVisit = locations.length > 0;
 
   return (
     <section
@@ -78,13 +84,12 @@ export function Hero({
 
         <div className="site-anim-rise site-anim-delay-4 mt-12 flex flex-wrap gap-3">
           {showVisit ? (
-            <a
-              href="#visit"
-              className="inline-flex rounded-md px-6 py-3.5 text-sm font-semibold text-stone-900 transition hover:opacity-95"
-              style={{ backgroundColor: secondaryColor }}
-            >
-              Plan a visit
-            </a>
+            <PlanVisitButton
+              slug={slug}
+              locations={locations}
+              secondaryColor={secondaryColor}
+              accentColor={primaryColor}
+            />
           ) : null}
           {givingUrl ? (
             <a

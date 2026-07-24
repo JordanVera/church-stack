@@ -110,7 +110,8 @@ export default async function ChurchHomePage({ searchParams }: PageProps) {
           primaryColor={primary}
           secondaryColor={secondary}
           givingUrl={givingUrl}
-          showVisit={locations.length > 0}
+          slug={slug}
+          locations={locations}
         />
 
         <VisitSection locations={locations} accentColor={primary} />
