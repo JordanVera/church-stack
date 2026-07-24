@@ -1,48 +1,54 @@
 'use client';
 
-import { useState } from 'react';
-import { PlanVisitModal, type VisitLocation } from '@/components/PlanVisitModal';
+import { usePlanVisit } from '@/components/PlanVisitProvider';
 
 type Props = {
-  slug: string;
-  locations: VisitLocation[];
   secondaryColor: string;
-  accentColor: string;
   className?: string;
+  /** Nav styling when over the brand hero. */
+  onBrand?: boolean;
+  variant?: 'hero' | 'nav';
 };
 
 export function PlanVisitButton({
-  slug,
-  locations,
   secondaryColor,
-  accentColor,
   className = '',
+  onBrand = false,
+  variant = 'hero',
 }: Props) {
-  const [open, setOpen] = useState(false);
+  const { openPlanVisit, canPlanVisit } = usePlanVisit();
 
-  if (locations.length === 0) return null;
+  if (!canPlanVisit) return null;
 
-  return (
-    <>
+  if (variant === 'nav') {
+    return (
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={openPlanVisit}
         className={
           className ||
-          'inline-flex rounded-md px-6 py-3.5 text-sm font-semibold text-stone-900 transition hover:opacity-95'
+          `rounded-md px-3 py-1.5 text-xs font-semibold sm:text-sm ${
+            onBrand ? 'text-stone-900' : 'text-white'
+          }`
         }
         style={{ backgroundColor: secondaryColor }}
       >
         Plan a visit
       </button>
-      <PlanVisitModal
-        open={open}
-        onClose={() => setOpen(false)}
-        slug={slug}
-        locations={locations}
-        accentColor={accentColor}
-        secondaryColor={secondaryColor}
-      />
-    </>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={openPlanVisit}
+      className={
+        className ||
+        'inline-flex rounded-md px-6 py-3.5 text-sm font-semibold text-stone-900 transition hover:opacity-95'
+      }
+      style={{ backgroundColor: secondaryColor }}
+    >
+      Plan a visit
+    </button>
   );
 }

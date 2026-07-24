@@ -1,6 +1,14 @@
 'use client';
 
-import { useEffect, useId, useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { DAY_LABELS, formatServiceTime } from '@/lib/format';
 
 export type VisitLocation = {
@@ -17,7 +25,7 @@ export type VisitLocation = {
 
 type Props = {
   open: boolean;
-  onClose: () => void;
+  onOpenChange: (open: boolean) => void;
   slug: string;
   locations: VisitLocation[];
   accentColor: string;
@@ -38,15 +46,17 @@ function dayOfWeekFromIso(iso: string): number | null {
   return new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]))).getUTCDay();
 }
 
+const fieldClass =
+  'mt-1 h-11 w-full rounded-md border border-[var(--site-line)] bg-[var(--site-bg)] px-3 text-sm outline-none focus:border-[var(--church-primary)]';
+
 export function PlanVisitModal({
   open,
-  onClose,
+  onOpenChange,
   slug,
   locations,
   accentColor,
   secondaryColor,
 }: Props) {
-  const titleId = useId();
   const multiLocation = locations.length > 1;
   const defaultLocationId = locations.length === 1 ? locations[0]!.id : '';
 
@@ -77,19 +87,6 @@ export function PlanVisitModal({
     setDone(false);
   }, [open, defaultLocationId]);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', onKey);
-    document.body.style.overflow = 'hidden';
-    return () => {
-      window.removeEventListener('keydown', onKey);
-      document.body.style.overflow = '';
-    };
-  }, [open, onClose]);
-
   const selectedLocation = useMemo(
     () => locations.find((l) => l.id === locationId) ?? null,
     [locations, locationId]
@@ -106,8 +103,6 @@ export function PlanVisitModal({
   const dateDay = dayOfWeekFromIso(visitDate);
   const dateMismatch =
     selectedService != null && dateDay != null && dateDay !== selectedService.dayOfWeek;
-
-  if (!open) return null;
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -162,60 +157,36 @@ export function PlanVisitModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-end justify-center sm:items-center sm:p-6">
-      <button
-        type="button"
-        aria-label="Close"
-        className="absolute inset-0 bg-black/55 backdrop-blur-[2px]"
-        onClick={onClose}
-      />
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        className="relative z-[81] flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden rounded-t-2xl bg-[var(--site-band)] text-[var(--site-fg)] shadow-2xl sm:rounded-2xl"
-      >
-        <div className="flex items-start justify-between gap-4 border-b border-[var(--site-line)] px-6 py-5">
-          <div>
-            <p
-              className="text-xs font-semibold uppercase tracking-[0.2em]"
-              style={{ color: accentColor }}
-            >
-              Visit
-            </p>
-            <h2
-              id={titleId}
-              className="mt-1 font-[family-name:var(--font-display)] text-2xl font-semibold tracking-tight"
-            >
-              Plan a visit
-            </h2>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-md px-2 py-1 text-sm text-[var(--site-muted)] transition hover:bg-[var(--site-band-alt)] hover:text-[var(--site-fg)]"
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <p
+            className="text-xs font-semibold uppercase tracking-[0.2em]"
+            style={{ color: accentColor }}
           >
-            Close
-          </button>
-        </div>
+            Visit
+          </p>
+          <DialogTitle>Plan a visit</DialogTitle>
+          <DialogDescription>
+            Tell us a bit about yourself and when you&apos;d like to join us.
+          </DialogDescription>
+        </DialogHeader>
 
         <div className="overflow-y-auto px-6 py-5">
           {done ? (
-            <div className="py-8 text-center">
+            <div className="py-6 text-center">
               <p className="font-[family-name:var(--font-display)] text-2xl font-semibold">
                 You&apos;re on the list
               </p>
               <p className="mx-auto mt-3 max-w-sm text-[var(--site-muted)]">
                 Thanks for planning a visit. We look forward to welcoming you.
               </p>
-              <button
-                type="button"
-                onClick={onClose}
+              <DialogClose
                 className="mt-8 inline-flex rounded-md px-5 py-3 text-sm font-semibold text-stone-900"
                 style={{ backgroundColor: secondaryColor }}
               >
                 Done
-              </button>
+              </DialogClose>
             </div>
           ) : (
             <form className="space-y-4" onSubmit={(e) => void submit(e)}>
@@ -230,7 +201,7 @@ export function PlanVisitModal({
                     autoComplete="given-name"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    className="mt-1 h-11 w-full rounded-md border border-[var(--site-line)] bg-[var(--site-bg)] px-3 text-sm outline-none focus:border-[var(--church-primary)]"
+                    className={fieldClass}
                   />
                 </div>
                 <div>
@@ -243,7 +214,7 @@ export function PlanVisitModal({
                     autoComplete="family-name"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    className="mt-1 h-11 w-full rounded-md border border-[var(--site-line)] bg-[var(--site-bg)] px-3 text-sm outline-none focus:border-[var(--church-primary)]"
+                    className={fieldClass}
                   />
                 </div>
               </div>
@@ -259,7 +230,7 @@ export function PlanVisitModal({
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="mt-1 h-11 w-full rounded-md border border-[var(--site-line)] bg-[var(--site-bg)] px-3 text-sm outline-none focus:border-[var(--church-primary)]"
+                  className={fieldClass}
                 />
               </div>
 
@@ -273,7 +244,7 @@ export function PlanVisitModal({
                   autoComplete="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="mt-1 h-11 w-full rounded-md border border-[var(--site-line)] bg-[var(--site-bg)] px-3 text-sm outline-none focus:border-[var(--church-primary)]"
+                  className={fieldClass}
                 />
               </div>
 
@@ -288,7 +259,7 @@ export function PlanVisitModal({
                   min={todayIsoLocal()}
                   value={visitDate}
                   onChange={(e) => setVisitDate(e.target.value)}
-                  className="mt-1 h-11 w-full rounded-md border border-[var(--site-line)] bg-[var(--site-bg)] px-3 text-sm outline-none focus:border-[var(--church-primary)]"
+                  className={fieldClass}
                 />
               </div>
 
@@ -302,7 +273,7 @@ export function PlanVisitModal({
                     required
                     value={locationId}
                     onChange={(e) => setLocationId(e.target.value)}
-                    className="mt-1 h-11 w-full rounded-md border border-[var(--site-line)] bg-[var(--site-bg)] px-3 text-sm outline-none focus:border-[var(--church-primary)]"
+                    className={fieldClass}
                   >
                     <option value="">Select a campus…</option>
                     {locations.map((loc) => (
@@ -325,7 +296,7 @@ export function PlanVisitModal({
                     required
                     value={serviceId}
                     onChange={(e) => setServiceId(e.target.value)}
-                    className="mt-1 h-11 w-full rounded-md border border-[var(--site-line)] bg-[var(--site-bg)] px-3 text-sm outline-none focus:border-[var(--church-primary)]"
+                    className={fieldClass}
                   >
                     <option value="">Select a service…</option>
                     {services.map((s) => (
@@ -370,7 +341,7 @@ export function PlanVisitModal({
             </form>
           )}
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

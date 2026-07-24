@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { PlanVisitButton } from '@/components/PlanVisitButton';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
 type SocialLinks = {
@@ -112,6 +113,13 @@ export function SiteChrome({
               </a>
             ) : null}
             <ThemeToggle onBrand={onBrand} />
+            {showVisit ? (
+              <PlanVisitButton
+                variant="nav"
+                onBrand={onBrand}
+                secondaryColor={onBrand ? secondaryColor : primaryColor}
+              />
+            ) : null}
             {givingUrl ? (
               <a
                 href={givingUrl}
