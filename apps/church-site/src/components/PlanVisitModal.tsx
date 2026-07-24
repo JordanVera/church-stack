@@ -176,10 +176,11 @@ export function PlanVisitModal({
           {done ? (
             <div className="py-6 text-center">
               <p className="font-[family-name:var(--font-display)] text-2xl font-semibold">
-                You&apos;re on the list
+                You&apos;re all set
               </p>
               <p className="mx-auto mt-3 max-w-sm text-[var(--site-muted)]">
-                Thanks for planning a visit. We look forward to welcoming you.
+                Thanks for planning a visit — we can&apos;t wait to welcome you. A member of our
+                team will reach out within 24–48 hours via email or phone.
               </p>
               <DialogClose
                 className="mt-8 inline-flex rounded-md px-5 py-3 text-sm font-semibold text-stone-900"
