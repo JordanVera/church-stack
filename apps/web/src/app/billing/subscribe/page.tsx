@@ -127,7 +127,7 @@ function SubscribeForm() {
     );
   }
 
-  const { church, configured, priceConfigured } = preview.data;
+  const { church, configured, priceConfigured, hasSubscription } = preview.data;
   const highlightFeatures = plan.features.slice(0, 5);
 
   return (
@@ -206,7 +206,7 @@ function SubscribeForm() {
                 </li>
               ))}
             </ul>
-            {!church.stripeSubscriptionId ? (
+            {!hasSubscription ? (
               <p className="mt-5 text-sm text-ink-500 dark:text-ink-400">
                 Need a different tier?{' '}
                 <Link
@@ -234,7 +234,7 @@ function SubscribeForm() {
               </p>
             ) : null}
 
-            {church.stripeSubscriptionId ? (
+            {hasSubscription ? (
               <p className="text-sm text-ink-600 dark:text-ink-300">
                 This church already has a Stripe subscription. Use Manage billing from your staff
                 contact if you need to change plans.
@@ -263,7 +263,7 @@ function SubscribeForm() {
                     !configured ||
                     priceConfigured === false ||
                     claimAndCheckout.isPending ||
-                    Boolean(church.stripeSubscriptionId)
+                    hasSubscription
                   }
                   onClick={startCheckout}
                 >

@@ -18,6 +18,13 @@ const columns = [
     links: [{ href: '/pricing', label: 'Register church' }],
   },
   {
+    title: 'Legal',
+    links: [
+      { href: '/privacy', label: 'Privacy' },
+      { href: '/terms', label: 'Terms' },
+    ],
+  },
+  {
     title: 'Follow',
     links: [
       { href: 'https://instagram.com', label: 'Instagram' },
@@ -31,7 +38,7 @@ export default function Footer() {
   return (
     <footer className="relative overflow-hidden bg-white py-20  text-ink-950 dark:bg-ink-950 dark:text-white border-t border-ink-200/70 dark:border-ink-800/70">
       <div className="mx-auto max-w-6xl px-6">
-        <Stagger className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+        <Stagger className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
           <StaggerItem>
             <Image
               src="/brand/logo-horizontal.png"
@@ -41,8 +48,8 @@ export default function Footer() {
               className="h-24 w-auto brightness-0 dark:invert"
             />
             <p className="mt-5 max-w-xs text-sm leading-relaxed text-ink-500 dark:text-white/50">
-              Software that empowers ministry — whitelabel iOS and Android apps for churches of
-              every size.
+              Software that empowers ministry — branded church websites and owner tools for churches
+              of every size.
             </p>
           </StaggerItem>
 

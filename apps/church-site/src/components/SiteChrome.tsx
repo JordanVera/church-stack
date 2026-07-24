@@ -19,6 +19,7 @@ type SiteChromeProps = {
   secondaryColor: string;
   showVisit?: boolean;
   showBelong?: boolean;
+  showTeam?: boolean;
   contact: {
     email: string | null;
     phone: string | null;
@@ -43,6 +44,7 @@ export function SiteChrome({
   secondaryColor,
   showVisit = false,
   showBelong = false,
+  showTeam = false,
   contact,
   social,
   children,
@@ -110,6 +112,16 @@ export function SiteChrome({
                 }`}
               >
                 Groups
+              </a>
+            ) : null}
+            {showTeam ? (
+              <a
+                href="#team"
+                className={`hidden transition sm:inline ${
+                  onBrand ? 'text-white/80 hover:text-white' : 'text-[var(--site-muted)] hover:text-[var(--site-fg)]'
+                }`}
+              >
+                Team
               </a>
             ) : null}
             <ThemeToggle onBrand={onBrand} />

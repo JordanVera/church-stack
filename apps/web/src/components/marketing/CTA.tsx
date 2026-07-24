@@ -84,8 +84,8 @@ export default function CTA() {
           as="p"
           className="mx-auto mt-8 max-w-xl text-lg leading-relaxed text-ink-600 sm:mt-10 sm:text-xl dark:text-white/65"
         >
-          Whitelabeled iOS and Android — announcements, events, giving, and sermons — live before
-          your next Sunday. No developers. No agency invoice.
+          A branded church website — locations, announcements, events, sermons, and your giving
+          link — live before your next Sunday. No developers. No agency invoice.
         </Reveal>
 
         <Reveal
@@ -114,7 +114,7 @@ export default function CTA() {
 
         <Reveal delay={0.55}>
           <p className="mt-12 text-xs font-medium uppercase tracking-[0.2em] ">
-            iOS &amp; Android · Live in days
+            Branded site · Owner dashboard · Live this week
           </p>
         </Reveal>
       </div>

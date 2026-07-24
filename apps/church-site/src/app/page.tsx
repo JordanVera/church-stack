@@ -5,6 +5,7 @@ import { EventsSection } from '@/components/EventsSection';
 import { GiveSection } from '@/components/GiveSection';
 import { Hero } from '@/components/Hero';
 import { LifeGroupsSection } from '@/components/LifeGroupsSection';
+import { PastorsSection } from '@/components/PastorsSection';
 import { PlanVisitProvider } from '@/components/PlanVisitProvider';
 import { SectionShell } from '@/components/SectionShell';
 import { SermonsGrid } from '@/components/SermonsGrid';
@@ -76,12 +77,14 @@ export default async function ChurchHomePage({ searchParams }: PageProps) {
     sermonsNextPageToken,
     lifeGroups,
     locations,
+    pastors,
   } = site;
   const primary = branding.primaryColor;
   const secondary = branding.secondaryColor;
   const givingUrl = branding.givingUrl?.trim() || null;
   const youtubeSermons = sermons ?? [];
   const groups = lifeGroups ?? [];
+  const team = pastors ?? [];
   const showYoutubeSermons = branding.features.sermons && youtubeSermons.length > 0;
   const showSeriesFallback =
     branding.features.sermons && !showYoutubeSermons && sermonSeries.length > 0;
@@ -112,6 +115,7 @@ export default async function ChurchHomePage({ searchParams }: PageProps) {
           secondaryColor={secondary}
           showVisit={locations.length > 0}
           showBelong={groups.length > 0}
+          showTeam={team.length > 0}
           contact={contact}
           social={social}
         >
@@ -126,6 +130,7 @@ export default async function ChurchHomePage({ searchParams }: PageProps) {
           />
 
           <VisitSection locations={locations} accentColor={primary} />
+          <PastorsSection pastors={team} accentColor={primary} />
           <LifeGroupsSection groups={groups} accentColor={primary} />
           <AnnouncementsSection announcements={announcements} accentColor={primary} />
 

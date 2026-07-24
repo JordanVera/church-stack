@@ -93,26 +93,15 @@ export default function AppPreviewCard() {
             hint="9:00 & 11:00 AM"
             trailing={
               <span className="rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-semibold text-white/80">
-                RSVP
+                Details
               </span>
             }
           />
 
           <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2.5">
-            <p className="text-[9px] font-semibold uppercase tracking-wider text-white/45">
-              Giving
-            </p>
-            <p className="mt-0.5 text-sm font-semibold text-white">Building Fund</p>
-            <p className="text-[11px] text-white/45">$12,480 of $20,000</p>
-            <div className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-              <motion.div
-                className="h-full rounded-full bg-accent-400"
-                initial={{ width: 0 }}
-                whileInView={{ width: '62%' }}
-                viewport={{ once: true }}
-                transition={{ duration: 1.2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              />
-            </div>
+            <p className="text-[9px] font-semibold uppercase tracking-wider text-white/45">Give</p>
+            <p className="mt-0.5 text-sm font-semibold text-white">External giving link</p>
+            <p className="text-[11px] text-white/45">Opens your Tithe.ly / Pushpay page</p>
           </div>
 
           <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2.5">

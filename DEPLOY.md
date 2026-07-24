@@ -64,10 +64,11 @@ Set these on the Vercel project (Production, and Preview if you use preview depl
 | `NEXTAUTH_SECRET`                                      | Yes         | Long random string                                                             |
 | `NEXTAUTH_URL`                                         | Yes         | Public URL of this deploy, e.g. `https://your-app.vercel.app`                  |
 | `PLATFORM_DEV_EMAILS`                                  | Recommended | Comma-separated emails allowed into `/dev`                                     |
-| `ALLOW_DEV_CONSOLE`                                    | No          | Prefer unset/`false` in production                                             |
+| `ALLOW_DEV_CONSOLE`                                    | No          | Prefer unset/`false` in production (alone is denied on Vercel production)      |
 | `PLATFORM_API_URL`                                     | Recommended | Public tRPC base for church sites, e.g. `https://your-app.vercel.app/api/trpc` |
 | `NEXT_PUBLIC_CHURCH_SITE_PREVIEW_URL`                  | No          | Local/dev preview helper                                                       |
 | `YOUTUBE_API_KEY`                                      | Recommended | YouTube Data API v3 key for church sermons playlists                           |
+| `RESEND_API_KEY`, `RESEND_FROM_EMAIL`                  | No          | Optional email notify for plan-a-visit submissions                             |
 | `VERCEL_TOKEN`, `VERCEL_TEAM_ID`, `VERCEL_GIT_REPO`, … | No          | Only if you use `/dev` to provision church websites                            |
 | `EXPO_TOKEN`, `EAS_PROJECT_ID`                         | No          | Only if you use `/dev` for white-label mobile builds                           |
 

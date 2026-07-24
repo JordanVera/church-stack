@@ -133,7 +133,6 @@ export const billingRouter = router({
           slug: true,
           name: true,
           planTier: true,
-          stripeCustomerId: true,
           stripeSubscriptionId: true,
         },
       });
@@ -142,8 +141,11 @@ export const billingRouter = router({
         throw new TRPCError({ code: 'NOT_FOUND', message: 'Church not found' });
       }
 
+      const { stripeSubscriptionId: _subId, ...publicChurch } = church;
+
       return {
-        church,
+        church: publicChurch,
+        hasSubscription: Boolean(_subId),
         configured: isStripeConfigured(),
         requestedPlan: input.planTier ?? null,
         priceConfigured: input.planTier ? Boolean(priceIdForPlanTier(input.planTier)) : null,

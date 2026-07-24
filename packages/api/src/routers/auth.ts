@@ -3,6 +3,7 @@ import { TRPCError } from '@trpc/server';
 import bcrypt from 'bcryptjs';
 import { router, publicProcedure, protectedProcedure } from '../trpc';
 import { isPlatformDev } from '../platform-dev';
+import { assertRateLimit, rateLimitExceededMessage } from '../rate-limit';
 import { prisma } from '@repo/database';
 
 export const authRouter = router({
@@ -20,6 +21,19 @@ export const authRouter = router({
       })
     )
     .mutation(async ({ input }) => {
+      const emailKey = input.email.trim().toLowerCase();
+      const limited = assertRateLimit({
+        key: `auth-register:${emailKey}`,
+        limit: 8,
+        windowMs: 60 * 60 * 1000,
+      });
+      if (!limited.ok) {
+        throw new TRPCError({
+          code: 'TOO_MANY_REQUESTS',
+          message: rateLimitExceededMessage(limited.retryAfterSec),
+        });
+      }
+
       const existingCount = await prisma.user.count({ where: { email: input.email } });
       if (existingCount > 0) {
         throw new TRPCError({ code: 'BAD_REQUEST', message: 'User already exists' });

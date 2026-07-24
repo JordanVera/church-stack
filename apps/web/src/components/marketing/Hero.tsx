@@ -10,9 +10,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 const stats = [
-  { value: 14, suffix: 'd', label: 'Idea to launch' },
-  { value: 2, suffix: '', label: 'App stores, one build' },
-  { value: 100, suffix: '%', label: 'Whitelabeled to you' },
+  { value: 1, suffix: '', label: 'Branded church site' },
+  { value: 1, suffix: '', label: 'Owner dashboard' },
+  { value: 100, suffix: '%', label: 'Your colors & logo' },
 ];
 
 export default function Hero() {
@@ -71,7 +71,7 @@ export default function Hero() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-500 opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-500" />
               </span>
-              iOS &amp; Android &middot; no code required
+              Branded website &middot; no code required
             </Badge>
           </Reveal>
 
@@ -80,10 +80,10 @@ export default function Hero() {
               Your church.
             </LineReveal>
             <LineReveal eager delay={0.28} className="text-brand-500 dark:text-brand-400">
-              Your app.
+              Your site.
             </LineReveal>
             <LineReveal eager delay={0.41}>
-              Live in days.
+              Live this week.
             </LineReveal>
           </h1>
 
@@ -92,8 +92,9 @@ export default function Hero() {
             as="p"
             className="relative z-10 mt-5 max-w-xl text-lg leading-relaxed text-ink-600 sm:text-xl lg:mt-4 lg:max-w-md lg:text-lg dark:text-ink-300"
           >
-            Church Stack turns your branding into a fully whitelabeled iOS and Android app —
-            announcements, events, giving, and sermons, ready before your next Sunday.
+            Church Stack gives you a branded church website and owner dashboard — locations,
+            announcements, events, sermons, and an external giving link — ready before your next
+            Sunday.
           </Reveal>
 
           <Reveal

@@ -2,6 +2,8 @@ import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { router, publicProcedure, churchAdminProcedure } from '../trpc';
 import { assertChurchAdmin } from '../church-admin';
+import { assertRateLimit, rateLimitExceededMessage } from '../rate-limit';
+import { notifyByEmail } from '../notify';
 
 const submitInput = z.object({
   slug: z.string().min(1),
@@ -27,9 +29,33 @@ export const visitPlansRouter = router({
    * Public: guest submits a "Plan a visit" request from the white-label site.
    */
   submit: publicProcedure.input(submitInput).mutation(async ({ ctx, input }) => {
+    const slugKey = input.slug.trim().toLowerCase();
+    const emailKey = input.email.trim().toLowerCase();
+    const limited = assertRateLimit({
+      key: `visit-submit:${slugKey}:${emailKey}`,
+      limit: 5,
+      windowMs: 60 * 60 * 1000,
+    });
+    if (!limited.ok) {
+      throw new TRPCError({
+        code: 'TOO_MANY_REQUESTS',
+        message: rateLimitExceededMessage(limited.retryAfterSec),
+      });
+    }
+
     const church = await ctx.prisma.church.findFirst({
       where: { slug: input.slug, isActive: true },
-      select: { id: true },
+      select: {
+        id: true,
+        name: true,
+        contactEmail: true,
+        adminEmails: { select: { email: true } },
+        memberships: {
+          where: { role: { in: ['OWNER', 'ADMIN'] } },
+          select: { user: { select: { email: true } } },
+          take: 20,
+        },
+      },
     });
     if (!church) {
       throw new TRPCError({ code: 'NOT_FOUND', message: 'Church not found' });
@@ -105,22 +131,61 @@ export const visitPlansRouter = router({
       ? `${service.name} (${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][service.dayOfWeek]} ${service.startTime})`
       : null;
 
+    const firstName = input.firstName.trim();
+    const lastName = input.lastName.trim();
+    const guestEmail = input.email.trim().toLowerCase();
+    const phone = input.phone?.trim() || null;
+    const notes = input.notes?.trim() || null;
+
     const created = await ctx.prisma.visitPlan.create({
       data: {
         churchId: church.id,
-        firstName: input.firstName.trim(),
-        lastName: input.lastName.trim(),
-        email: input.email.trim().toLowerCase(),
-        phone: input.phone?.trim() || null,
+        firstName,
+        lastName,
+        email: guestEmail,
+        phone,
         visitDate,
         locationId: location.id,
         locationName: location.name,
         serviceId: service?.id ?? null,
         serviceName,
-        notes: input.notes?.trim() || null,
+        notes,
       },
       select: { id: true },
     });
+
+    const notifyTo = Array.from(
+      new Set(
+        [
+          church.contactEmail,
+          ...church.adminEmails.map((a) => a.email),
+          ...church.memberships.map((m) => m.user.email),
+        ]
+          .map((e) => e?.trim().toLowerCase())
+          .filter((e): e is string => Boolean(e))
+      )
+    );
+
+    if (notifyTo.length > 0) {
+      const lines = [
+        `${firstName} ${lastName} planned a visit to ${church.name}.`,
+        ``,
+        `Date: ${input.visitDate}`,
+        `Location: ${location.name}`,
+        serviceName ? `Service: ${serviceName}` : null,
+        `Email: ${guestEmail}`,
+        phone ? `Phone: ${phone}` : null,
+        notes ? `Notes: ${notes}` : null,
+        ``,
+        `View visit plans in your Church Stack dashboard.`,
+      ].filter((line): line is string => line != null);
+
+      void notifyByEmail({
+        to: notifyTo,
+        subject: `New visit plan — ${church.name}`,
+        text: lines.join('\n'),
+      });
+    }
 
     return { ok: true as const, id: created.id };
   }),

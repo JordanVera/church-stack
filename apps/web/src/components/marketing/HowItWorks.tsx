@@ -10,19 +10,19 @@ const steps = [
   {
     n: '01',
     title: 'Create your church',
-    body: 'Register your church, drop in your logo and colors, and Church Stack builds a branded app shell that looks like it was made in-house.',
+    body: 'Register your church, add locations and pastors, and Church Stack stands up a branded site that looks like it was made in-house.',
     visual: 'brand' as const,
   },
   {
     n: '02',
     title: 'Add your content',
-    body: 'Post announcements, events, sermons, and giving links from one dashboard — no code, no agency back-and-forth.',
+    body: 'Post announcements, events, sermons, and your external giving link from one dashboard — no code, no agency back-and-forth.',
     visual: 'content' as const,
   },
   {
     n: '03',
-    title: 'Publish to both stores',
-    body: 'We handle App Store and Google Play submissions so your congregation downloads an app under your name.',
+    title: 'Go live on the web',
+    body: 'We provision your church website so visitors find service times, plan a visit, and explore your content under your brand.',
     visual: 'publish' as const,
   },
 ];
@@ -39,8 +39,8 @@ export default function HowItWorks() {
             From zero to launched
           </h2>
           <p className="mt-4 text-lg text-ink-600 dark:text-ink-300">
-            Three steps. Your brand stays front and center the whole way — on the dashboard, in the
-            app, and on both stores.
+            Three steps. Your brand stays front and center the whole way — on the dashboard and on
+            your public site.
           </p>
         </Reveal>
 
@@ -280,7 +280,7 @@ function PublishVisual() {
             <MiniPhoneScreen church="Grace" accent="#55bae8" />
           </div>
           <p className="mt-1.5 text-center text-[9px] font-semibold tracking-wider text-white/55 uppercase">
-            App Store
+            Your site
           </p>
         </motion.div>
 
@@ -302,7 +302,7 @@ function PublishVisual() {
             </div>
           </div>
           <p className="mt-1.5 text-center text-[9px] font-semibold tracking-wider text-white/55 uppercase">
-            Google Play
+            Mobile web
           </p>
         </motion.div>
       </div>
@@ -316,7 +316,7 @@ function PublishVisual() {
       >
         <div className="flex items-center gap-1.5 rounded-full border border-white/25 bg-white/95 px-2.5 py-1.5 shadow-xl backdrop-blur-sm">
           <Smartphone className="h-3 w-3 text-brand-600" />
-          <span className="text-[10px] font-bold text-ink-900">Live under your name</span>
+          <span className="text-[10px] font-bold text-ink-900">Live under your brand</span>
         </div>
       </motion.div>
     </div>
@@ -335,14 +335,14 @@ function MiniPhoneScreen({ church, accent }: { church: string; accent: string })
         </span>
         <div className="min-w-0">
           <p className="truncate text-[9px] font-semibold text-white">{church} Church</p>
-          <p className="text-[7px] text-white/45">Your church app</p>
+          <p className="text-[7px] text-white/45">Your church site</p>
         </div>
       </div>
       <div
         className="rounded-md py-1 text-center text-[8px] font-bold text-white"
         style={{ backgroundColor: accent }}
       >
-        Open app
+        Visit site
       </div>
     </div>
   );

@@ -5,11 +5,11 @@ import { Marquee } from '@/components/motion';
 const capabilities = [
   'Announcements',
   'Events',
-  'Giving',
+  'Giving link',
   'Sermons',
-  'Groups',
-  'Check-in',
-  'Push notifications',
+  'Life groups',
+  'Plan a visit',
+  'Locations',
 ];
 
 export default function LogoMarquee() {

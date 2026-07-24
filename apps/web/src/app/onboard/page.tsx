@@ -1,7 +1,9 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { PLAN_TIERS, type PlanTierId } from '@repo/config';
@@ -82,17 +84,30 @@ function validateStep(step: number, draft: OnboardDraft): string | null {
 function OnboardForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { status: sessionStatus } = useSession();
   const planTier = parsePlan(searchParams.get('plan'));
   const reduce = useReducedMotion();
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState<OnboardDraft>(() => createInitialDraft());
   const [error, setError] = useState<string | null>(null);
 
+  const onboardCallback =
+    planTier != null
+      ? `/onboard?plan=${encodeURIComponent(planTier)}`
+      : '/pricing';
+
   useEffect(() => {
     if (!planTier) {
       router.replace('/pricing');
     }
   }, [planTier, router]);
+
+  useEffect(() => {
+    if (!planTier) return;
+    if (sessionStatus === 'unauthenticated') {
+      router.replace(`/signup?callbackUrl=${encodeURIComponent(onboardCallback)}`);
+    }
+  }, [sessionStatus, planTier, router, onboardCallback]);
 
   const onboard = trpc.church.onboard.useMutation({
     onSuccess: (church) => {
@@ -107,6 +122,23 @@ function OnboardForm() {
     return (
       <div className="mx-auto max-w-3xl px-6 py-20 text-ink-600 dark:text-ink-300">
         Redirecting to pricing…
+      </div>
+    );
+  }
+
+  if (sessionStatus === 'loading' || sessionStatus === 'unauthenticated') {
+    return (
+      <div className="mx-auto max-w-3xl px-6 py-20 text-ink-600 dark:text-ink-300">
+        <p>Sign in required to register a church…</p>
+        <p className="mt-3 text-sm">
+          Already have an account?{' '}
+          <Link
+            href={`/login?callbackUrl=${encodeURIComponent(onboardCallback)}`}
+            className="font-semibold text-brand-600 dark:text-brand-400"
+          >
+            Log in
+          </Link>
+        </p>
       </div>
     );
   }

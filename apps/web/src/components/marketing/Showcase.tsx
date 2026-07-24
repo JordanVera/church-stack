@@ -6,9 +6,9 @@ import { Counter, Parallax, Reveal } from '@/components/motion';
 import { Button } from '@/components/ui/button';
 
 const stats = [
-  { value: 3, suffix: ' days', label: 'From sign-up to a live app in both stores' },
-  { value: 2, suffix: ' stores', label: 'iOS and Android, published under your name' },
-  { value: 1, suffix: ' dashboard', label: 'For every announcement, event, and gift' },
+  { value: 1, suffix: ' site', label: 'Branded church website under your name' },
+  { value: 1, suffix: ' dashboard', label: 'For announcements, events, and sermons' },
+  { value: 0, suffix: ' agency', label: 'No retainer required to stay online' },
 ];
 
 export default function Showcase() {
@@ -38,9 +38,9 @@ export default function Showcase() {
                 Built for how churches work
               </h2>
               <p className="mt-5 text-lg leading-relaxed text-ink-600 dark:text-ink-300">
-                No dev team, no agency retainer. Your staff manages announcements, events, and
-                giving from one dashboard, and it shows up instantly in an app that looks and feels
-                like it was built in-house.
+                No dev team, no agency retainer. Your staff manages announcements, events, sermons,
+                and your external giving link from one dashboard — and it shows up on a site that
+                looks and feels like it was built in-house.
               </p>
             </Reveal>
 

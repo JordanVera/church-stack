@@ -8,35 +8,35 @@ import { Card, CardContent } from '@/components/ui/card';
 const cells = [
   {
     icon: Palette,
-    title: 'Fully whitelabel',
-    body: 'Your logo, your colors, your name on the App Store and Google Play. No "powered by" badge, ever.',
+    title: 'Fully branded',
+    body: 'Your logo, colors, and name on a white-label church site — no "powered by" badge for visitors.',
     className: 'lg:col-span-2',
     feature: true,
   },
   {
     icon: Zap,
-    title: 'Launch in days',
-    body: 'Go from sign-up to a published app without waiting on a dev team or agency timeline.',
+    title: 'Launch this week',
+    body: 'Go from signup to a live branded website without waiting on a dev team or agency timeline.',
   },
   {
     icon: Megaphone,
     title: 'Announcements',
-    body: 'Push updates straight to every phone the moment something changes.',
+    body: 'Publish updates from your dashboard and they appear on your church site.',
   },
   {
     icon: CalendarDays,
     title: 'Events',
-    body: 'A shared calendar with RSVPs, reminders, and directions built in.',
+    body: 'Upcoming gatherings listed clearly so guests know what is happening next.',
   },
   {
     icon: HandHeart,
-    title: 'Giving-ready',
-    body: 'Accept one-time and recurring gifts without sending people to a separate site.',
+    title: 'Giving link',
+    body: 'Point visitors to your Tithe.ly, Pushpay, or other giving page — we never process gifts ourselves.',
   },
   {
     icon: Smartphone,
-    title: 'iOS & Android',
-    body: 'One dashboard powers both native apps, so your team never manages two codebases.',
+    title: 'One owner dashboard',
+    body: 'Manage branding, locations, sermons, and site content in one place. Native apps are a Custom add-on.',
     className: 'lg:col-span-3',
     wide: true,
   },
@@ -253,7 +253,7 @@ function WhitelabelVisual() {
         >
           <div className="rounded-xl border border-white/25 bg-white/95 px-2.5 py-1.5 shadow-xl shadow-black/25 backdrop-blur-sm">
             <p className="text-[8px] font-semibold tracking-[0.14em] text-ink-400 uppercase">
-              App Store
+              Your site
             </p>
             <p className="font-display text-[11px] font-bold text-ink-900">Grace Church</p>
             <div className="mt-0.5 flex items-center gap-1">
@@ -311,11 +311,11 @@ function DevicesVisual() {
             <PhoneScreen church="Harbor" accent="#55bae8" />
           </div>
           <p className="mt-2 text-center text-[10px] font-semibold tracking-wider text-white/55 uppercase">
-            iOS
+            Desktop
           </p>
         </div>
 
-        {/* Android phone — slightly offset / larger for depth */}
+        {/* Second phone — mobile web */}
         <div className="relative mb-1 w-29.5 shrink-0 translate-y-1 lg:w-33">
           <div className="overflow-hidden rounded-[1.1rem] border border-white/25 bg-ink-950 shadow-2xl shadow-black/50 ring-1 ring-white/10">
             <div className="flex items-center justify-between px-3 pt-2 text-[8px] font-semibold text-white/45">
@@ -331,7 +331,7 @@ function DevicesVisual() {
             </div>
           </div>
           <p className="mt-2 text-center text-[10px] font-semibold tracking-wider text-white/55 uppercase">
-            Android
+            Mobile web
           </p>
         </div>
       </div>
@@ -351,7 +351,7 @@ function PhoneScreen({ church, accent }: { church: string; accent: string }) {
         </span>
         <div className="min-w-0">
           <p className="truncate text-[10px] font-semibold text-white">{church} Church</p>
-          <p className="text-[8px] text-white/45">Your church app</p>
+          <p className="text-[8px] text-white/45">Your church site</p>
         </div>
       </div>
       <div className="rounded-lg bg-white/5 px-2 py-1.5">
@@ -366,7 +366,7 @@ function PhoneScreen({ church, accent }: { church: string; accent: string }) {
         className="rounded-lg py-1.5 text-center text-[9px] font-bold text-white"
         style={{ backgroundColor: accent }}
       >
-        Open app
+        Plan a visit
       </div>
     </div>
   );

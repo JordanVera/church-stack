@@ -66,6 +66,12 @@ export type PublicSitePayload = {
       startTime: string;
     }>;
   }>;
+  pastors: Array<{
+    id: string;
+    firstName: string;
+    lastName: string;
+    title: string;
+  }>;
 };
 
 function apiBase(): string {

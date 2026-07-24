@@ -1,7 +1,14 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { planAllowsGiving, planTierDefaults, toTenantBranding } from '@repo/config';
-import { router, publicProcedure, devProcedure, churchAdminProcedure } from '../trpc';
+import { getPlan, planAllowsGiving, planTierDefaults, toTenantBranding } from '@repo/config';
+import {
+  router,
+  publicProcedure,
+  protectedProcedure,
+  devProcedure,
+  churchAdminProcedure,
+} from '../trpc';
+import { assertRateLimit, rateLimitExceededMessage } from '../rate-limit';
 import {
   assertChurchAdmin,
   assertChurchAdminBySlug,
@@ -136,8 +143,24 @@ export const churchRouter = router({
       return toTenantBranding(church);
     }),
 
+  /** Public-safe church summary — never returns PCO/Stripe/Vercel secrets. */
   getById: publicProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
-    return ctx.prisma.church.findUnique({ where: { id: input.id } });
+    return ctx.prisma.church.findUnique({
+      where: { id: input.id },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        tagline: true,
+        logoUrl: true,
+        primaryColor: true,
+        secondaryColor: true,
+        planTier: true,
+        isActive: true,
+        websiteStatus: true,
+        websiteUrl: true,
+      },
+    });
   }),
 
   /**
@@ -151,7 +174,20 @@ export const churchRouter = router({
         secret: z.string().min(1).max(2000),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ ctx, input }) => {
+      const userKey = ctx.session?.user?.id ?? ctx.session?.user?.email ?? 'anon';
+      const limited = assertRateLimit({
+        key: `pco-preview:${userKey}`,
+        limit: 10,
+        windowMs: 15 * 60 * 1000,
+      });
+      if (!limited.ok) {
+        throw new TRPCError({
+          code: 'TOO_MANY_REQUESTS',
+          message: rateLimitExceededMessage(limited.retryAfterSec),
+        });
+      }
+
       const locations = await fetchCampusesWithServiceTimes(
         input.applicationId.trim(),
         input.secret.trim()
@@ -175,38 +211,50 @@ export const churchRouter = router({
       });
       if (!church) return null;
 
-      const [events, announcements, sermonSeries, lifeGroups, locations] = await Promise.all([
-        church.eventsEnabled
-          ? ctx.prisma.event.findMany({
-              where: { churchId: church.id, startsAt: { gte: new Date() } },
-              orderBy: { startsAt: 'asc' },
-              take: 12,
-            })
-          : Promise.resolve([]),
-        ctx.prisma.announcement.findMany({
-          where: { churchId: church.id, published: true },
-          orderBy: { createdAt: 'desc' },
-          take: 8,
-        }),
-        church.sermonsEnabled && !church.sermonsYoutubePlaylistId
-          ? ctx.prisma.sermonSeries.findMany({
-              where: { churchId: church.id },
-              orderBy: { createdAt: 'desc' },
-              take: 8,
-            })
-          : Promise.resolve([]),
-        ctx.prisma.lifeGroup.findMany({
-          where: { churchId: church.id },
-          orderBy: { name: 'asc' },
-          take: 24,
-        }),
-        ctx.prisma.location.findMany({
-          where: { churchId: church.id },
-          orderBy: { sortOrder: 'asc' },
-          include: { services: { orderBy: { sortOrder: 'asc' } } },
-          take: 20,
-        }),
-      ]);
+      const [events, announcements, sermonSeries, lifeGroups, locations, pastors] =
+        await Promise.all([
+          church.eventsEnabled
+            ? ctx.prisma.event.findMany({
+                where: { churchId: church.id, startsAt: { gte: new Date() } },
+                orderBy: { startsAt: 'asc' },
+                take: 12,
+              })
+            : Promise.resolve([]),
+          ctx.prisma.announcement.findMany({
+            where: { churchId: church.id, published: true },
+            orderBy: { createdAt: 'desc' },
+            take: 8,
+          }),
+          church.sermonsEnabled && !church.sermonsYoutubePlaylistId
+            ? ctx.prisma.sermonSeries.findMany({
+                where: { churchId: church.id },
+                orderBy: { createdAt: 'desc' },
+                take: 8,
+              })
+            : Promise.resolve([]),
+          ctx.prisma.lifeGroup.findMany({
+            where: { churchId: church.id },
+            orderBy: { name: 'asc' },
+            take: 24,
+          }),
+          ctx.prisma.location.findMany({
+            where: { churchId: church.id },
+            orderBy: { sortOrder: 'asc' },
+            include: { services: { orderBy: { sortOrder: 'asc' } } },
+            take: 20,
+          }),
+          ctx.prisma.pastor.findMany({
+            where: { churchId: church.id },
+            orderBy: { sortOrder: 'asc' },
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              title: true,
+            },
+            take: 24,
+          }),
+        ]);
 
       let sermons: SermonVideo[] = [];
       let sermonsNextPageToken: string | null = null;
@@ -250,6 +298,7 @@ export const churchRouter = router({
         sermonsYoutubePlaylistId: church.sermonsYoutubePlaylistId,
         lifeGroups,
         locations,
+        pastors,
       };
     }),
 
@@ -320,10 +369,23 @@ export const churchRouter = router({
     }),
 
   /**
-   * Public church signup: create church + pastors + locations/services + admin emails.
-   * Does not create Users — platform staff are provisioned manually in the User table.
+   * Authenticated church signup: create church + pastors + locations/services + admin emails
+   * and OWNER membership for the signed-in user.
    */
-  onboard: publicProcedure.input(churchOnboardInput).mutation(async ({ ctx, input }) => {
+  onboard: protectedProcedure.input(churchOnboardInput).mutation(async ({ ctx, input }) => {
+    const user = ctx.session.user!;
+    const limited = assertRateLimit({
+      key: `onboard:${user.id}`,
+      limit: 5,
+      windowMs: 60 * 60 * 1000,
+    });
+    if (!limited.ok) {
+      throw new TRPCError({
+        code: 'TOO_MANY_REQUESTS',
+        message: rateLimitExceededMessage(limited.retryAfterSec),
+      });
+    }
+
     const existingSlug = await ctx.prisma.church.findUnique({ where: { slug: input.slug } });
     if (existingSlug) {
       throw new TRPCError({ code: 'CONFLICT', message: 'Slug already in use' });
@@ -334,6 +396,14 @@ export const churchRouter = router({
     );
     if (churchAdminEmails.length < 1) {
       throw new TRPCError({ code: 'BAD_REQUEST', message: 'Add at least one admin email' });
+    }
+
+    const maxCampuses = getPlan('SITE').maxCampuses;
+    if (maxCampuses != null && input.locations.length > maxCampuses) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: `Site plan includes up to ${maxCampuses} campuses. Remove a location or choose Growth.`,
+      });
     }
 
     const pastorKeys = new Set(input.pastors.map((p) => p.clientKey));
@@ -376,6 +446,14 @@ export const churchRouter = router({
           email,
           locationId: null,
         })),
+      });
+
+      await tx.membership.upsert({
+        where: {
+          userId_churchId: { userId: user.id, churchId: church.id },
+        },
+        update: { role: 'OWNER' },
+        create: { userId: user.id, churchId: church.id, role: 'OWNER' },
       });
 
       const pastorIdByKey = new Map<string, string>();

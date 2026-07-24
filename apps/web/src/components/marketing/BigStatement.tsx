@@ -20,9 +20,9 @@ import { LineReveal, Reveal } from '@/components/motion';
 const CYCLE = 4.2;
 
 const packets = [
-  { label: 'Address', delay: 0 },
-  { label: '$50 gift', delay: 1.4 },
-  { label: 'Form reply', delay: 2.8 },
+  { label: 'Visit date', delay: 0 },
+  { label: 'Campus', delay: 1.4 },
+  { label: 'Guest note', delay: 2.8 },
 ];
 
 export default function BigStatement() {
@@ -36,38 +36,23 @@ export default function BigStatement() {
           <div>
             <Reveal>
               <p className="text-sm font-medium uppercase tracking-[0.28em] text-brand-300">
-                Live sync
+                Guest visits
               </p>
             </Reveal>
             <h2 className="mt-5 font-hero text-[clamp(2.75rem,8vw,5.75rem)] leading-[0.88] tracking-tight uppercase">
-              <LineReveal>The moment</LineReveal>
+              <LineReveal>They plan</LineReveal>
               <LineReveal delay={0.08} className="text-brand-400">
-                they tap save —
+                a visit —
               </LineReveal>
-              <LineReveal delay={0.16}>it&apos;s already there.</LineReveal>
+              <LineReveal delay={0.16}>you see it.</LineReveal>
             </h2>
           </div>
 
           <Reveal delay={0.25} className="lg:pb-3">
             <p className="max-w-sm text-lg leading-relaxed text-white/60 lg:ml-auto lg:text-right">
-              Profile edits, gifts, and form replies land in your dashboard the instant they happen
-              — no exports, no paste jobs, no waiting until Monday.
+              Plan-a-visit requests from your church site land in the owner dashboard (and email
+              when Resend is configured) — no spreadsheets, no missed inbox threads.
             </p>
-            {!reduce && (
-              <div className="mt-6 flex items-center gap-3 lg:justify-end">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-400 opacity-70" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-400" />
-                </span>
-                <motion.p
-                  className="font-mono text-xs tracking-[0.2em] text-brand-300 uppercase"
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
-                >
-                  Latency · 0.3s
-                </motion.p>
-              </div>
-            )}
           </Reveal>
         </div>
 
@@ -129,7 +114,7 @@ export default function BigStatement() {
               <div className="mb-4 flex justify-center lg:justify-start">
                 <span className="inline-flex items-center gap-2 rounded-full border border-brand-300/45 bg-brand-500/25 px-4 py-1.5 text-xs font-bold tracking-[0.18em] text-brand-100 uppercase shadow-[0_0_24px_rgba(26,139,189,0.3)] backdrop-blur-sm">
                   <Smartphone className="h-3.5 w-3.5" strokeWidth={2.25} />
-                  Member app
+                  Church site
                 </span>
               </div>
               <motion.div
@@ -194,7 +179,7 @@ export default function BigStatement() {
                   repeatDelay: 1.2,
                 }}
               >
-                Address
+                Visit date
               </motion.span>
             </div>
           )}
@@ -217,17 +202,13 @@ function PhoneMock({ reduce }: { reduce: boolean | null }) {
 
       <div className="flex items-center gap-2 px-4 pb-1 pt-3 text-white/80">
         <ArrowLeft className="h-4 w-4 text-white/45" strokeWidth={2} />
-        <span className="text-sm font-semibold">Your profile</span>
+        <span className="text-sm font-semibold">Plan a visit</span>
       </div>
 
       <div className="space-y-2.5 px-4 pb-5 pt-2">
         <Field label="Name" value="Hannah Barnes" />
-        <Field label="Address" value="1472 Alderwood Ln" active reduce={reduce} />
-        <div className="grid grid-cols-3 gap-2">
-          <Field label="City" value="Portland" compact />
-          <Field label="State" value="OR" compact />
-          <Field label="Zip" value="97209" compact />
-        </div>
+        <Field label="Visit date" value="Sunday, Aug 3" active reduce={reduce} />
+        <Field label="Campus" value="North Campus" />
         <motion.div
           className="mt-3 rounded-xl bg-brand-500 py-2.5 text-center text-xs font-bold text-white"
           animate={
@@ -249,7 +230,7 @@ function PhoneMock({ reduce }: { reduce: boolean | null }) {
             times: [0, 0.12, 0.28],
           }}
         >
-          Save changes
+          Submit visit plan
         </motion.div>
       </div>
     </div>
@@ -264,7 +245,7 @@ function DashboardMock({ reduce }: { reduce: boolean | null }) {
         <span className="h-2.5 w-2.5 rounded-full bg-amber-400/90" />
         <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/90" />
         <span className="ml-2 truncate text-[11px] font-medium text-ink-500">
-          People · Hannah Barnes
+          Visits · Hannah Barnes
         </span>
         {!reduce && (
           <motion.span
@@ -300,7 +281,7 @@ function DashboardMock({ reduce }: { reduce: boolean | null }) {
               </div>
               <div>
                 <p className="text-base font-semibold text-ink-900">Hannah Barnes</p>
-                <p className="text-xs text-ink-500">Member since 2019</p>
+                <p className="text-xs text-ink-500">First-time guest</p>
               </div>
             </div>
             <div className="flex items-center gap-1.5 rounded-lg border border-ink-200 bg-white px-2.5 py-1.5 text-xs font-medium text-ink-600 shadow-sm">
@@ -334,7 +315,7 @@ function DashboardMock({ reduce }: { reduce: boolean | null }) {
             >
               <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent-700" />
               <p className="text-sm font-semibold text-ink-800">
-                1472 Alderwood Ln, Portland OR 97209
+                North Campus · Sunday 10:00am · Aug 3
               </p>
             </motion.div>
           </div>
@@ -355,7 +336,7 @@ function DashboardMock({ reduce }: { reduce: boolean | null }) {
             }}
           >
             <span className="h-1.5 w-1.5 rounded-full bg-brand-400" />
-            Synced from app
+            From your church site
           </motion.div>
         </div>
       </div>

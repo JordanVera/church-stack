@@ -2,25 +2,13 @@
 
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
-import {
-  CalendarDays,
-  CalendarRange,
-  CheckSquare,
-  Church,
-  Globe,
-  Smartphone,
-  Users,
-  UserRound,
-} from 'lucide-react';
+import { CalendarDays, Church, Globe, Smartphone, UserRound } from 'lucide-react';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion';
 
 const synced = [
-  { label: 'Groups', icon: Users },
-  { label: 'Events', icon: CalendarDays },
-  { label: 'Services', icon: Church },
-  { label: 'Calendars', icon: CalendarRange },
-  { label: 'Check-ins', icon: CheckSquare },
-  { label: 'People', icon: UserRound },
+  { label: 'Campuses', icon: Church },
+  { label: 'Service times', icon: CalendarDays },
+  { label: 'People API', icon: UserRound },
 ];
 
 export default function PlanningCenter() {
@@ -40,11 +28,12 @@ export default function PlanningCenter() {
             <PlanningCenterLogo className="h-8 w-auto sm:h-10" alt="Planning Center" />
           </div>
           <h2 className="mt-4 font-display text-4xl font-bold tracking-tight text-ink-900 sm:text-5xl dark:text-white">
-            Add it once in Planning Center
+            Import campuses from Planning Center
           </h2>
           <p className="mt-4 text-lg leading-relaxed text-ink-600 dark:text-white/70">
-            Groups, events, services, calendars, check-ins, people, and more sync straight to your
-            Church Stack website and app — no re-entering the same content in two places.
+            Connect a Planning Center Personal Access Token to pull campuses and weekly service
+            times into Church Stack — then keep syncing from Integrations when you are ready. Full
+            PCO surface sync (groups, events, check-ins) is not required for launch.
           </p>
         </Reveal>
 
@@ -64,7 +53,7 @@ export default function PlanningCenter() {
                   </p>
                 </div>
 
-                <Stagger className="mt-6 grid grid-cols-2 gap-2.5">
+                <Stagger className="mt-6 grid grid-cols-1 gap-2.5 sm:grid-cols-3 lg:grid-cols-1">
                   {synced.map((item) => (
                     <StaggerItem key={item.label}>
                       <div className="flex items-center gap-2.5 rounded-xl border border-ink-200 bg-brand-50/80 px-3 py-2.5 dark:border-white/10 dark:bg-white/5">
@@ -76,9 +65,6 @@ export default function PlanningCenter() {
                     </StaggerItem>
                   ))}
                 </Stagger>
-                <p className="mt-3 text-center text-xs font-medium text-ink-400 dark:text-white/40">
-                  + more
-                </p>
               </div>
             </Reveal>
 
@@ -98,14 +84,14 @@ export default function PlanningCenter() {
                   <DestinationRow
                     icon={Globe}
                     title="Your website"
-                    subtitle="Events, groups, and calendars live on your site"
+                    subtitle="Campuses and service times on your public site"
                     reduce={reduce}
                     delay={0}
                   />
                   <DestinationRow
                     icon={Smartphone}
-                    title="Your church app"
-                    subtitle="Same content, instantly on every phone"
+                    title="Owner dashboard"
+                    subtitle="Review and re-sync locations when campuses change"
                     reduce={reduce}
                     delay={0.35}
                   />
@@ -119,7 +105,7 @@ export default function PlanningCenter() {
                     </span>
                   )}
                   <span className="text-xs font-semibold text-orange-600 dark:text-orange-400">
-                    Live sync · update once, publish everywhere
+                    Owner-triggered sync · campuses &amp; services
                   </span>
                 </div>
               </div>
