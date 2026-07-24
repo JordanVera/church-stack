@@ -3,7 +3,6 @@ import { DEFAULT_BRANDING, type TenantBranding } from '@repo/config';
 import { trpc } from '../lib/trpc';
 import { tenantStore } from '../lib/tenant-store';
 import { themeFromBranding, type Theme } from '../lib/theme';
-import { DEFAULT_TENANT } from '../lib/config';
 
 interface TenantContextValue {
   slug: string | null;
@@ -17,11 +16,9 @@ interface TenantContextValue {
 const TenantContext = createContext<TenantContextValue | null>(null);
 
 export function TenantProvider({ children }: { children: React.ReactNode }) {
-  // Resolution order: build-time EXPO_PUBLIC_TENANT -> runtime selection.
-  const [slug, setSlug] = useState<string | null>(() => {
-    if (DEFAULT_TENANT) tenantStore.set(DEFAULT_TENANT);
-    return DEFAULT_TENANT;
-  });
+  // Tenant is set after auth (membership or join). Whitelabel DEFAULT_TENANT
+  // is applied by the auth gate via church.join, not on mount.
+  const [slug, setSlug] = useState<string | null>(() => tenantStore.get());
 
   const brandingQuery = trpc.church.getBranding.useQuery(
     { slug: slug ?? '' },

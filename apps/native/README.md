@@ -2,6 +2,15 @@
 
 Expo / React Native app (tenant-aware church app shell). Uses plain `StyleSheet` styling today.
 
+## Auth
+
+Email/password sign-in and sign-up gate the app. The client stores a Bearer JWT (signed with the
+same `NEXTAUTH_SECRET` as the web app) in SecureStore and sends it on every tRPC request.
+
+- Users with church memberships only see those churches.
+- Users without a membership pick a church; selecting calls `church.join` (MEMBER).
+- Whitelabel builds (`EXPO_PUBLIC_TENANT`) auto-join that church when the user has no memberships.
+
 ## TODO: shadcn/ui does not apply here
 
 `apps/web` was migrated to [shadcn/ui](https://ui.shadcn.com) (Button, Input, Label, Card, Badge, Separator).

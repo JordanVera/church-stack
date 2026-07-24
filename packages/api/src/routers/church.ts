@@ -132,6 +132,49 @@ export const churchRouter = router({
     });
   }),
 
+  /**
+   * Associate the signed-in user with a church as MEMBER (native congregant join).
+   * Idempotent — existing memberships are left as-is (role not downgraded).
+   */
+  join: protectedProcedure
+    .input(z.object({ slug: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.session.user!.id;
+      const limited = assertRateLimit({
+        key: `church-join:${userId}`,
+        limit: 20,
+        windowMs: 60 * 60 * 1000,
+      });
+      if (!limited.ok) {
+        throw new TRPCError({
+          code: 'TOO_MANY_REQUESTS',
+          message: rateLimitExceededMessage(limited.retryAfterSec),
+        });
+      }
+
+      const church = await ctx.prisma.church.findFirst({
+        where: { slug: input.slug, isActive: true },
+        select: { id: true, slug: true, name: true, tagline: true, logoUrl: true },
+      });
+      if (!church) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Church not found' });
+      }
+
+      await ctx.prisma.membership.upsert({
+        where: {
+          userId_churchId: { userId, churchId: church.id },
+        },
+        create: {
+          userId,
+          churchId: church.id,
+          role: 'MEMBER',
+        },
+        update: {},
+      });
+
+      return church;
+    }),
+
   // Resolve whitelabel branding for a single tenant by slug.
   getBranding: publicProcedure
     .input(z.object({ slug: z.string().min(1) }))

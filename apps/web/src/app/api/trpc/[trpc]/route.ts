@@ -4,6 +4,17 @@ import { auth } from '@/auth';
 
 const handler = async (req: Request) => {
   const session = await auth();
+  // Prefer NextAuth cookie session; otherwise createContext resolves Bearer JWT.
+  const cookieSession = session?.user
+    ? {
+        user: {
+          id: session.user.id,
+          email: session.user.email,
+          name: session.user.name,
+          isAdmin: session.user.isAdmin,
+        },
+      }
+    : undefined;
 
   return fetchRequestHandler({
     endpoint: '/api/trpc',
@@ -12,16 +23,7 @@ const handler = async (req: Request) => {
     createContext: () =>
       createContext({
         headers: req.headers,
-        session: session?.user
-          ? {
-              user: {
-                id: session.user.id,
-                email: session.user.email,
-                name: session.user.name,
-                isAdmin: session.user.isAdmin,
-              },
-            }
-          : null,
+        ...(cookieSession ? { session: cookieSession } : {}),
       }),
   });
 };

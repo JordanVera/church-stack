@@ -4,6 +4,7 @@ import { httpBatchLink } from '@trpc/client';
 import { trpc } from '../lib/trpc';
 import { API_URL } from '../lib/config';
 import { tenantStore } from '../lib/tenant-store';
+import { sessionStore } from '../lib/session-store';
 
 export function ApiProvider({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
@@ -13,8 +14,12 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
         httpBatchLink({
           url: `${API_URL}/api/trpc`,
           headers() {
+            const headers: Record<string, string> = {};
+            const token = sessionStore.get();
+            if (token) headers.Authorization = `Bearer ${token}`;
             const slug = tenantStore.get();
-            return slug ? { 'x-church-slug': slug } : {};
+            if (slug) headers['x-church-slug'] = slug;
+            return headers;
           },
         }),
       ],

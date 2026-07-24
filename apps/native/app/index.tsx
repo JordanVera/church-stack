@@ -1,28 +1,53 @@
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Redirect } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { trpc } from '../src/lib/trpc';
+import { useAuth } from '../src/providers/AuthProvider';
 import { useTenant } from '../src/providers/TenantProvider';
 
 export default function Home() {
+  const router = useRouter();
   const { slug, branding, theme, isLoading, clearTenant } = useTenant();
+  const { isReady, token, isAuthenticated, meLoading, memberships, signOut } = useAuth();
 
-  // No tenant resolved yet -> send the user to the church picker.
-  if (!slug) {
-    return <Redirect href="/select" />;
-  }
+  const feedEnabled = !!slug && isAuthenticated;
+  const announcements = trpc.announcements.list.useQuery(undefined, { enabled: feedEnabled });
+  const events = trpc.events.upcoming.useQuery(undefined, { enabled: feedEnabled });
 
-  const announcements = trpc.announcements.list.useQuery();
-  const events = trpc.events.upcoming.useQuery();
-
-  if (isLoading) {
+  if (!isReady || meLoading) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
         <ActivityIndicator color={theme.primary} style={{ marginTop: 60 }} />
       </SafeAreaView>
     );
   }
+
+  if (!token || !isAuthenticated) {
+    return <Redirect href="/login" />;
+  }
+
+  // AuthRedirect / select will assign a tenant; wait here.
+  if (!slug || isLoading) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+        <ActivityIndicator color={theme.primary} style={{ marginTop: 60 }} />
+      </SafeAreaView>
+    );
+  }
+
+  const canSwitchChurch = (memberships?.length ?? 0) !== 1;
+
+  const onSwitchChurch = () => {
+    clearTenant();
+    router.replace('/select');
+  };
+
+  const onSignOut = async () => {
+    clearTenant();
+    await signOut();
+    router.replace('/login');
+  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
@@ -34,9 +59,16 @@ export default function Home() {
             {branding.tagline}
           </Text>
         ) : null}
-        <TouchableOpacity onPress={clearTenant}>
-          <Text style={[styles.switch, { color: theme.primaryForeground }]}>Switch church</Text>
-        </TouchableOpacity>
+        <View style={styles.headerActions}>
+          {canSwitchChurch ? (
+            <TouchableOpacity onPress={onSwitchChurch}>
+              <Text style={[styles.switch, { color: theme.primaryForeground }]}>Switch church</Text>
+            </TouchableOpacity>
+          ) : null}
+          <TouchableOpacity onPress={onSignOut}>
+            <Text style={[styles.switch, { color: theme.primaryForeground }]}>Sign out</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 20 }}>
@@ -82,7 +114,8 @@ const styles = StyleSheet.create({
   header: { paddingHorizontal: 20, paddingTop: 24, paddingBottom: 28 },
   headerName: { fontSize: 26, fontWeight: '700' },
   headerTagline: { marginTop: 4, fontSize: 15 },
-  switch: { marginTop: 14, fontSize: 13, textDecorationLine: 'underline' },
+  headerActions: { marginTop: 14, flexDirection: 'row', gap: 16 },
+  switch: { fontSize: 13, textDecorationLine: 'underline' },
   sectionTitle: { fontSize: 20, fontWeight: '700', marginBottom: 12 },
   card: { borderWidth: 1, borderRadius: 14, padding: 16, marginBottom: 12 },
   cardTitle: { fontSize: 16, fontWeight: '600' },

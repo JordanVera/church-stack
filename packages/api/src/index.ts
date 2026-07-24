@@ -5,6 +5,7 @@ export { appRouter } from './routers';
 export type { AppRouter } from './routers';
 export { createContext } from './context';
 export type { Context, Session, SessionUser, CreateContextOptions } from './context';
+export { signMobileToken, verifyMobileToken, readBearerToken } from './mobile-jwt';
 export {
   router,
   publicProcedure,
