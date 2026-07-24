@@ -48,6 +48,12 @@ enum PlanTier {
   CUSTOM
 }
 
+/// Default color mode for the white-label church website (visitor toggle still allowed).
+enum SiteThemeDefault {
+  LIGHT
+  DARK
+}
+
 /// Where a content row originated (manual CMS vs Planning Center sync).
 enum ContentSource {
   MANUAL
@@ -63,6 +69,8 @@ model Church {
   logoUrl        String?
   primaryColor   String   @default("#1a8bbd")
   secondaryColor String   @default("#84dccf")
+  /// Default light/dark appearance for the white-label site.
+  siteThemeDefault SiteThemeDefault @default(LIGHT)
   contactEmail   String?
   phone          String?
   address        String?

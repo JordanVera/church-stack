@@ -597,6 +597,28 @@ export const churchRouter = router({
       });
     }),
 
+  /** Default light/dark mode for the white-label website. */
+  ownerUpdateSiteThemeDefault: churchAdminProcedure
+    .input(
+      z.object({
+        churchId: z.string().min(1),
+        siteThemeDefault: z.enum(['LIGHT', 'DARK']),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await assertChurchAdmin(ctx, input.churchId);
+
+      return ctx.prisma.church.update({
+        where: { id: input.churchId },
+        data: { siteThemeDefault: input.siteThemeDefault },
+        select: {
+          id: true,
+          slug: true,
+          siteThemeDefault: true,
+        },
+      });
+    }),
+
   /** Set or clear the church logo URL (Blob upload route persists after upload). */
   ownerUpdateLogoUrl: churchAdminProcedure
     .input(
@@ -814,6 +836,7 @@ export const churchRouter = router({
         logoUrl: church.logoUrl,
         primaryColor: church.primaryColor,
         secondaryColor: church.secondaryColor,
+        siteThemeDefault: church.siteThemeDefault,
         contactEmail: church.contactEmail,
         phone: church.phone,
         address: church.address,

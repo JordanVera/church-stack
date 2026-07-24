@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { Fraunces, Source_Sans_3 } from 'next/font/google';
-import ThemeProvider from '@/components/ThemeProvider';
 import '@/styles/global.css';
 
 const sans = Source_Sans_3({
@@ -24,7 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${sans.variable} ${display.variable}`} suppressHydrationWarning>
       <body className="bg-[var(--site-bg)] font-[family-name:var(--font-sans)] text-[var(--site-fg)] antialiased">
-        <ThemeProvider>{children}</ThemeProvider>
+        {children}
       </body>
     </html>
   );

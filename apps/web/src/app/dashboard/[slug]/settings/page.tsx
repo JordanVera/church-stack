@@ -41,6 +41,7 @@ function SettingsPanel({ churchId, slug }: { churchId: string; slug: string }) {
   const [givingUrl, setGivingUrl] = useState('');
   const [primaryColor, setPrimaryColor] = useState('#1a8bbd');
   const [secondaryColor, setSecondaryColor] = useState('#84dccf');
+  const [siteThemeDefault, setSiteThemeDefault] = useState<'LIGHT' | 'DARK'>('LIGHT');
   const [contactEmail, setContactEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
@@ -60,6 +61,12 @@ function SettingsPanel({ churchId, slug }: { churchId: string; slug: string }) {
     if (dash.data?.primaryColor) setPrimaryColor(dash.data.primaryColor);
     if (dash.data?.secondaryColor) setSecondaryColor(dash.data.secondaryColor);
   }, [dash.data?.primaryColor, dash.data?.secondaryColor]);
+
+  useEffect(() => {
+    if (dash.data?.siteThemeDefault === 'DARK' || dash.data?.siteThemeDefault === 'LIGHT') {
+      setSiteThemeDefault(dash.data.siteThemeDefault);
+    }
+  }, [dash.data?.siteThemeDefault]);
 
   useEffect(() => {
     setContactEmail(dash.data?.contactEmail ?? '');
@@ -103,6 +110,14 @@ function SettingsPanel({ churchId, slug }: { churchId: string; slug: string }) {
   const saveColors = trpc.church.ownerUpdateBrandingColors.useMutation({
     onSuccess: async () => {
       toast.success('Brand colors saved');
+      await utils.church.getOwnerDashboard.invalidate({ slug });
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  const saveTheme = trpc.church.ownerUpdateSiteThemeDefault.useMutation({
+    onSuccess: async () => {
+      toast.success('Site theme default saved');
       await utils.church.getOwnerDashboard.invalidate({ slug });
     },
     onError: (err) => toast.error(err.message),
@@ -488,6 +503,66 @@ function SettingsPanel({ churchId, slug }: { churchId: string; slug: string }) {
             }
           >
             {saveColors.isPending ? 'Saving…' : 'Save colors'}
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card className="border-ink-200 dark:border-ink-800 dark:bg-ink-900">
+        <CardHeader>
+          <CardTitle className="text-base">Site theme</CardTitle>
+          <CardDescription>
+            Default light or dark mode for first-time visitors on your white-label website. Guests
+            can still switch with the theme toggle.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-3 sm:grid-cols-2">
+            {(
+              [
+                {
+                  value: 'LIGHT' as const,
+                  label: 'Light',
+                  description: 'Bright backgrounds by default',
+                },
+                {
+                  value: 'DARK' as const,
+                  label: 'Dark',
+                  description: 'Dark backgrounds by default',
+                },
+              ] as const
+            ).map((option) => {
+              const selected = siteThemeDefault === option.value;
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => setSiteThemeDefault(option.value)}
+                  className={`rounded-xl border px-4 py-3 text-left transition ${
+                    selected
+                      ? 'border-brand-500 bg-brand-50 ring-2 ring-brand-500/30 dark:border-brand-400 dark:bg-brand-500/10'
+                      : 'border-ink-200 hover:border-ink-300 dark:border-ink-700 dark:hover:border-ink-600'
+                  }`}
+                >
+                  <p className="text-sm font-semibold text-ink-900 dark:text-white">
+                    {option.label}
+                  </p>
+                  <p className="mt-0.5 text-xs text-ink-500 dark:text-ink-400">
+                    {option.description}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+          <Button
+            disabled={saveTheme.isPending || siteThemeDefault === data.siteThemeDefault}
+            onClick={() =>
+              saveTheme.mutate({
+                churchId,
+                siteThemeDefault,
+              })
+            }
+          >
+            {saveTheme.isPending ? 'Saving…' : 'Save theme default'}
           </Button>
         </CardContent>
       </Card>

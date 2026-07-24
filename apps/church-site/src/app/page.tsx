@@ -9,6 +9,7 @@ import { PlanVisitProvider } from '@/components/PlanVisitProvider';
 import { SectionShell } from '@/components/SectionShell';
 import { SermonsGrid } from '@/components/SermonsGrid';
 import { SiteChrome } from '@/components/SiteChrome';
+import ThemeProvider from '@/components/ThemeProvider';
 import { VisitSection } from '@/components/VisitSection';
 import { fetchPublicSite, resolveChurchSlug } from '@/lib/site';
 
@@ -85,21 +86,24 @@ export default async function ChurchHomePage({ searchParams }: PageProps) {
   const showSeriesFallback =
     branding.features.sermons && !showYoutubeSermons && sermonSeries.length > 0;
 
+  const themeDefault = branding.themeDefault ?? 'light';
+
   return (
-    <main
-      style={
-        {
-          '--church-primary': primary,
-          '--church-secondary': secondary,
-        } as CSSProperties
-      }
-    >
-      <PlanVisitProvider
-        slug={slug}
-        locations={locations}
-        accentColor={primary}
-        secondaryColor={secondary}
+    <ThemeProvider defaultTheme={themeDefault}>
+      <main
+        style={
+          {
+            '--church-primary': primary,
+            '--church-secondary': secondary,
+          } as CSSProperties
+        }
       >
+        <PlanVisitProvider
+          slug={slug}
+          locations={locations}
+          accentColor={primary}
+          secondaryColor={secondary}
+        >
         <SiteChrome
           name={branding.name}
           logoUrl={branding.logoUrl}
@@ -174,6 +178,7 @@ export default async function ChurchHomePage({ searchParams }: PageProps) {
           ) : null}
         </SiteChrome>
       </PlanVisitProvider>
-    </main>
+      </main>
+    </ThemeProvider>
   );
 }
