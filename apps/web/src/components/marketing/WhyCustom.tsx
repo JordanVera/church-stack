@@ -25,7 +25,7 @@ export default function WhyCustom() {
   return (
     <section
       id="why-custom"
-      className="relative scroll-mt-24 overflow-hidden bg-ink-950 py-12 mb-24 text-white"
+      className="relative scroll-mt-24 overflow-hidden bg-ink-950 py-12 text-white"
     >
       <div className="relative mx-auto max-w-6xl px-6">
         <Reveal className="mx-auto max-w-3xl text-center">

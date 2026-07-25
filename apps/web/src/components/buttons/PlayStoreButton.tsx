@@ -1,18 +1,23 @@
 'use client';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
+
 const PLAY_STORE_URL =
   'https://play.google.com/store/apps/details?id=io.pushpay.tlhcsoutheast&hl=en_US';
 
-export default function PlayStoreButton() {
+export default function PlayStoreButton({ className }: { className?: string }) {
   return (
     <Link
       href={PLAY_STORE_URL}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex mt-3 w-48 h-14 bg-black dark:bg-white text-white dark:text-black rounded-lg items-center justify-center"
+      className={cn(
+        'flex h-14 w-48 items-center justify-center rounded-xl bg-black text-white dark:bg-white dark:text-black',
+        className
+      )}
     >
       <div className="mr-3">
-        <svg viewBox="30 336.7 120.9 129.2" width="30">
+        <svg viewBox="30 336.7 120.9 129.2" width="30" aria-hidden>
           <path
             fill="#FFD400"
             d="M119.2,421.2c15.3-8.4,27-14.8,28-15.3c3.2-1.7,6.5-6.2,0-9.7  c-2.1-1.1-13.4-7.3-28-15.3l-20.1,20.2L119.2,421.2z"
@@ -33,7 +38,7 @@ export default function PlayStoreButton() {
       </div>
       <div>
         <div className="text-xs">GET IT ON</div>
-        <div className="text-xl font-semibold font-sans -mt-1">Google Play</div>
+        <div className="-mt-1 font-sans text-xl font-semibold">Google Play</div>
       </div>
     </Link>
   );

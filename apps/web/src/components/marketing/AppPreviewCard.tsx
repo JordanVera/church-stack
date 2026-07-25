@@ -15,7 +15,7 @@ const waveform = [4, 8, 5, 10, 6, 9, 4, 7, 5, 6];
 /** Matches Hero's Reveal (delay 0.35 + duration 0.7) so the glow arrives after the card. */
 const GLOW_IN_DELAY = 1.05;
 
-export default function AppPreviewCard() {
+export default function AppPreviewCard({ showFloatBadges = true }: { showFloatBadges?: boolean }) {
   const reduce = useReducedMotion();
 
   return (
@@ -139,7 +139,7 @@ export default function AppPreviewCard() {
         </div>
       </motion.div>
 
-      {!reduce && (
+      {showFloatBadges && !reduce && (
         <>
           <motion.div
             className="absolute -left-10 top-8 z-20 hidden sm:block"

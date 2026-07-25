@@ -6,6 +6,7 @@ import Showcase from '@/components/marketing/Showcase';
 import WhyCustom from '@/components/marketing/WhyCustom';
 import HowItWorks from '@/components/marketing/HowItWorks';
 import PlanningCenter from '@/components/marketing/PlanningCenter';
+import MobileApp from '@/components/marketing/MobileApp';
 import CTA from '@/components/marketing/CTA';
 
 export default function HomePage() {
@@ -19,6 +20,7 @@ export default function HomePage() {
       <HowItWorks />
       <PlanningCenter />
       <WhyCustom />
+      <MobileApp />
       <CTA />
     </div>
   );
