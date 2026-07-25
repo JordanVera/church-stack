@@ -87,6 +87,7 @@ type SeedChurch = {
     daysFromNow: number;
     source?: ContentSource;
     externalId?: string | null;
+    requiresRegistration?: boolean;
   }[];
   sermonSeries: { title: string; description: string }[];
   lifeGroups: {
@@ -199,6 +200,7 @@ const churches: SeedChurch[] = [
         description: 'Food, games, and fellowship for the whole family.',
         location: 'Lincoln Park',
         daysFromNow: 14,
+        requiresRegistration: true,
       },
     ],
     sermonSeries: [
@@ -710,7 +712,13 @@ async function ensureContent(churchId: string, church: SeedChurch) {
           startsAt: new Date(Date.now() + e.daysFromNow * 24 * 60 * 60 * 1000),
           source: e.source ?? ContentSource.MANUAL,
           externalId: e.externalId ?? null,
+          requiresRegistration: e.requiresRegistration ?? false,
         },
+      });
+    } else if (e.requiresRegistration !== undefined) {
+      await prisma.event.update({
+        where: { id: existing.id },
+        data: { requiresRegistration: e.requiresRegistration },
       });
     }
   }
