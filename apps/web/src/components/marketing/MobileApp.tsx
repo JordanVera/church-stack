@@ -46,18 +46,6 @@ export default function MobileApp() {
 
               <div className="relative grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-10">
                 <div className="max-w-xl">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-accent-400/40 bg-accent-500/10 px-3.5 py-1.5">
-                    <span className="relative flex h-2 w-2">
-                      {!reduce && (
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-400 opacity-75" />
-                      )}
-                      <span className="relative inline-flex h-2 w-2 rounded-full bg-accent-400" />
-                    </span>
-                    <span className="text-[11px] font-semibold tracking-[0.2em] text-white uppercase">
-                      Coming soon
-                    </span>
-                  </div>
-
                   <h2 className="mt-6 font-display text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-[3.25rem] lg:leading-[1.1]">
                     Take{' '}
                     <span
@@ -67,7 +55,7 @@ export default function MobileApp() {
                           'linear-gradient(90deg, #68d4c4 0%, #55bae8 40%, #a78bfa 70%, #f5b07a 100%)',
                       }}
                     >
-                      Church Stack
+                      Your Church
                     </span>{' '}
                     with you everywhere
                   </h2>
