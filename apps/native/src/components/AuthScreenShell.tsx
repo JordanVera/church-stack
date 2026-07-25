@@ -49,8 +49,7 @@ export function AuthScreenShell({ title, subtitle, children, footer }: Props) {
               },
             ]}
           >
-            <View style={styles.brandBlock}>
-              <Text style={styles.brand}>Church Stack</Text>
+            <View style={styles.headerBlock}>
               <Text style={styles.title}>{title}</Text>
               <Text style={styles.subtitle}>{subtitle}</Text>
             </View>
@@ -74,18 +73,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 20,
   },
-  brandBlock: { marginBottom: 28 },
-  brand: {
-    fontSize: 34,
-    fontWeight: '700',
-    letterSpacing: -0.6,
-    color: '#f4f7fa',
-  },
+  headerBlock: { marginBottom: 28 },
   title: {
-    marginTop: 14,
-    fontSize: 22,
-    fontWeight: '600',
-    color: '#e8eef4',
+    fontSize: 28,
+    fontWeight: '700',
+    letterSpacing: -0.4,
+    color: '#f4f7fa',
   },
   subtitle: {
     marginTop: 6,

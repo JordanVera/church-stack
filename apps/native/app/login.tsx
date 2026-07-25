@@ -75,6 +75,9 @@ export default function LoginScreen() {
           <Text style={authControlStyles.buttonText}>Sign in</Text>
         )}
       </TouchableOpacity>
+
+      <Text className="text-white">vera.jojo96@gmail.com</Text>
+      <Text className="text-white">Jordan96</Text>
     </AuthScreenShell>
   );
 }
