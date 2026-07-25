@@ -20,18 +20,9 @@ export function ChurchTopBar() {
   const initials = userInitials(user?.name, user?.email);
 
   return (
-    <View
-      className="relative flex-row items-center justify-end px-4"
-      style={{
-        backgroundColor: theme.background,
-        borderBottomColor: theme.border,
-        borderBottomWidth: 1,
-        height: 48,
-      }}
-    >
+    <View className="relative h-12 flex-row items-center justify-end border-b border-border bg-background px-4">
       <Text
-        className="absolute inset-x-12 text-center text-[15px] font-bold"
-        style={{ color: theme.text }}
+        className="absolute inset-x-12 text-center text-[15px] font-bold text-foreground"
         numberOfLines={1}
       >
         {branding.name}

@@ -12,11 +12,8 @@ export default function GiveScreen() {
 
   if (!givingEnabled || !givingUrl) {
     return (
-      <View
-        className="flex-1 items-center justify-center px-6"
-        style={{ backgroundColor: theme.background }}
-      >
-        <Text className="text-center text-base leading-6" style={{ color: theme.muted }}>
+      <View className="flex-1 items-center justify-center bg-background px-6">
+        <Text className="text-center text-base leading-6 text-muted-foreground">
           {!givingEnabled
             ? "Giving isn't available for this church."
             : 'No giving link has been set up yet.'}
@@ -26,7 +23,7 @@ export default function GiveScreen() {
   }
 
   return (
-    <View className="flex-1" style={{ backgroundColor: theme.background }}>
+    <View className="flex-1 bg-background">
       {loading && !error ? (
         <View className="absolute inset-0 z-10 items-center justify-center">
           <ActivityIndicator color={theme.primary} />
@@ -34,7 +31,7 @@ export default function GiveScreen() {
       ) : null}
       {error ? (
         <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-center text-base leading-6" style={{ color: theme.muted }}>
+          <Text className="text-center text-base leading-6 text-muted-foreground">
             Couldn't open the giving page. Try again later.
           </Text>
         </View>

@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useMemo, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { Uniwind, useUniwind } from 'uniwind';
 import { DEFAULT_BRANDING, type TenantBranding } from '@repo/config';
 import { trpc } from '../lib/trpc';
 import { tenantStore } from '../lib/tenant-store';
@@ -16,6 +17,8 @@ interface TenantContextValue {
 const TenantContext = createContext<TenantContextValue | null>(null);
 
 export function TenantProvider({ children }: { children: React.ReactNode }) {
+  const { theme: mode } = useUniwind();
+  const resolvedMode = mode === 'dark' ? 'dark' : 'light';
   // Tenant is set after auth (membership or join). Whitelabel DEFAULT_TENANT
   // is applied by the auth gate via church.join, not on mount.
   const [slug, setSlug] = useState<string | null>(() => tenantStore.get());
@@ -25,12 +28,28 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
     { enabled: !!slug }
   );
 
+  useEffect(() => {
+    const branding = brandingQuery.data;
+    if (!branding) return;
+    const vars = {
+      '--color-primary': branding.primaryColor,
+    };
+    Uniwind.updateCSSVariables('light', {
+      ...vars,
+      '--color-primary-foreground': '#ffffff',
+    });
+    Uniwind.updateCSSVariables('dark', {
+      ...vars,
+      '--color-primary-foreground': '#22181c',
+    });
+  }, [brandingQuery.data]);
+
   const value = useMemo<TenantContextValue>(() => {
     const branding = brandingQuery.data ?? DEFAULT_BRANDING;
     return {
       slug,
       branding,
-      theme: themeFromBranding(branding),
+      theme: themeFromBranding(branding, resolvedMode),
       isLoading: !!slug && brandingQuery.isLoading,
       setTenant: (next: string) => {
         tenantStore.set(next);
@@ -41,7 +60,7 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
         setSlug(null);
       },
     };
-  }, [slug, brandingQuery.data, brandingQuery.isLoading]);
+  }, [slug, brandingQuery.data, brandingQuery.isLoading, resolvedMode]);
 
   return <TenantContext.Provider value={value}>{children}</TenantContext.Provider>;
 }
@@ -52,6 +71,7 @@ export function useTenant() {
   return ctx;
 }
 
-export function useTheme() {
+/** Branding + mode-aware chrome colors (not Uniwind's useUniwind). */
+export function useBrandingTheme() {
   return useTenant().theme;
 }

@@ -110,11 +110,8 @@ export default function SermonsScreen() {
 
   if (!sermonsEnabled) {
     return (
-      <View
-        className="flex-1 items-center justify-center px-6"
-        style={{ backgroundColor: theme.background }}
-      >
-        <Text className="text-center text-base leading-6" style={{ color: theme.muted }}>
+      <View className="flex-1 items-center justify-center bg-background px-6">
+        <Text className="text-center text-base leading-6 text-muted-foreground">
           Sermons aren't available for this church.
         </Text>
       </View>
@@ -122,7 +119,7 @@ export default function SermonsScreen() {
   }
 
   return (
-    <View className="flex-1" style={{ backgroundColor: theme.background }}>
+    <View className="flex-1 bg-background">
       <FlatList
         data={showYoutube ? videos : []}
         key={columns}
@@ -138,23 +135,17 @@ export default function SermonsScreen() {
             </View>
           ) : siteQuery.isError ? (
             <View className="flex-1 items-center justify-center py-24">
-              <Text className="text-center text-base leading-6" style={{ color: theme.muted }}>
+              <Text className="text-center text-base leading-6 text-muted-foreground">
                 Couldn't load sermons. Pull to refresh or try again later.
               </Text>
             </View>
           ) : showSeriesFallback ? (
             <View>
               {sermonSeries.map((series) => (
-                <View
-                  key={series.id}
-                  className="mb-3 rounded-[14px] border p-4"
-                  style={{ backgroundColor: theme.card, borderColor: theme.border }}
-                >
-                  <Text className="text-base font-semibold" style={{ color: theme.text }}>
-                    {series.title}
-                  </Text>
+                <View key={series.id} className="mb-3 rounded-[14px] border border-border bg-card p-4">
+                  <Text className="text-base font-semibold text-foreground">{series.title}</Text>
                   {series.description ? (
-                    <Text className="mt-1.5 text-sm leading-5" style={{ color: theme.muted }}>
+                    <Text className="mt-1.5 text-sm leading-5 text-muted-foreground">
                       {series.description}
                     </Text>
                   ) : null}
@@ -163,7 +154,7 @@ export default function SermonsScreen() {
             </View>
           ) : (
             <View className="flex-1 items-center justify-center py-24">
-              <Text className="text-center text-base leading-6" style={{ color: theme.muted }}>
+              <Text className="text-center text-base leading-6 text-muted-foreground">
                 No sermons available yet.
               </Text>
             </View>
@@ -176,10 +167,7 @@ export default function SermonsScreen() {
             accessibilityRole="link"
             accessibilityLabel={`Watch ${item.title}`}
           >
-            <View
-              className="overflow-hidden rounded-[14px] border"
-              style={{ backgroundColor: theme.card, borderColor: theme.border }}
-            >
+            <View className="overflow-hidden rounded-[14px] border border-border bg-card">
               <View className="relative w-full aspect-video bg-black/30">
                 {item.thumbnailUrl ? (
                   <Image
@@ -196,18 +184,11 @@ export default function SermonsScreen() {
                 ) : null}
               </View>
               <View className="p-3.5">
-                <Text
-                  className="text-base font-semibold leading-5"
-                  style={{ color: theme.text }}
-                  numberOfLines={2}
-                >
+                <Text className="text-base font-semibold leading-5 text-foreground" numberOfLines={2}>
                   {item.title}
                 </Text>
                 {item.publishedAt ? (
-                  <Text
-                    className="mt-1.5 text-xs uppercase tracking-wide"
-                    style={{ color: theme.muted }}
-                  >
+                  <Text className="mt-1.5 text-xs uppercase tracking-wide text-muted-foreground">
                     {formatPublishedAt(item.publishedAt)}
                   </Text>
                 ) : null}
@@ -219,9 +200,7 @@ export default function SermonsScreen() {
           showYoutube ? (
             <View className="mt-6 items-center">
               {loadMoreError ? (
-                <Text className="mb-3 text-center text-sm" style={{ color: '#f87171' }}>
-                  {loadMoreError}
-                </Text>
+                <Text className="mb-3 text-center text-sm text-destructive">{loadMoreError}</Text>
               ) : null}
               {nextPageToken ? (
                 <Pressable

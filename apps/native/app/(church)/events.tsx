@@ -53,13 +53,7 @@ function EventCard({
   const weekday = start.toLocaleDateString(undefined, { weekday: 'short' });
 
   return (
-    <View
-      className="overflow-hidden rounded-2xl border"
-      style={{
-        backgroundColor: theme.card,
-        borderColor: theme.border,
-      }}
-    >
+    <View className="overflow-hidden rounded-2xl border border-border bg-card">
       <View className="flex-row">
         <View
           className="w-[72px] items-center justify-center px-2 py-4"
@@ -86,25 +80,21 @@ function EventCard({
         </View>
 
         <View className="min-w-0 flex-1 px-4 py-3.5">
-          <Text
-            className="text-lg font-bold leading-6"
-            style={{ color: theme.text }}
-            numberOfLines={2}
-          >
+          <Text className="text-lg font-bold leading-6 text-foreground" numberOfLines={2}>
             {event.title}
           </Text>
 
           <View className="mt-2.5 gap-1.5">
             <View className="flex-row items-center gap-1.5">
               <Ionicons name="time-outline" size={14} color={theme.muted} />
-              <Text className="text-sm" style={{ color: theme.muted }}>
+              <Text className="text-sm text-muted-foreground">
                 {formatTimeRange(event.startsAt, event.endsAt)}
               </Text>
             </View>
             {event.location ? (
               <View className="flex-row items-center gap-1.5">
                 <Ionicons name="location-outline" size={14} color={theme.muted} />
-                <Text className="flex-1 text-sm" style={{ color: theme.muted }} numberOfLines={1}>
+                <Text className="flex-1 text-sm text-muted-foreground" numberOfLines={1}>
                   {event.location}
                 </Text>
               </View>
@@ -112,11 +102,7 @@ function EventCard({
           </View>
 
           {event.description ? (
-            <Text
-              className="mt-2.5 text-sm leading-5"
-              style={{ color: theme.muted }}
-              numberOfLines={3}
-            >
+            <Text className="mt-2.5 text-sm leading-5 text-muted-foreground" numberOfLines={3}>
               {event.description}
             </Text>
           ) : null}
@@ -125,18 +111,9 @@ function EventCard({
             <View className="mt-3.5">
               {event.isRegistered ? (
                 <View className="gap-2">
-                  <View
-                    className="flex-row items-center justify-center gap-1.5 rounded-xl px-4 py-2.5"
-                    style={{
-                      backgroundColor: 'rgba(255,255,255,0.06)',
-                      borderWidth: 1,
-                      borderColor: theme.border,
-                    }}
-                  >
+                  <View className="flex-row items-center justify-center gap-1.5 rounded-xl border border-border bg-muted px-4 py-2.5">
                     <Ionicons name="checkmark-circle" size={16} color={theme.primary} />
-                    <Text className="text-sm font-semibold" style={{ color: theme.text }}>
-                      Registered
-                    </Text>
+                    <Text className="text-sm font-semibold text-foreground">Registered</Text>
                   </View>
                   <Pressable
                     onPress={onCancel}
@@ -144,7 +121,7 @@ function EventCard({
                     className="items-center py-1"
                     style={{ opacity: busy ? 0.5 : 1 }}
                   >
-                    <Text className="text-sm font-medium" style={{ color: theme.muted }}>
+                    <Text className="text-sm font-medium text-muted-foreground">
                       {busy ? 'Canceling…' : 'Cancel registration'}
                     </Text>
                   </Pressable>
@@ -166,9 +143,7 @@ function EventCard({
                 </Pressable>
               )}
               {error ? (
-                <Text className="mt-2 text-center text-xs" style={{ color: '#f87171' }}>
-                  {error}
-                </Text>
+                <Text className="mt-2 text-center text-xs text-destructive">{error}</Text>
               ) : null}
             </View>
           ) : null}
@@ -242,11 +217,8 @@ export default function EventsScreen() {
 
   if (!eventsEnabled) {
     return (
-      <View
-        className="flex-1 items-center justify-center px-6"
-        style={{ backgroundColor: theme.background }}
-      >
-        <Text className="text-center text-base leading-6" style={{ color: theme.muted }}>
+      <View className="flex-1 items-center justify-center bg-background px-6">
+        <Text className="text-center text-base leading-6 text-muted-foreground">
           Events aren't available for this church.
         </Text>
       </View>
@@ -254,7 +226,7 @@ export default function EventsScreen() {
   }
 
   return (
-    <View className="flex-1" style={{ backgroundColor: theme.background }}>
+    <View className="flex-1 bg-background">
       <FlatList
         data={(events.data ?? []) as EventRow[]}
         keyExtractor={(item) => item.id}
@@ -269,13 +241,13 @@ export default function EventsScreen() {
             </View>
           ) : events.isError ? (
             <View className="flex-1 items-center justify-center py-24">
-              <Text className="text-center text-base leading-6" style={{ color: theme.muted }}>
+              <Text className="text-center text-base leading-6 text-muted-foreground">
                 Couldn't load events. Pull to refresh or try again later.
               </Text>
             </View>
           ) : (
             <View className="flex-1 items-center justify-center py-24">
-              <Text className="text-center text-base leading-6" style={{ color: theme.muted }}>
+              <Text className="text-center text-base leading-6 text-muted-foreground">
                 No upcoming events.
               </Text>
             </View>

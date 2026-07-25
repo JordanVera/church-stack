@@ -1,6 +1,5 @@
 import { Redirect, Tabs } from 'expo-router';
 import { ActivityIndicator, View } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../src/providers/AuthProvider';
 import { useTenant } from '../../src/providers/TenantProvider';
@@ -36,14 +35,13 @@ export default function ChurchTabsLayout() {
   }
 
   return (
-    <SafeAreaView className="flex-1" edges={['top']} style={{ backgroundColor: theme.background }}>
-      <StatusBar style="light" />
+    <SafeAreaView className="flex-1 bg-background" edges={['top']}>
       <ChurchTopBar />
       <Tabs
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: theme.primary,
-          tabBarInactiveTintColor: '#908889',
+          tabBarInactiveTintColor: theme.mode === 'dark' ? '#908889' : '#787272',
           tabBarStyle: {
             backgroundColor: theme.background,
             borderTopColor: theme.border,

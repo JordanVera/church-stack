@@ -3,7 +3,7 @@
 
 /**
  * Shared Church Stack palette — mirrors apps/web/src/styles/global.css.
- * Native defaults to the web dark semantic surface.
+ * Semantic surfaces flip via Uniwind light/dark variants.
  */
 @theme {
   /* Brand — azure blue */
@@ -44,16 +44,34 @@
   --color-ink-800: #3f3c3c;
   --color-ink-900: #312f2f;
   --color-ink-950: #22181c;
+}
 
-  /* Dark semantic surfaces (web .dark) */
-  --color-background: #22181c;
-  --color-foreground: #f6e8ea;
-  --color-card: #312f2f;
-  --color-muted: #3f3c3c;
-  --color-muted-foreground: #aba2a3;
-  --color-primary: #55bae8;
-  --color-primary-foreground: #22181c;
-  --color-border: rgba(255, 255, 255, 0.1);
-  --color-input: rgba(255, 255, 255, 0.15);
-  --color-destructive: #f87171;
+@layer theme {
+  :root {
+    @variant light {
+      --color-background: #f6e8ea;
+      --color-foreground: #22181c;
+      --color-card: #ffffff;
+      --color-muted: #e2d6d7;
+      --color-muted-foreground: #787272;
+      --color-primary: #156f97;
+      --color-primary-foreground: #ffffff;
+      --color-border: #c7bcbd;
+      --color-input: #c7bcbd;
+      --color-destructive: #dc2626;
+    }
+
+    @variant dark {
+      --color-background: #22181c;
+      --color-foreground: #f6e8ea;
+      --color-card: #312f2f;
+      --color-muted: #3f3c3c;
+      --color-muted-foreground: #aba2a3;
+      --color-primary: #55bae8;
+      --color-primary-foreground: #22181c;
+      --color-border: rgba(255, 255, 255, 0.1);
+      --color-input: rgba(255, 255, 255, 0.15);
+      --color-destructive: #f87171;
+    }
+  }
 }

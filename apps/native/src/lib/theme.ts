@@ -9,19 +9,37 @@ export interface Theme {
   text: string;
   muted: string;
   border: string;
+  mode: 'light' | 'dark';
 }
 
-export function themeFromBranding(branding: TenantBranding): Theme {
+const LIGHT_CHROME = {
+  background: '#f6e8ea',
+  card: '#ffffff',
+  text: '#22181c',
+  muted: '#787272',
+  border: '#c7bcbd',
+  primaryForeground: '#ffffff',
+} as const;
+
+const DARK_CHROME = {
+  background: '#22181c',
+  card: '#312f2f',
+  text: '#f6e8ea',
+  muted: '#aba2a3',
+  border: 'rgba(255,255,255,0.1)',
+  primaryForeground: '#22181c',
+} as const;
+
+/** Brand colors + mode-aware chrome (for RN APIs that need hex: icons, tab bar). */
+export function themeFromBranding(
+  branding: TenantBranding,
+  mode: 'light' | 'dark' = 'dark'
+): Theme {
+  const chrome = mode === 'light' ? LIGHT_CHROME : DARK_CHROME;
   return {
     primary: branding.primaryColor,
-    // Match web dark primary-foreground on brand surfaces.
-    primaryForeground: '#22181c',
     secondary: branding.secondaryColor,
-    // Neutral chrome uses web dark ink scale; church brand colors stay dynamic.
-    background: '#22181c',
-    card: '#312f2f',
-    text: '#f6e8ea',
-    muted: '#aba2a3',
-    border: 'rgba(255,255,255,0.1)',
+    mode,
+    ...chrome,
   };
 }
