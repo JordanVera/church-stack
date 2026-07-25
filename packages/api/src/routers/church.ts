@@ -131,7 +131,15 @@ export const churchRouter = router({
     return ctx.prisma.church.findMany({
       where: { isActive: true },
       orderBy: { name: 'asc' },
-      select: { id: true, slug: true, name: true, tagline: true, logoUrl: true },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        tagline: true,
+        logoUrl: true,
+        address: true,
+        _count: { select: { locations: true } },
+      },
     });
   }),
 

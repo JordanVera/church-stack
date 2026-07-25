@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   Pressable,
   StyleSheet,
@@ -9,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { Redirect, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { trpc } from '../src/lib/trpc';
@@ -23,6 +25,8 @@ type ChurchRow = {
   name: string;
   tagline?: string | null;
   logoUrl?: string | null;
+  address?: string | null;
+  locationCount?: number;
 };
 
 function initials(name: string) {
@@ -30,6 +34,11 @@ function initials(name: string) {
   if (parts.length === 0) return 'C';
   if (parts.length === 1) return parts[0]!.slice(0, 2).toUpperCase();
   return `${parts[0]![0] ?? ''}${parts[1]![0] ?? ''}`.toUpperCase();
+}
+
+function locationLabel(count: number) {
+  if (count <= 0) return 'No locations';
+  return count === 1 ? '1 location' : `${count} locations`;
 }
 
 export default function SelectChurch() {
@@ -49,13 +58,23 @@ export default function SelectChurch() {
     () =>
       hasMemberships
         ? (memberships ?? []).map((m) => ({
-            id: m.church.slug,
+            id: m.church.id,
             slug: m.church.slug,
             name: m.church.name,
-            tagline: null,
-            logoUrl: null,
+            tagline: m.church.tagline,
+            logoUrl: m.church.logoUrl,
+            address: m.church.address,
+            locationCount: m.church._count.locations,
           }))
-        : (churches.data ?? []),
+        : (churches.data ?? []).map((c) => ({
+            id: c.id,
+            slug: c.slug,
+            name: c.name,
+            tagline: c.tagline,
+            logoUrl: c.logoUrl,
+            address: c.address,
+            locationCount: c._count.locations,
+          })),
     [hasMemberships, memberships, churches.data]
   );
 
@@ -65,7 +84,8 @@ export default function SelectChurch() {
     return list.filter((c) => {
       const name = c.name.toLowerCase();
       const tagline = (c.tagline ?? '').toLowerCase();
-      return name.includes(q) || tagline.includes(q);
+      const address = (c.address ?? '').toLowerCase();
+      return name.includes(q) || tagline.includes(q) || address.includes(q);
     });
   }, [list, query]);
 
@@ -87,14 +107,8 @@ export default function SelectChurch() {
     return <Redirect href="/login" />;
   }
 
-  const onSelect = async (slug: string) => {
+  const joinChurch = async (slug: string) => {
     setError(null);
-    if (hasMemberships) {
-      setTenant(slug);
-      router.replace('/');
-      return;
-    }
-
     setJoiningSlug(slug);
     try {
       const church = await join.mutateAsync({ slug });
@@ -106,6 +120,30 @@ export default function SelectChurch() {
     } finally {
       setJoiningSlug(null);
     }
+  };
+
+  const onSelect = (church: ChurchRow) => {
+    setError(null);
+    if (hasMemberships) {
+      setTenant(church.slug);
+      router.replace('/');
+      return;
+    }
+
+    Alert.alert(
+      'Join this church?',
+      `Are you sure you want to join and become a member of ${church.name}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Join',
+          style: 'default',
+          onPress: () => {
+            void joinChurch(church.slug);
+          },
+        },
+      ]
+    );
   };
 
   const onSignOut = async () => {
@@ -181,39 +219,65 @@ export default function SelectChurch() {
               }
 
               const busy = joiningSlug === item.slug;
+              const count = item.locationCount ?? 0;
+
               return (
                 <Pressable
-                  onPress={() => onSelect(item.slug)}
+                  onPress={() => onSelect(item)}
                   disabled={joiningSlug !== null}
                   className={cn(
-                    'aspect-square flex-1 items-center justify-center rounded-2xl border border-border bg-card px-3',
+                    'aspect-square flex-1 overflow-hidden rounded-2xl border-2 border-brand-400/10 bg-card',
                     joiningSlug !== null && !busy && 'opacity-55'
                   )}
-                  style={({ pressed }) => (pressed ? { transform: [{ scale: 0.98 }] } : undefined)}
+                  style={({ pressed }) => [
+                    {
+                      shadowColor: '#55bae8',
+                      shadowOpacity: 0.28,
+                      shadowRadius: 14,
+                      shadowOffset: { width: 0, height: 0 },
+                      elevation: 6,
+                    },
+                    pressed ? { transform: [{ scale: 0.98 }] } : null,
+                  ]}
                 >
-                  <View className="mb-3 h-14 w-14 items-center justify-center rounded-2xl bg-brand-900">
+                  <View className="relative min-h-0 flex-1 items-center justify-center overflow-hidden bg-brand-950">
                     {busy ? (
                       <ActivityIndicator color="#55bae8" />
+                    ) : item.logoUrl ? (
+                      <Image
+                        source={item.logoUrl}
+                        style={StyleSheet.absoluteFillObject}
+                        contentFit="cover"
+                        cachePolicy="memory-disk"
+                        transition={150}
+                        recyclingKey={item.slug}
+                        priority="high"
+                      />
                     ) : (
-                      <Text className="text-lg font-bold text-brand-300">
+                      <Text className="text-4xl font-bold text-brand-300">
                         {initials(item.name)}
                       </Text>
                     )}
                   </View>
-                  <Text
-                    className="text-center text-[15px] font-semibold text-foreground"
-                    numberOfLines={2}
-                  >
-                    {item.name}
-                  </Text>
-                  {item.tagline ? (
+                  <View className="border-t border-brand-400/25 bg-ink-900/95 px-2.5 py-2.5">
                     <Text
-                      className="mt-1 text-center text-[12px] text-muted-foreground"
-                      numberOfLines={2}
+                      className="text-center text-[13px] font-semibold text-foreground"
+                      numberOfLines={1}
                     >
-                      {item.tagline}
+                      {item.name}
                     </Text>
-                  ) : null}
+                    {item.address ? (
+                      <Text
+                        className="mt-0.5 text-center text-[10px] leading-[13px] text-muted-foreground"
+                        numberOfLines={1}
+                      >
+                        {item.address}
+                      </Text>
+                    ) : null}
+                    <Text className="mt-1 text-center text-[10px] font-semibold text-brand-300">
+                      {locationLabel(count)}
+                    </Text>
+                  </View>
                 </Pressable>
               );
             }}

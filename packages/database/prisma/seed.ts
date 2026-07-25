@@ -54,6 +54,7 @@ type SeedChurch = {
   slug: string;
   name: string;
   tagline: string;
+  logoUrl: string | null;
   primaryColor: string;
   secondaryColor: string;
   contactEmail: string;
@@ -104,6 +105,8 @@ const churches: SeedChurch[] = [
     slug: 'grace',
     name: 'Grace Community Church',
     tagline: 'A place to belong',
+    logoUrl:
+      'https://v30ij5824o0cojgu.public.blob.vercel-storage.com/churches/grace/logo-seed-D1VuXiZw1UkCy5SU5X6NqHtpHgAVuQ.jpg',
     primaryColor: '#4f46e5',
     secondaryColor: '#0ea5e9',
     contactEmail: 'hello@gracechurch.example',
@@ -225,6 +228,8 @@ const churches: SeedChurch[] = [
     slug: 'hillside',
     name: 'Hillside Fellowship',
     tagline: 'Faith, hope, and community',
+    logoUrl:
+      'https://v30ij5824o0cojgu.public.blob.vercel-storage.com/churches/hillside/logo-seed-RfbbB9m471VH97Tut4BvZU4Kn4ZDCl.jpg',
     primaryColor: '#059669',
     secondaryColor: '#f59e0b',
     contactEmail: 'hello@hillside.example',
@@ -407,6 +412,8 @@ const churches: SeedChurch[] = [
     slug: 'harbor',
     name: 'Harbor Church',
     tagline: 'Anchored in hope',
+    logoUrl:
+      'https://v30ij5824o0cojgu.public.blob.vercel-storage.com/churches/harbor/logo-seed-arUN5ozT9e8QmgmiCXSJonygYYO48k.jpg',
     primaryColor: '#0f766e',
     secondaryColor: '#f97316',
     contactEmail: 'hello@harbor.example',
@@ -778,6 +785,7 @@ async function main() {
     const churchData = {
       name: c.name,
       tagline: c.tagline,
+      logoUrl: c.logoUrl,
       primaryColor: c.primaryColor,
       secondaryColor: c.secondaryColor,
       contactEmail: c.contactEmail,
