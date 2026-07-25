@@ -64,6 +64,9 @@ export default function LoginScreen() {
         onChangeText={setPassword}
         placeholder="Your password"
       />
+      <Link href="/forgot-password" className={cn(authControlClass.link, 'self-end text-[13px]')}>
+        Forgot password?
+      </Link>
       {error ? <Text className={authControlClass.error}>{error}</Text> : null}
       <TouchableOpacity
         className={cn(authControlClass.button, loading && authControlClass.buttonDisabled)}

@@ -6,7 +6,7 @@ import { routeAfterAuth } from '../lib/auth-routing';
 import { useAuth } from '../providers/AuthProvider';
 import { useTenant } from '../providers/TenantProvider';
 
-const AUTH_SCREENS = new Set(['login', 'signup']);
+const AUTH_SCREENS = new Set(['login', 'signup', 'forgot-password', 'reset-password']);
 
 /**
  * Global auth + membership routing. Renders nothing; redirects as needed.
