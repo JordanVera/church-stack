@@ -973,6 +973,8 @@ export const churchRouter = router({
         name: church.name,
         planTier: church.planTier,
         logoUrl: church.logoUrl,
+        heroMediaUrl: church.heroMediaUrl,
+        heroMediaType: church.heroMediaType,
         primaryColor: church.primaryColor,
         secondaryColor: church.secondaryColor,
         siteThemeDefault: church.siteThemeDefault,

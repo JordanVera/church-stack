@@ -50,8 +50,8 @@ export default function BigStatement() {
 
           <Reveal delay={0.25} className="lg:pb-3">
             <p className="max-w-sm text-lg leading-relaxed text-white/60 lg:ml-auto lg:text-right">
-              Plan-a-visit requests from your church site land in the owner dashboard (and email
-              when Resend is configured) — no spreadsheets, no missed inbox threads.
+              Plan-a-visit requests from your church site land in the owner dashboard and email — no
+              spreadsheets, no missed inbox threads.
             </p>
           </Reveal>
         </div>

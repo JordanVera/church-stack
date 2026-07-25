@@ -123,6 +123,8 @@ export default async function ChurchHomePage({ searchParams }: PageProps) {
             name={branding.name}
             tagline={branding.tagline}
             logoUrl={branding.logoUrl}
+            heroMediaUrl={branding.heroMediaUrl}
+            heroMediaType={branding.heroMediaType}
             primaryColor={primary}
             secondaryColor={secondary}
             givingUrl={givingUrl}

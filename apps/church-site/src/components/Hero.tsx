@@ -4,6 +4,8 @@ type HeroProps = {
   name: string;
   tagline: string | null;
   logoUrl: string | null;
+  heroMediaUrl: string | null;
+  heroMediaType: 'image' | 'video' | null;
   primaryColor: string;
   secondaryColor: string;
   givingUrl: string | null;
@@ -14,42 +16,82 @@ export function Hero({
   name,
   tagline,
   logoUrl,
+  heroMediaUrl,
+  heroMediaType,
   primaryColor,
   secondaryColor,
   givingUrl,
   showVisit,
 }: HeroProps) {
   const headline = tagline?.trim() || 'Welcome';
+  const hasMedia = Boolean(heroMediaUrl && heroMediaType);
 
   return (
     <section
       id="top"
       className="relative isolate flex min-h-[100svh] overflow-hidden px-6 pb-24 pt-28 text-white sm:pt-32"
-      style={{
-        background: `linear-gradient(155deg, ${primaryColor} 0%, color-mix(in srgb, ${primaryColor} 62%, #0b1220) 48%, ${secondaryColor} 140%)`,
-      }}
+      style={
+        hasMedia
+          ? undefined
+          : {
+              background: `linear-gradient(155deg, ${primaryColor} 0%, color-mix(in srgb, ${primaryColor} 62%, #0b1220) 48%, ${secondaryColor} 140%)`,
+            }
+      }
     >
-      <div
-        className="site-anim-drift pointer-events-none absolute -inset-[12%] opacity-40"
-        style={{
-          backgroundImage:
-            'radial-gradient(circle at 18% 22%, rgba(255,255,255,0.42), transparent 42%), radial-gradient(circle at 82% 8%, rgba(255,255,255,0.24), transparent 34%), radial-gradient(circle at 70% 80%, rgba(0,0,0,0.22), transparent 42%)',
-        }}
-      />
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.08]"
-        style={{
-          backgroundImage:
-            'repeating-linear-gradient(-14deg, rgba(255,255,255,0.55) 0 1px, transparent 1px 16px)',
-        }}
-      />
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.12]"
-        style={{
-          backgroundImage: 'radial-gradient(rgba(255,255,255,0.35) 0.6px, transparent 0.6px)',
-          backgroundSize: '18px 18px',
-        }}
-      />
+      {hasMedia && heroMediaUrl ? (
+        heroMediaType === 'video' ? (
+          <video
+            className="absolute inset-0 -z-20 h-full w-full object-cover"
+            src={heroMediaUrl}
+            autoPlay
+            muted
+            loop
+            playsInline
+            aria-hidden
+          />
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={heroMediaUrl}
+            alt=""
+            className="absolute inset-0 -z-20 h-full w-full object-cover"
+            aria-hidden
+          />
+        )
+      ) : null}
+
+      {hasMedia ? (
+        <div
+          className="pointer-events-none absolute inset-0 -z-10"
+          style={{
+            background: `linear-gradient(160deg, color-mix(in srgb, ${primaryColor} 72%, #0b1220) 0%, rgba(11,18,32,0.55) 45%, color-mix(in srgb, ${secondaryColor} 35%, #0b1220) 100%)`,
+          }}
+        />
+      ) : (
+        <>
+          <div
+            className="site-anim-drift pointer-events-none absolute -inset-[12%] opacity-40"
+            style={{
+              backgroundImage:
+                'radial-gradient(circle at 18% 22%, rgba(255,255,255,0.42), transparent 42%), radial-gradient(circle at 82% 8%, rgba(255,255,255,0.24), transparent 34%), radial-gradient(circle at 70% 80%, rgba(0,0,0,0.22), transparent 42%)',
+            }}
+          />
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.08]"
+            style={{
+              backgroundImage:
+                'repeating-linear-gradient(-14deg, rgba(255,255,255,0.55) 0 1px, transparent 1px 16px)',
+            }}
+          />
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.12]"
+            style={{
+              backgroundImage: 'radial-gradient(rgba(255,255,255,0.35) 0.6px, transparent 0.6px)',
+              backgroundSize: '18px 18px',
+            }}
+          />
+        </>
+      )}
 
       <div className="relative mx-auto flex w-full max-w-6xl flex-1 flex-col justify-end pb-4 sm:pb-10 lg:pl-8">
         {logoUrl ? (

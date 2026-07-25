@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { use } from 'react';
+import { upload } from '@vercel/blob/client';
 import { toast } from 'sonner';
 import { ChurchDashboardProvider } from '@/components/dashboard/ChurchDashboardProvider';
 import {
@@ -15,6 +16,23 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+function heroExtForMime(mime: string): string {
+  switch (mime) {
+    case 'image/png':
+      return 'png';
+    case 'image/jpeg':
+      return 'jpg';
+    case 'image/webp':
+      return 'webp';
+    case 'video/mp4':
+      return 'mp4';
+    case 'video/webm':
+      return 'webm';
+    default:
+      return 'bin';
+  }
+}
 
 const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || 'hello@churchstack.com';
 const HEX_COLOR = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/;
@@ -38,6 +56,7 @@ function SettingsPanel({ churchId, slug }: { churchId: string; slug: string }) {
   const utils = trpc.useUtils();
   const dash = trpc.church.getOwnerDashboard.useQuery({ slug });
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const heroInputRef = useRef<HTMLInputElement>(null);
   const [givingUrl, setGivingUrl] = useState('');
   const [primaryColor, setPrimaryColor] = useState('#1a8bbd');
   const [secondaryColor, setSecondaryColor] = useState('#84dccf');
@@ -52,6 +71,9 @@ function SettingsPanel({ churchId, slug }: { churchId: string; slug: string }) {
   const [logoBusy, setLogoBusy] = useState(false);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [pendingPreview, setPendingPreview] = useState<string | null>(null);
+  const [heroBusy, setHeroBusy] = useState(false);
+  const [pendingHeroFile, setPendingHeroFile] = useState<File | null>(null);
+  const [pendingHeroPreview, setPendingHeroPreview] = useState<string | null>(null);
 
   useEffect(() => {
     setGivingUrl(dash.data?.givingUrl ?? '');
@@ -91,6 +113,12 @@ function SettingsPanel({ churchId, slug }: { churchId: string; slug: string }) {
       if (pendingPreview) URL.revokeObjectURL(pendingPreview);
     };
   }, [pendingPreview]);
+
+  useEffect(() => {
+    return () => {
+      if (pendingHeroPreview) URL.revokeObjectURL(pendingHeroPreview);
+    };
+  }, [pendingHeroPreview]);
 
   const portal = trpc.billing.createPortalSession.useMutation({
     onSuccess: (data) => {
@@ -145,6 +173,10 @@ function SettingsPanel({ churchId, slug }: { churchId: string; slug: string }) {
   const primaryValid = HEX_COLOR.test(primaryColor);
   const secondaryValid = HEX_COLOR.test(secondaryColor);
   const logoPreview = pendingPreview ?? data.logoUrl ?? null;
+  const heroPreviewUrl = pendingHeroPreview ?? data.heroMediaUrl ?? null;
+  const heroPreviewIsVideo = pendingHeroFile
+    ? pendingHeroFile.type.startsWith('video/')
+    : data.heroMediaType === 'VIDEO';
 
   const clearPendingFile = () => {
     if (pendingPreview) URL.revokeObjectURL(pendingPreview);
@@ -207,6 +239,85 @@ function SettingsPanel({ churchId, slug }: { churchId: string; slug: string }) {
     }
   };
 
+  const clearPendingHero = () => {
+    if (pendingHeroPreview) URL.revokeObjectURL(pendingHeroPreview);
+    setPendingHeroFile(null);
+    setPendingHeroPreview(null);
+    if (heroInputRef.current) heroInputRef.current.value = '';
+  };
+
+  const onPickHero = (file: File | null) => {
+    if (!file) {
+      clearPendingHero();
+      return;
+    }
+    if (pendingHeroPreview) URL.revokeObjectURL(pendingHeroPreview);
+    setPendingHeroFile(file);
+    setPendingHeroPreview(URL.createObjectURL(file));
+  };
+
+  const uploadHero = async () => {
+    if (!pendingHeroFile) return;
+    const isVideo = pendingHeroFile.type.startsWith('video/');
+    const maxBytes = isVideo ? 40 * 1024 * 1024 : 8 * 1024 * 1024;
+    if (pendingHeroFile.size <= 0 || pendingHeroFile.size > maxBytes) {
+      toast.error(isVideo ? 'Hero video must be under 40MB.' : 'Hero image must be under 8MB.');
+      return;
+    }
+    setHeroBusy(true);
+    try {
+      const pathname = `churches/${slug}/hero-${crypto.randomUUID()}.${heroExtForMime(pendingHeroFile.type)}`;
+      const blob = await upload(pathname, pendingHeroFile, {
+        access: 'public',
+        handleUploadUrl: '/api/church/hero/upload',
+        clientPayload: JSON.stringify({ churchId }),
+      });
+
+      const res = await fetch('/api/church/hero', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          churchId,
+          url: blob.url,
+          contentType: pendingHeroFile.type,
+        }),
+      });
+      const body = (await res.json()) as { ok?: boolean; error?: string };
+      if (!res.ok || !body.ok) {
+        throw new Error(body.error || 'Upload failed');
+      }
+      toast.success('Hero media uploaded');
+      clearPendingHero();
+      await utils.church.getOwnerDashboard.invalidate({ slug });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Upload failed');
+    } finally {
+      setHeroBusy(false);
+    }
+  };
+
+  const removeHero = async () => {
+    setHeroBusy(true);
+    try {
+      const res = await fetch('/api/church/hero', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ churchId }),
+      });
+      const body = (await res.json()) as { ok?: boolean; error?: string };
+      if (!res.ok || !body.ok) {
+        throw new Error(body.error || 'Could not remove hero media');
+      }
+      toast.success('Hero media removed');
+      clearPendingHero();
+      await utils.church.getOwnerDashboard.invalidate({ slug });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Could not remove hero media');
+    } finally {
+      setHeroBusy(false);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div>
@@ -256,6 +367,65 @@ function SettingsPanel({ churchId, slug }: { churchId: string; slug: string }) {
             ) : null}
             {pendingFile ? (
               <Button variant="ghost" disabled={logoBusy} onClick={clearPendingFile}>
+                Cancel
+              </Button>
+            ) : null}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-ink-200 dark:border-ink-800 dark:bg-ink-900">
+        <CardHeader>
+          <CardTitle className="text-base">Hero media</CardTitle>
+          <CardDescription>
+            Full-bleed background on your website homepage. Image (PNG, JPEG, WebP up to 8MB) or
+            video (MP4, WebM up to 40MB). Brand colors are used when nothing is uploaded.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap items-start gap-4">
+            <div className="flex h-28 w-44 items-center justify-center overflow-hidden rounded-lg border border-ink-200 bg-ink-50 dark:border-ink-700 dark:bg-ink-950">
+              {heroPreviewUrl ? (
+                heroPreviewIsVideo ? (
+                  <video
+                    src={heroPreviewUrl}
+                    className="h-full w-full object-cover"
+                    muted
+                    playsInline
+                    loop
+                    autoPlay
+                  />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={heroPreviewUrl} alt="" className="h-full w-full object-cover" />
+                )
+              ) : (
+                <span className="px-2 text-center text-xs text-ink-400">Brand gradient</span>
+              )}
+            </div>
+            <div className="min-w-0 flex-1 space-y-2">
+              <Label htmlFor="hero-file">Photo or video</Label>
+              <input
+                ref={heroInputRef}
+                id="hero-file"
+                type="file"
+                accept="image/png,image/jpeg,image/webp,video/mp4,video/webm"
+                className="mt-1 block h-10 w-full cursor-pointer rounded-lg border border-ink-200 bg-transparent px-2.5 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-ink-100 file:px-3 file:py-1 file:text-sm file:font-medium dark:border-ink-700 dark:file:bg-ink-800"
+                onChange={(e) => onPickHero(e.target.files?.[0] ?? null)}
+              />
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button disabled={heroBusy || !pendingHeroFile} onClick={() => void uploadHero()}>
+              {heroBusy && pendingHeroFile ? 'Uploading…' : 'Upload hero media'}
+            </Button>
+            {data.heroMediaUrl ? (
+              <Button variant="outline" disabled={heroBusy} onClick={() => void removeHero()}>
+                {heroBusy && !pendingHeroFile ? 'Removing…' : 'Remove hero media'}
+              </Button>
+            ) : null}
+            {pendingHeroFile ? (
+              <Button variant="ghost" disabled={heroBusy} onClick={clearPendingHero}>
                 Cancel
               </Button>
             ) : null}

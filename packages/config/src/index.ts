@@ -19,11 +19,16 @@ export type { PlanTierId, PlanDefinition, PlanEntitlements } from './plans';
 
 export type SiteThemeDefault = 'light' | 'dark';
 
+export type HeroMediaType = 'image' | 'video';
+
 export interface TenantBranding {
   slug: string;
   name: string;
   tagline: string | null;
   logoUrl: string | null;
+  /** Full-bleed hero background URL when set. */
+  heroMediaUrl: string | null;
+  heroMediaType: HeroMediaType | null;
   primaryColor: string;
   secondaryColor: string;
   /** Default light/dark mode for the white-label site (visitors can still toggle). */
@@ -46,6 +51,8 @@ export const DEFAULT_BRANDING: TenantBranding = {
   name: 'Church Stack',
   tagline: 'Your church, your app.',
   logoUrl: null,
+  heroMediaUrl: null,
+  heroMediaType: null,
   primaryColor: '#1a8bbd',
   secondaryColor: '#84dccf',
   themeDefault: 'light',
@@ -64,6 +71,8 @@ export interface ChurchBrandingSource {
   name: string;
   tagline?: string | null;
   logoUrl?: string | null;
+  heroMediaUrl?: string | null;
+  heroMediaType?: 'IMAGE' | 'VIDEO' | null;
   primaryColor?: string | null;
   secondaryColor?: string | null;
   siteThemeDefault?: 'LIGHT' | 'DARK' | null;
@@ -78,12 +87,22 @@ function toThemeDefault(value?: 'LIGHT' | 'DARK' | null): SiteThemeDefault {
   return value === 'DARK' ? 'dark' : 'light';
 }
 
+function toHeroMediaType(value?: 'IMAGE' | 'VIDEO' | null): HeroMediaType | null {
+  if (value === 'IMAGE') return 'image';
+  if (value === 'VIDEO') return 'video';
+  return null;
+}
+
 export function toTenantBranding(church: ChurchBrandingSource): TenantBranding {
+  const heroMediaUrl = church.heroMediaUrl?.trim() || null;
+  const heroMediaType = heroMediaUrl ? toHeroMediaType(church.heroMediaType) : null;
   return {
     slug: church.slug,
     name: church.name,
     tagline: church.tagline ?? null,
     logoUrl: church.logoUrl ?? null,
+    heroMediaUrl,
+    heroMediaType,
     primaryColor: church.primaryColor ?? DEFAULT_BRANDING.primaryColor,
     secondaryColor: church.secondaryColor ?? DEFAULT_BRANDING.secondaryColor,
     themeDefault: toThemeDefault(church.siteThemeDefault),

@@ -54,6 +54,12 @@ enum SiteThemeDefault {
   DARK
 }
 
+/// White-label site hero background media kind.
+enum HeroMediaType {
+  IMAGE
+  VIDEO
+}
+
 /// Where a content row originated (manual CMS vs Planning Center sync).
 enum ContentSource {
   MANUAL
@@ -67,6 +73,10 @@ model Church {
   name           String
   tagline        String?
   logoUrl        String?
+  /// Full-bleed hero background on the white-label site (image or video URL).
+  heroMediaUrl   String?
+  /// IMAGE or VIDEO when heroMediaUrl is set.
+  heroMediaType  HeroMediaType?
   primaryColor   String   @default("#1a8bbd")
   secondaryColor String   @default("#84dccf")
   /// Default light/dark appearance for the white-label site.
