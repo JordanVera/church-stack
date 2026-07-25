@@ -1,10 +1,10 @@
-import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Redirect, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { trpc } from '../src/lib/trpc';
 import { useAuth } from '../src/providers/AuthProvider';
 import { useTenant } from '../src/providers/TenantProvider';
+import { SafeAreaView } from '../src/components/uniwind';
 
 export default function Home() {
   const router = useRouter();
@@ -17,7 +17,7 @@ export default function Home() {
 
   if (!isReady || meLoading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <SafeAreaView className="flex-1" style={{ backgroundColor: theme.background }}>
         <ActivityIndicator color={theme.primary} style={{ marginTop: 60 }} />
       </SafeAreaView>
     );
@@ -30,7 +30,7 @@ export default function Home() {
   // AuthRedirect / select will assign a tenant; wait here.
   if (!slug || isLoading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <SafeAreaView className="flex-1" style={{ backgroundColor: theme.background }}>
         <ActivityIndicator color={theme.primary} style={{ marginTop: 60 }} />
       </SafeAreaView>
     );
@@ -50,52 +50,80 @@ export default function Home() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: theme.background }}>
       <StatusBar style="light" />
-      <View style={[styles.header, { backgroundColor: theme.primary }]}>
-        <Text style={[styles.headerName, { color: theme.primaryForeground }]}>{branding.name}</Text>
+      <View className="px-5 pt-6 pb-7" style={{ backgroundColor: theme.primary }}>
+        <Text className="text-[26px] font-bold" style={{ color: theme.primaryForeground }}>
+          {branding.name}
+        </Text>
         {branding.tagline ? (
-          <Text style={[styles.headerTagline, { color: theme.primaryForeground, opacity: 0.85 }]}>
+          <Text
+            className="mt-1 text-[15px] opacity-85"
+            style={{ color: theme.primaryForeground }}
+          >
             {branding.tagline}
           </Text>
         ) : null}
-        <View style={styles.headerActions}>
+        <View className="mt-3.5 flex-row gap-4">
           {canSwitchChurch ? (
             <TouchableOpacity onPress={onSwitchChurch}>
-              <Text style={[styles.switch, { color: theme.primaryForeground }]}>Switch church</Text>
+              <Text
+                className="text-[13px] underline"
+                style={{ color: theme.primaryForeground }}
+              >
+                Switch church
+              </Text>
             </TouchableOpacity>
           ) : null}
           <TouchableOpacity onPress={onSignOut}>
-            <Text style={[styles.switch, { color: theme.primaryForeground }]}>Sign out</Text>
+            <Text className="text-[13px] underline" style={{ color: theme.primaryForeground }}>
+              Sign out
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: 20 }}>
-        <Text style={[styles.sectionTitle, { color: theme.text }]}>Announcements</Text>
+      <ScrollView contentContainerClassName="p-5">
+        <Text className="mb-3 text-xl font-bold" style={{ color: theme.text }}>
+          Announcements
+        </Text>
         {announcements.isLoading ? (
           <ActivityIndicator color={theme.primary} />
         ) : announcements.data?.length ? (
           announcements.data.map((a) => (
-            <View key={a.id} style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
-              <Text style={[styles.cardTitle, { color: theme.text }]}>{a.title}</Text>
-              <Text style={[styles.cardBody, { color: theme.muted }]}>{a.body}</Text>
+            <View
+              key={a.id}
+              className="mb-3 rounded-[14px] border p-4"
+              style={{ backgroundColor: theme.card, borderColor: theme.border }}
+            >
+              <Text className="text-base font-semibold" style={{ color: theme.text }}>
+                {a.title}
+              </Text>
+              <Text className="mt-1.5 text-sm leading-5" style={{ color: theme.muted }}>
+                {a.body}
+              </Text>
             </View>
           ))
         ) : (
           <Text style={{ color: theme.muted }}>No announcements yet.</Text>
         )}
 
-        <Text style={[styles.sectionTitle, { color: theme.text, marginTop: 28 }]}>
+        <Text className="mb-3 mt-7 text-xl font-bold" style={{ color: theme.text }}>
           Upcoming events
         </Text>
         {events.isLoading ? (
           <ActivityIndicator color={theme.primary} />
         ) : events.data?.length ? (
           events.data.map((e) => (
-            <View key={e.id} style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
-              <Text style={[styles.cardTitle, { color: theme.text }]}>{e.title}</Text>
-              <Text style={[styles.cardBody, { color: theme.muted }]}>
+            <View
+              key={e.id}
+              className="mb-3 rounded-[14px] border p-4"
+              style={{ backgroundColor: theme.card, borderColor: theme.border }}
+            >
+              <Text className="text-base font-semibold" style={{ color: theme.text }}>
+                {e.title}
+              </Text>
+              <Text className="mt-1.5 text-sm leading-5" style={{ color: theme.muted }}>
                 {new Date(e.startsAt).toLocaleString()}
                 {e.location ? ` · ${e.location}` : ''}
               </Text>
@@ -108,16 +136,3 @@ export default function Home() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  header: { paddingHorizontal: 20, paddingTop: 24, paddingBottom: 28 },
-  headerName: { fontSize: 26, fontWeight: '700' },
-  headerTagline: { marginTop: 4, fontSize: 15 },
-  headerActions: { marginTop: 14, flexDirection: 'row', gap: 16 },
-  switch: { fontSize: 13, textDecorationLine: 'underline' },
-  sectionTitle: { fontSize: 20, fontWeight: '700', marginBottom: 12 },
-  card: { borderWidth: 1, borderRadius: 14, padding: 16, marginBottom: 12 },
-  cardTitle: { fontSize: 16, fontWeight: '600' },
-  cardBody: { marginTop: 6, fontSize: 14, lineHeight: 20 },
-});

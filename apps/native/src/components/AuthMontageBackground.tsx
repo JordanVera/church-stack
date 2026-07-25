@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, StyleSheet, View, useWindowDimensions } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { LinearGradient } from './uniwind';
 
 const SLIDES = [
   require('../../assets/auth/montage-1.png'),
@@ -14,7 +14,7 @@ const ZOOM_MS = HOLD_MS + FADE_MS;
 
 /**
  * Full-bleed cinematic montage: crossfading stills with slow Ken Burns zoom.
- * Reads like a background reel without shipping a large video file.
+ * Animated opacity/scale stay as style; static wrapper uses className.
  */
 export function AuthMontageBackground() {
   const { width, height } = useWindowDimensions();
@@ -59,7 +59,7 @@ export function AuthMontageBackground() {
   }, [index, opacities, scales]);
 
   return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="none">
+    <View className="absolute inset-0" pointerEvents="none">
       {SLIDES.map((src, i) => (
         <Animated.View
           key={i}
@@ -76,9 +76,9 @@ export function AuthMontageBackground() {
       ))}
 
       <LinearGradient
-        colors={['rgba(12,18,24,0.35)', 'rgba(12,18,24,0.55)', 'rgba(12,18,24,0.92)']}
+        colors={['rgba(34,24,28,0.35)', 'rgba(34,24,28,0.62)', 'rgba(34,24,28,0.94)']}
         locations={[0, 0.42, 1]}
-        style={StyleSheet.absoluteFill}
+        className="absolute inset-0"
       />
     </View>
   );

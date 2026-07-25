@@ -3,7 +3,8 @@ import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { Link } from 'expo-router';
 import { useAuth } from '../src/providers/AuthProvider';
 import { AuthScreenShell } from '../src/components/AuthScreenShell';
-import { AuthField, authControlStyles } from '../src/components/AuthField';
+import { AuthField, authControlClass } from '../src/components/AuthField';
+import { cn } from '../src/lib/cn';
 
 export default function SignupScreen() {
   const { signUp, isReady, token } = useAuth();
@@ -15,8 +16,8 @@ export default function SignupScreen() {
 
   if (!isReady || token) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#0c1218', justifyContent: 'center' }}>
-        <ActivityIndicator color="#7dd3f0" />
+      <View className="flex-1 items-center justify-center bg-background">
+        <ActivityIndicator color="#55bae8" />
       </View>
     );
   }
@@ -42,9 +43,9 @@ export default function SignupScreen() {
       title="Create account"
       subtitle="Join your church community in a couple of steps."
       footer={
-        <Text style={authControlStyles.footerText}>
+        <Text className={authControlClass.footerText}>
           Already have an account?{' '}
-          <Link href="/login" style={authControlStyles.link}>
+          <Link href="/login" className={authControlClass.link}>
             Sign in
           </Link>
         </Text>
@@ -76,16 +77,16 @@ export default function SignupScreen() {
         onChangeText={setPassword}
         placeholder="At least 8 characters"
       />
-      {error ? <Text style={authControlStyles.error}>{error}</Text> : null}
+      {error ? <Text className={authControlClass.error}>{error}</Text> : null}
       <TouchableOpacity
-        style={[authControlStyles.button, loading && authControlStyles.buttonDisabled]}
+        className={cn(authControlClass.button, loading && authControlClass.buttonDisabled)}
         onPress={onSubmit}
         disabled={loading || !name || !email || !password}
       >
         {loading ? (
           <ActivityIndicator color="#061018" />
         ) : (
-          <Text style={authControlStyles.buttonText}>Create account</Text>
+          <Text className={authControlClass.buttonText}>Create account</Text>
         )}
       </TouchableOpacity>
     </AuthScreenShell>

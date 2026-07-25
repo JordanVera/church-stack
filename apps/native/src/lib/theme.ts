@@ -14,14 +14,14 @@ export interface Theme {
 export function themeFromBranding(branding: TenantBranding): Theme {
   return {
     primary: branding.primaryColor,
-    // Coral/mint brand colors are light enough that white text reads poorly on
-    // them, so default to a dark ink foreground instead.
+    // Match web dark primary-foreground on brand surfaces.
     primaryForeground: '#22181c',
     secondary: branding.secondaryColor,
-    background: '#f6e8ea',
-    card: '#ffffff',
-    text: '#22181c',
-    muted: '#787272',
-    border: '#c7bcbd',
+    // Neutral chrome uses web dark ink scale; church brand colors stay dynamic.
+    background: '#22181c',
+    card: '#312f2f',
+    text: '#f6e8ea',
+    muted: '#aba2a3',
+    border: 'rgba(255,255,255,0.1)',
   };
 }

@@ -47,7 +47,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     favicon: './assets/favicon.png',
     bundler: 'metro',
   },
-  plugins: ['expo-router', 'expo-secure-store'],
+  plugins: ['expo-router', 'expo-secure-store', 'expo-asset', 'expo-font'],
   extra: {
     // Surfaced via expo-constants for runtime tenant resolution.
     // Only include when set (omit rather than emit null, which Expo serializes as {}).

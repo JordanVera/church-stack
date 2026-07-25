@@ -1,0 +1,59 @@
+@import 'tailwindcss';
+@import 'uniwind';
+
+/**
+ * Shared Church Stack palette — mirrors apps/web/src/styles/global.css.
+ * Native defaults to the web dark semantic surface.
+ */
+@theme {
+  /* Brand — azure blue */
+  --color-brand-50: #f2fafd;
+  --color-brand-100: #e0f2fb;
+  --color-brand-200: #bce4f6;
+  --color-brand-300: #8ad0ef;
+  --color-brand-400: #55bae8;
+  --color-brand-500: #1a8bbd;
+  --color-brand-600: #156f97;
+  --color-brand-700: #105675;
+  --color-brand-800: #0c4057;
+  --color-brand-900: #082c3c;
+  --color-brand-950: #051c26;
+
+  /* Accent — mint */
+  --color-accent-50: #f3fcfa;
+  --color-accent-100: #e3f7f4;
+  --color-accent-200: #c3eee8;
+  --color-accent-300: #98e2d7;
+  --color-accent-400: #68d4c4;
+  --color-accent-500: #84dccf;
+  --color-accent-600: #4dccba;
+  --color-accent-700: #30aa98;
+  --color-accent-800: #247e71;
+  --color-accent-900: #19584e;
+  --color-accent-950: #103731;
+
+  /* Ink — warm neutrals */
+  --color-ink-50: #f6e8ea;
+  --color-ink-100: #e2d6d7;
+  --color-ink-200: #c7bcbd;
+  --color-ink-300: #aba2a3;
+  --color-ink-400: #908889;
+  --color-ink-500: #787272;
+  --color-ink-600: #625d5e;
+  --color-ink-700: #4f4b4b;
+  --color-ink-800: #3f3c3c;
+  --color-ink-900: #312f2f;
+  --color-ink-950: #22181c;
+
+  /* Dark semantic surfaces (web .dark) */
+  --color-background: #22181c;
+  --color-foreground: #f6e8ea;
+  --color-card: #312f2f;
+  --color-muted: #3f3c3c;
+  --color-muted-foreground: #aba2a3;
+  --color-primary: #55bae8;
+  --color-primary-foreground: #22181c;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-input: rgba(255, 255, 255, 0.15);
+  --color-destructive: #f87171;
+}

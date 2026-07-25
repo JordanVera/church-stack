@@ -1,8 +1,8 @@
 import { useEffect, useRef, type ReactNode } from 'react';
-import { Animated, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Animated, KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { AuthMontageBackground } from './AuthMontageBackground';
+import { SafeAreaView } from './uniwind';
 
 type Props = {
   title: string;
@@ -25,67 +25,40 @@ export function AuthScreenShell({ title, subtitle, children, footer }: Props) {
   }, [enter]);
 
   return (
-    <View style={styles.root}>
+    <View className="flex-1 bg-background">
       <StatusBar style="light" />
       <AuthMontageBackground />
-      <SafeAreaView style={styles.safe}>
+      <SafeAreaView className="flex-1">
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          style={styles.flex}
+          className="flex-1"
         >
           <Animated.View
-            style={[
-              styles.content,
-              {
-                opacity: enter,
-                transform: [
-                  {
-                    translateY: enter.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [18, 0],
-                    }),
-                  },
-                ],
-              },
-            ]}
+            className="flex-1 justify-end px-6 pb-5"
+            style={{
+              opacity: enter,
+              transform: [
+                {
+                  translateY: enter.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [18, 0],
+                  }),
+                },
+              ],
+            }}
           >
-            <View style={styles.headerBlock}>
-              <Text style={styles.title}>{title}</Text>
-              <Text style={styles.subtitle}>{subtitle}</Text>
+            <View className="mb-7">
+              <Text className="text-[28px] font-bold tracking-tight text-foreground">{title}</Text>
+              <Text className="mt-1.5 text-[15px] leading-[21px] text-muted-foreground">
+                {subtitle}
+              </Text>
             </View>
 
-            <View style={styles.form}>{children}</View>
-            <View style={styles.footer}>{footer}</View>
+            <View className="gap-3.5">{children}</View>
+            <View className="mt-[22px] mb-2">{footer}</View>
           </Animated.View>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#0c1218' },
-  safe: { flex: 1 },
-  flex: { flex: 1 },
-  content: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    paddingHorizontal: 24,
-    paddingBottom: 20,
-  },
-  headerBlock: { marginBottom: 28 },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    letterSpacing: -0.4,
-    color: '#f4f7fa',
-  },
-  subtitle: {
-    marginTop: 6,
-    fontSize: 15,
-    lineHeight: 21,
-    color: 'rgba(232,238,244,0.72)',
-  },
-  form: { gap: 14 },
-  footer: { marginTop: 22, marginBottom: 8 },
-});

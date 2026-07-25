@@ -1,20 +1,21 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
   Pressable,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { LinearGradient } from 'expo-linear-gradient';
 import { trpc } from '../src/lib/trpc';
 import { useAuth } from '../src/providers/AuthProvider';
 import { useTenant } from '../src/providers/TenantProvider';
+import { cn } from '../src/lib/cn';
+import { LinearGradient, SafeAreaView } from '../src/components/uniwind';
 
 type ChurchRow = {
   id?: string;
@@ -34,19 +35,50 @@ function initials(name: string) {
 export default function SelectChurch() {
   const router = useRouter();
   const { setTenant } = useTenant();
-  const { isReady, token, isAuthenticated, meLoading, memberships, signOut, refreshMe } =
-    useAuth();
+  const { isReady, token, isAuthenticated, meLoading, memberships, signOut, refreshMe } = useAuth();
   const churches = trpc.church.list.useQuery(undefined, {
     enabled: isAuthenticated && (memberships?.length ?? 0) === 0,
   });
   const join = trpc.church.join.useMutation();
   const [joiningSlug, setJoiningSlug] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
+
+  const hasMemberships = (memberships?.length ?? 0) > 0;
+  const list: ChurchRow[] = useMemo(
+    () =>
+      hasMemberships
+        ? (memberships ?? []).map((m) => ({
+            id: m.church.slug,
+            slug: m.church.slug,
+            name: m.church.name,
+            tagline: null,
+            logoUrl: null,
+          }))
+        : (churches.data ?? []),
+    [hasMemberships, memberships, churches.data]
+  );
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return list;
+    return list.filter((c) => {
+      const name = c.name.toLowerCase();
+      const tagline = (c.tagline ?? '').toLowerCase();
+      return name.includes(q) || tagline.includes(q);
+    });
+  }, [list, query]);
+
+  // Pad odd counts so every row stays two equal cells (empty slot on the right).
+  const gridData = useMemo<(ChurchRow | null)[]>(() => {
+    if (filtered.length === 0) return [];
+    return filtered.length % 2 === 1 ? [...filtered, null] : filtered;
+  }, [filtered]);
 
   if (!isReady || meLoading) {
     return (
-      <View style={styles.boot}>
-        <ActivityIndicator color="#2aa3d4" />
+      <View className="flex-1 items-center justify-center bg-background">
+        <ActivityIndicator color="#55bae8" />
       </View>
     );
   }
@@ -54,17 +86,6 @@ export default function SelectChurch() {
   if (!token || !isAuthenticated) {
     return <Redirect href="/login" />;
   }
-
-  const hasMemberships = (memberships?.length ?? 0) > 0;
-  const list: ChurchRow[] = hasMemberships
-    ? (memberships ?? []).map((m) => ({
-        id: m.church.slug,
-        slug: m.church.slug,
-        name: m.church.name,
-        tagline: null,
-        logoUrl: null,
-      }))
-    : (churches.data ?? []);
 
   const onSelect = async (slug: string) => {
     setError(null);
@@ -92,81 +113,113 @@ export default function SelectChurch() {
     router.replace('/login');
   };
 
+  const emptyMessage = query.trim()
+    ? 'No churches match your search.'
+    : hasMemberships
+      ? 'No churches on this account.'
+      : 'No churches found yet.';
+
   return (
-    <View style={styles.root}>
-      <StatusBar style="dark" />
-      <LinearGradient colors={['#eef6fa', '#f7f1ee', '#f4f7fa']} style={StyleSheet.absoluteFill} />
-      <SafeAreaView style={styles.safe}>
-        <View style={styles.header}>
-          <View style={styles.headerTop}>
-            <Text style={styles.kicker}>Church Stack</Text>
+    <View className="flex-1 bg-background">
+      <StatusBar style="light" />
+      <LinearGradient
+        colors={['#051c26', '#22181c', '#312f2f']}
+        locations={[0, 0.55, 1]}
+        style={StyleSheet.absoluteFill}
+      />
+      <SafeAreaView className="flex-1">
+        <View className="px-6 pt-3 pb-2">
+          <View className="mb-[18px] flex-row items-center justify-between">
+            <Text className="text-[15px] font-bold tracking-tight text-brand-400">
+              Church Stack
+            </Text>
             <TouchableOpacity onPress={onSignOut} hitSlop={12}>
-              <Text style={styles.signOut}>Sign out</Text>
+              <Text className="text-sm font-semibold text-brand-300">Sign out</Text>
             </TouchableOpacity>
           </View>
-          <Text style={styles.title}>
+          <Text className="text-[32px] font-bold tracking-tight text-foreground">
             {hasMemberships ? 'Your churches' : 'Find your church'}
           </Text>
-          <Text style={styles.subtitle}>
+          <Text className="mt-2 max-w-[340px] text-base leading-[22px] text-muted-foreground">
             {hasMemberships
               ? 'Choose where you want to continue.'
               : 'Connect your account to the church you call home.'}
           </Text>
+
+          <TextInput
+            value={query}
+            onChangeText={setQuery}
+            placeholder="Search churches"
+            placeholderTextColor="rgba(246,232,234,0.45)"
+            autoCapitalize="none"
+            autoCorrect={false}
+            clearButtonMode="while-editing"
+            className="mt-5 rounded-[14px] border border-input bg-white/10 px-3.5 py-3 text-base text-foreground"
+          />
         </View>
 
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+        {error ? <Text className="mx-6 mt-3 text-sm text-destructive">{error}</Text> : null}
 
         {!hasMemberships && churches.isLoading ? (
-          <ActivityIndicator style={{ marginTop: 40 }} color="#2aa3d4" />
+          <ActivityIndicator style={{ marginTop: 40 }} color="#55bae8" />
         ) : !hasMemberships && churches.error ? (
-          <Text style={styles.error}>
+          <Text className="mx-6 mt-3 text-sm text-destructive">
             Could not load churches. Is the API running at the configured URL?
           </Text>
         ) : (
           <FlatList
-            style={styles.list}
-            contentContainerStyle={styles.listContent}
-            data={list}
-            keyExtractor={(item) => item.id ?? item.slug}
-            ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+            className="mt-2 flex-1"
+            contentContainerClassName="px-5 pb-7 pt-2"
+            data={gridData}
+            keyExtractor={(item, index) => item?.id ?? item?.slug ?? `empty-${index}`}
+            numColumns={2}
+            columnWrapperClassName="gap-3"
+            ItemSeparatorComponent={() => <View className="h-3" />}
             renderItem={({ item }) => {
+              if (!item) {
+                return <View className="aspect-square flex-1" />;
+              }
+
               const busy = joiningSlug === item.slug;
               return (
                 <Pressable
                   onPress={() => onSelect(item.slug)}
                   disabled={joiningSlug !== null}
-                  style={({ pressed }) => [
-                    styles.row,
-                    pressed && styles.rowPressed,
-                    joiningSlug !== null && !busy && styles.rowDimmed,
-                  ]}
+                  className={cn(
+                    'aspect-square flex-1 items-center justify-center rounded-2xl border border-border bg-card px-3',
+                    joiningSlug !== null && !busy && 'opacity-55'
+                  )}
+                  style={({ pressed }) => (pressed ? { transform: [{ scale: 0.98 }] } : undefined)}
                 >
-                  <View style={styles.avatar}>
-                    <Text style={styles.avatarText}>{initials(item.name)}</Text>
-                  </View>
-                  <View style={styles.rowBody}>
-                    <Text style={styles.rowTitle}>{item.name}</Text>
-                    {item.tagline ? (
-                      <Text style={styles.rowSubtitle} numberOfLines={2}>
-                        {item.tagline}
-                      </Text>
+                  <View className="mb-3 h-14 w-14 items-center justify-center rounded-2xl bg-brand-900">
+                    {busy ? (
+                      <ActivityIndicator color="#55bae8" />
                     ) : (
-                      <Text style={styles.rowSubtitle}>
-                        {hasMemberships ? 'Tap to open' : 'Tap to join'}
+                      <Text className="text-lg font-bold text-brand-300">
+                        {initials(item.name)}
                       </Text>
                     )}
                   </View>
-                  {busy ? (
-                    <ActivityIndicator color="#2aa3d4" />
-                  ) : (
-                    <Text style={styles.chevron}>›</Text>
-                  )}
+                  <Text
+                    className="text-center text-[15px] font-semibold text-foreground"
+                    numberOfLines={2}
+                  >
+                    {item.name}
+                  </Text>
+                  {item.tagline ? (
+                    <Text
+                      className="mt-1 text-center text-[12px] text-muted-foreground"
+                      numberOfLines={2}
+                    >
+                      {item.tagline}
+                    </Text>
+                  ) : null}
                 </Pressable>
               );
             }}
             ListEmptyComponent={
-              <Text style={styles.empty}>
-                {hasMemberships ? 'No churches on this account.' : 'No churches found yet.'}
+              <Text className="mt-6 text-center text-[15px] text-muted-foreground">
+                {emptyMessage}
               </Text>
             }
           />
@@ -175,66 +228,3 @@ export default function SelectChurch() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  boot: { flex: 1, backgroundColor: '#eef6fa', justifyContent: 'center' },
-  root: { flex: 1, backgroundColor: '#eef6fa' },
-  safe: { flex: 1 },
-  header: { paddingHorizontal: 24, paddingTop: 12, paddingBottom: 8 },
-  headerTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 18,
-  },
-  kicker: {
-    fontSize: 15,
-    fontWeight: '700',
-    letterSpacing: -0.2,
-    color: '#1a6f90',
-  },
-  signOut: { fontSize: 14, fontWeight: '600', color: '#3a7f9a' },
-  title: {
-    fontSize: 32,
-    fontWeight: '700',
-    letterSpacing: -0.7,
-    color: '#152028',
-  },
-  subtitle: {
-    marginTop: 8,
-    fontSize: 16,
-    lineHeight: 22,
-    color: '#5c6b75',
-    maxWidth: 340,
-  },
-  error: { marginHorizontal: 24, marginTop: 12, color: '#c23b3b', fontSize: 14 },
-  list: { flex: 1, marginTop: 12 },
-  listContent: { paddingHorizontal: 20, paddingBottom: 28, paddingTop: 8 },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-    backgroundColor: 'rgba(255,255,255,0.82)',
-    borderColor: 'rgba(21,32,40,0.08)',
-    borderWidth: 1,
-    borderRadius: 18,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-  },
-  rowPressed: { backgroundColor: 'rgba(255,255,255,0.96)', transform: [{ scale: 0.99 }] },
-  rowDimmed: { opacity: 0.55 },
-  avatar: {
-    width: 46,
-    height: 46,
-    borderRadius: 14,
-    backgroundColor: '#d7ebf4',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: { fontSize: 15, fontWeight: '700', color: '#1a6f90' },
-  rowBody: { flex: 1 },
-  rowTitle: { fontSize: 17, fontWeight: '600', color: '#152028' },
-  rowSubtitle: { marginTop: 3, fontSize: 13, color: '#6a7882' },
-  chevron: { fontSize: 28, lineHeight: 28, color: '#8aa0ad', marginTop: -2 },
-  empty: { marginTop: 24, fontSize: 15, color: '#5c6b75', textAlign: 'center' },
-});

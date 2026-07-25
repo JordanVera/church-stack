@@ -7,10 +7,12 @@
       "@/*": [
         "./src/*"
       ]
-    }
+    },
+    "types": ["uniwind/types"]
   },
   "include": [
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    "uniwind-types.d.ts"
   ]
 }

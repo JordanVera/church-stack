@@ -1,3 +1,4 @@
+import '../global.css';
 import { Stack } from 'expo-router';
 import { ApiProvider } from '../src/providers/ApiProvider';
 import { AuthProvider } from '../src/providers/AuthProvider';
