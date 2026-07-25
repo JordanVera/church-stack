@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { useTenant } from '../../src/providers/TenantProvider';
+import { useTenant } from '../../../src/providers/TenantProvider';
 
 export default function GiveScreen() {
   const { branding, theme } = useTenant();

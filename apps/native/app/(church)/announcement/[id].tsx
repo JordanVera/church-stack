@@ -22,7 +22,7 @@ export default function AnnouncementDetailScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <StackScreenHeader title="Announcement" />
+      <StackScreenHeader title="Announcement" fallbackHref="/" preferHistory />
       {query.isLoading ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator color={theme.primary} />

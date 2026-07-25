@@ -7,7 +7,11 @@ import { useAppearance } from '../../src/providers/AppearanceProvider';
 import type { AppearancePreference } from '../../src/lib/appearance-store';
 import { cn } from '../../src/lib/cn';
 
-const THEME_OPTIONS: { value: AppearancePreference; label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
+const THEME_OPTIONS: {
+  value: AppearancePreference;
+  label: string;
+  icon: keyof typeof Ionicons.glyphMap;
+}[] = [
   { value: 'light', label: 'Light', icon: 'sunny-outline' },
   { value: 'dark', label: 'Dark', icon: 'moon-outline' },
   { value: 'system', label: 'System', icon: 'phone-portrait-outline' },
@@ -31,11 +35,19 @@ export default function AccountScreen() {
     router.replace('/login');
   };
 
+  const onBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.navigate('/');
+  };
+
   return (
     <View className="flex-1 bg-background">
-      <View className="flex-row items-center px-4 py-3">
+      <View className="flex-row items-center border-b border-border px-4 py-3">
         <TouchableOpacity
-          onPress={() => router.back()}
+          onPress={onBack}
           hitSlop={12}
           accessibilityRole="button"
           accessibilityLabel="Go back"
@@ -48,9 +60,7 @@ export default function AccountScreen() {
 
       <View className="px-5 pt-2">
         <View className="rounded-2xl border border-border bg-card px-4 py-4">
-          <Text className="text-base font-semibold text-foreground">
-            {user?.name || 'Member'}
-          </Text>
+          <Text className="text-base font-semibold text-foreground">{user?.name || 'Member'}</Text>
           {user?.email ? (
             <Text className="mt-1 text-sm text-muted-foreground">{user.email}</Text>
           ) : null}

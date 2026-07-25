@@ -1,8 +1,8 @@
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { StackScreenHeader } from '../../../src/components/StackScreenHeader';
-import { trpc } from '../../../src/lib/trpc';
-import { useTenant } from '../../../src/providers/TenantProvider';
+import { StackScreenHeader } from '../../../../src/components/StackScreenHeader';
+import { trpc } from '../../../../src/lib/trpc';
+import { useTenant } from '../../../../src/providers/TenantProvider';
 
 export default function RegistrationsScreen() {
   const router = useRouter();

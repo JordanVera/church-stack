@@ -1,11 +1,11 @@
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { trpc } from '../../src/lib/trpc';
-import { usePublicSite } from '../../src/hooks/usePublicSite';
-import { DAY_LABELS, formatServiceTime } from '../../src/lib/format';
-import { useAuth } from '../../src/providers/AuthProvider';
-import { useTenant } from '../../src/providers/TenantProvider';
+import { trpc } from '../../../src/lib/trpc';
+import { usePublicSite } from '../../../src/hooks/usePublicSite';
+import { DAY_LABELS, formatServiceTime } from '../../../src/lib/format';
+import { useAuth } from '../../../src/providers/AuthProvider';
+import { useTenant } from '../../../src/providers/TenantProvider';
 
 function nextServiceLabel(
   locations: {
@@ -60,7 +60,7 @@ export default function Home() {
           </Text>
           {nextService ? (
             <Pressable
-              onPress={() => router.push('/more/visit')}
+              onPress={() => router.push('/more/visit?from=home')}
               className="mt-4 rounded-2xl px-4 py-3"
               style={{ backgroundColor: 'rgba(0,0,0,0.18)' }}
             >
@@ -77,8 +77,8 @@ export default function Home() {
         <View className="flex-row gap-2 px-5 pt-5">
           {(
             [
-              { label: 'Visit', href: '/more/visit', icon: 'map-outline' as const },
-              { label: 'Groups', href: '/more/groups', icon: 'people-outline' as const },
+              { label: 'Visit', href: '/more/visit?from=home', icon: 'map-outline' as const },
+              { label: 'Groups', href: '/more/groups?from=home', icon: 'people-outline' as const },
               { label: 'Give', href: '/give', icon: 'heart-outline' as const },
             ] as const
           ).map((item) => (

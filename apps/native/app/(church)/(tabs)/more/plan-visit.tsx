@@ -9,12 +9,12 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { StackScreenHeader } from '../../../src/components/StackScreenHeader';
-import { usePublicSite } from '../../../src/hooks/usePublicSite';
-import { DAY_LABELS, formatServiceTime, todayIsoDate } from '../../../src/lib/format';
-import { trpc } from '../../../src/lib/trpc';
-import { useAuth } from '../../../src/providers/AuthProvider';
-import { useTenant } from '../../../src/providers/TenantProvider';
+import { StackScreenHeader } from '../../../../src/components/StackScreenHeader';
+import { usePublicSite } from '../../../../src/hooks/usePublicSite';
+import { DAY_LABELS, formatServiceTime, todayIsoDate } from '../../../../src/lib/format';
+import { trpc } from '../../../../src/lib/trpc';
+import { useAuth } from '../../../../src/providers/AuthProvider';
+import { useTenant } from '../../../../src/providers/TenantProvider';
 
 export default function PlanVisitScreen() {
   const { slug, theme } = useTenant();

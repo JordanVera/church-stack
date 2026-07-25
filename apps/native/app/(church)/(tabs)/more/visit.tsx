@@ -1,9 +1,9 @@
 import { ActivityIndicator, Linking, Pressable, ScrollView, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { StackScreenHeader } from '../../../src/components/StackScreenHeader';
-import { usePublicSite } from '../../../src/hooks/usePublicSite';
-import { DAY_LABELS, formatServiceTime } from '../../../src/lib/format';
-import { useTenant } from '../../../src/providers/TenantProvider';
+import { StackScreenHeader } from '../../../../src/components/StackScreenHeader';
+import { usePublicSite } from '../../../../src/hooks/usePublicSite';
+import { DAY_LABELS, formatServiceTime } from '../../../../src/lib/format';
+import { useTenant } from '../../../../src/providers/TenantProvider';
 
 function openMaps(address: string) {
   const url = `https://maps.apple.com/?q=${encodeURIComponent(address)}`;

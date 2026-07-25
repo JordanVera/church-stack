@@ -9,8 +9,8 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { Image } from 'expo-image';
-import { trpc } from '../../src/lib/trpc';
-import { useTenant } from '../../src/providers/TenantProvider';
+import { trpc } from '../../../src/lib/trpc';
+import { useTenant } from '../../../src/providers/TenantProvider';
 
 type SermonVideo = {
   videoId: string;

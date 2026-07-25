@@ -8,9 +8,9 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { StackScreenHeader } from '../../../src/components/StackScreenHeader';
-import { trpc } from '../../../src/lib/trpc';
-import { useTenant } from '../../../src/providers/TenantProvider';
+import { StackScreenHeader } from '../../../../src/components/StackScreenHeader';
+import { trpc } from '../../../../src/lib/trpc';
+import { useTenant } from '../../../../src/providers/TenantProvider';
 
 export default function PrayerScreen() {
   const { theme } = useTenant();

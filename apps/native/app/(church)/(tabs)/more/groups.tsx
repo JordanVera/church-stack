@@ -7,11 +7,11 @@ import {
   Text,
   View,
 } from 'react-native';
-import { StackScreenHeader } from '../../../src/components/StackScreenHeader';
-import { usePublicSite } from '../../../src/hooks/usePublicSite';
-import { formatMeetingDay, formatServiceTime } from '../../../src/lib/format';
-import { trpc } from '../../../src/lib/trpc';
-import { useTenant } from '../../../src/providers/TenantProvider';
+import { StackScreenHeader } from '../../../../src/components/StackScreenHeader';
+import { usePublicSite } from '../../../../src/hooks/usePublicSite';
+import { formatMeetingDay, formatServiceTime } from '../../../../src/lib/format';
+import { trpc } from '../../../../src/lib/trpc';
+import { useTenant } from '../../../../src/providers/TenantProvider';
 
 export default function GroupsScreen() {
   const { theme } = useTenant();

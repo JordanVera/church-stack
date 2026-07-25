@@ -1,8 +1,8 @@
 import { ActivityIndicator, Linking, Pressable, ScrollView, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { StackScreenHeader } from '../../../src/components/StackScreenHeader';
-import { usePublicSite } from '../../../src/hooks/usePublicSite';
-import { useTenant } from '../../../src/providers/TenantProvider';
+import { StackScreenHeader } from '../../../../src/components/StackScreenHeader';
+import { usePublicSite } from '../../../../src/hooks/usePublicSite';
+import { useTenant } from '../../../../src/providers/TenantProvider';
 
 type LinkRow = {
   label: string;

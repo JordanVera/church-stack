@@ -1,9 +1,9 @@
 import { ActivityIndicator, Linking, Pressable, ScrollView, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
-import { StackScreenHeader } from '../../../src/components/StackScreenHeader';
-import { usePublicSite } from '../../../src/hooks/usePublicSite';
-import { useTenant } from '../../../src/providers/TenantProvider';
+import { StackScreenHeader } from '../../../../src/components/StackScreenHeader';
+import { usePublicSite } from '../../../../src/hooks/usePublicSite';
+import { useTenant } from '../../../../src/providers/TenantProvider';
 
 function initials(first: string, last: string) {
   return `${first[0] ?? ''}${last[0] ?? ''}`.toUpperCase() || '?';

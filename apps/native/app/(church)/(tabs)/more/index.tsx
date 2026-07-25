@@ -1,7 +1,7 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useTenant } from '../../../src/providers/TenantProvider';
+import { useTenant } from '../../../../src/providers/TenantProvider';
 
 type Row = {
   title: string;

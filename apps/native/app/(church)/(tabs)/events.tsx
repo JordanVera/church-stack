@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { trpc } from '../../src/lib/trpc';
-import { useAuth } from '../../src/providers/AuthProvider';
-import { useTenant } from '../../src/providers/TenantProvider';
-import type { Theme } from '../../src/lib/theme';
+import { trpc } from '../../../src/lib/trpc';
+import { useAuth } from '../../../src/providers/AuthProvider';
+import { useTenant } from '../../../src/providers/TenantProvider';
+import type { Theme } from '../../../src/lib/theme';
 
 type EventRow = {
   id: string;

@@ -1,5 +1,5 @@
 import { Stack } from 'expo-router';
-import { useTenant } from '../../../src/providers/TenantProvider';
+import { useTenant } from '../../../../src/providers/TenantProvider';
 
 export default function MoreStackLayout() {
   const { theme } = useTenant();
