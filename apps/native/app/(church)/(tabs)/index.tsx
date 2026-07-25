@@ -1,6 +1,7 @@
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { HomeHero } from '../../../src/components/HomeHero';
 import { trpc } from '../../../src/lib/trpc';
 import { usePublicSite } from '../../../src/hooks/usePublicSite';
 import { DAY_LABELS, formatServiceTime } from '../../../src/lib/format';
@@ -51,28 +52,13 @@ export default function Home() {
   return (
     <View className="flex-1 bg-background">
       <ScrollView contentContainerClassName="pb-10">
-        <View className="px-5 pb-5 pt-6" style={{ backgroundColor: theme.primary }}>
-          <Text className="text-sm font-semibold uppercase tracking-wide" style={{ color: theme.primaryForeground, opacity: 0.85 }}>
-            Welcome
-          </Text>
-          <Text className="mt-1 text-[26px] font-bold" style={{ color: theme.primaryForeground }}>
-            {branding.name}
-          </Text>
-          {nextService ? (
-            <Pressable
-              onPress={() => router.push('/more/visit?from=home')}
-              className="mt-4 rounded-2xl px-4 py-3"
-              style={{ backgroundColor: 'rgba(0,0,0,0.18)' }}
-            >
-              <Text className="text-xs font-semibold uppercase tracking-wide" style={{ color: theme.primaryForeground, opacity: 0.8 }}>
-                Next service
-              </Text>
-              <Text className="mt-1 text-base font-semibold" style={{ color: theme.primaryForeground }}>
-                {nextService}
-              </Text>
-            </Pressable>
-          ) : null}
-        </View>
+        <HomeHero
+          churchName={branding.name}
+          tagline={branding.tagline}
+          nextService={nextService}
+          primaryColor={theme.primary}
+          onPressNextService={() => router.push('/more/visit?from=home')}
+        />
 
         <View className="flex-row gap-2 px-5 pt-5">
           {(
