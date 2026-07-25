@@ -8,6 +8,7 @@ import { pastorsRouter } from './pastors';
 import { locationsRouter } from './locations';
 import { lifeGroupsRouter } from './lifeGroups';
 import { visitPlansRouter } from './visitPlans';
+import { engagementRouter } from './engagement';
 
 export const appRouter = router({
   church: churchRouter,
@@ -19,6 +20,7 @@ export const appRouter = router({
   locations: locationsRouter,
   lifeGroups: lifeGroupsRouter,
   visitPlans: visitPlansRouter,
+  engagement: engagementRouter,
 });
 
 export type AppRouter = typeof appRouter;

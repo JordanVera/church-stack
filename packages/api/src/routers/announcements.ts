@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { router, tenantProcedure, churchAdminProcedure } from '../trpc';
 import { assertChurchAdmin } from '../church-admin';
+import { notifyChurchMembersOfAnnouncement } from './engagement';
 
 export const announcementsRouter = router({
   // Public / app: published announcements for the current tenant.
@@ -11,6 +12,14 @@ export const announcementsRouter = router({
       orderBy: { createdAt: 'desc' },
     });
   }),
+
+  byId: tenantProcedure
+    .input(z.object({ id: z.string().min(1) }))
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.announcement.findFirst({
+        where: { id: input.id, churchId: ctx.churchId, published: true },
+      });
+    }),
 
   /** Owner CMS: all announcements including drafts. */
   adminList: churchAdminProcedure
@@ -34,7 +43,7 @@ export const announcementsRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       await assertChurchAdmin(ctx, input.churchId);
-      return ctx.prisma.announcement.create({
+      const row = await ctx.prisma.announcement.create({
         data: {
           churchId: input.churchId,
           title: input.title.trim(),
@@ -42,6 +51,16 @@ export const announcementsRouter = router({
           published: input.published,
         },
       });
+      if (row.published) {
+        void notifyChurchMembersOfAnnouncement({
+          prisma: ctx.prisma,
+          churchId: input.churchId,
+          title: row.title,
+          body: row.body,
+          announcementId: row.id,
+        });
+      }
+      return row;
     }),
 
   update: churchAdminProcedure
@@ -62,7 +81,7 @@ export const announcementsRouter = router({
       if (!existing) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'Announcement not found' });
       }
-      return ctx.prisma.announcement.update({
+      const row = await ctx.prisma.announcement.update({
         where: { id: existing.id },
         data: {
           title: input.title?.trim(),
@@ -70,6 +89,16 @@ export const announcementsRouter = router({
           published: input.published,
         },
       });
+      if (row.published && !existing.published) {
+        void notifyChurchMembersOfAnnouncement({
+          prisma: ctx.prisma,
+          churchId: input.churchId,
+          title: row.title,
+          body: row.body,
+          announcementId: row.id,
+        });
+      }
+      return row;
     }),
 
   delete: churchAdminProcedure

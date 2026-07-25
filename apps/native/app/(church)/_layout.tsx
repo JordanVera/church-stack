@@ -98,6 +98,13 @@ export default function ChurchTabsLayout() {
             tabBarStyle: { display: 'none' },
           }}
         />
+        <Tabs.Screen
+          name="announcement/[id]"
+          options={{
+            href: null,
+            tabBarStyle: { display: 'none' },
+          }}
+        />
       </Tabs>
     </SafeAreaView>
   );

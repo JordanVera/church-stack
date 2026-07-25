@@ -225,15 +225,31 @@ export default function EventsScreen() {
     );
   }
 
+  const rows = (events.data ?? []) as EventRow[];
+  const registeredCount = rows.filter((e) => e.isRegistered).length;
+
   return (
     <View className="flex-1 bg-background">
       <FlatList
-        data={(events.data ?? []) as EventRow[]}
+        data={rows}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ padding: 16, paddingBottom: 32, flexGrow: 1 }}
         ItemSeparatorComponent={() => <View style={{ height: 14 }} />}
         refreshing={events.isRefetching && !events.isLoading}
         onRefresh={() => void events.refetch()}
+        ListHeaderComponent={
+          registeredCount > 0 ? (
+            <View className="mb-4 rounded-2xl border border-border bg-card px-4 py-3">
+              <Text className="text-sm font-semibold text-foreground">
+                You’re registered for {registeredCount} upcoming event
+                {registeredCount === 1 ? '' : 's'}
+              </Text>
+              <Text className="mt-1 text-xs text-muted-foreground">
+                Manage sign-ups in More → My registrations.
+              </Text>
+            </View>
+          ) : null
+        }
         ListEmptyComponent={
           events.isLoading ? (
             <View className="flex-1 items-center justify-center py-24">
