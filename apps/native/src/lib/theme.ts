@@ -13,7 +13,7 @@ export interface Theme {
 }
 
 const LIGHT_CHROME = {
-  background: '#f6e8ea',
+  background: '#ffffff',
   card: '#ffffff',
   text: '#22181c',
   muted: '#787272',

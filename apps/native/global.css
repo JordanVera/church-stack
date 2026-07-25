@@ -49,7 +49,7 @@
 @layer theme {
   :root {
     @variant light {
-      --color-background: #f6e8ea;
+      --color-background: #ffffff;
       --color-foreground: #22181c;
       --color-card: #ffffff;
       --color-muted: #e2d6d7;

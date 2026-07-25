@@ -2,10 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import { Uniwind, useUniwind } from 'uniwind';
 import { StatusBar } from 'expo-status-bar';
 import * as SystemUI from 'expo-system-ui';
-import {
-  appearanceStore,
-  type AppearancePreference,
-} from '../lib/appearance-store';
+import { appearanceStore, type AppearancePreference } from '../lib/appearance-store';
 
 interface AppearanceContextValue {
   /** Resolved theme currently rendering (`light` | `dark`). */
@@ -44,7 +41,7 @@ export function AppearanceProvider({ children }: { children: React.ReactNode }) 
 
   useEffect(() => {
     if (!isReady) return;
-    const bg = theme === 'dark' ? '#22181c' : '#f6e8ea';
+    const bg = theme === 'dark' ? '#22181c' : '#ffffff';
     void SystemUI.setBackgroundColorAsync(bg);
   }, [theme, isReady]);
 
