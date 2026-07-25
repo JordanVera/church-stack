@@ -3,6 +3,15 @@ import { TRPCError } from '@trpc/server';
 import { router, churchAdminProcedure } from '../trpc';
 import { assertChurchAdmin } from '../church-admin';
 
+/** Empty string / null → null; omit (undefined) stays undefined for partial updates. */
+const optionalUrlSchema = z.union([z.string().url().max(500), z.literal(''), z.null()]).optional();
+
+function normalizeOptionalUrl(v: string | null | undefined): string | null | undefined {
+  if (v === undefined) return undefined;
+  if (v === null || v === '') return null;
+  return v;
+}
+
 export const pastorsRouter = router({
   list: churchAdminProcedure
     .input(z.object({ churchId: z.string().min(1) }))
@@ -24,6 +33,10 @@ export const pastorsRouter = router({
         firstName: z.string().min(1).max(80),
         lastName: z.string().min(1).max(80),
         title: z.string().min(1).max(120),
+        photoUrl: optionalUrlSchema,
+        facebookUrl: optionalUrlSchema,
+        instagramUrl: optionalUrlSchema,
+        youtubeUrl: optionalUrlSchema,
         sortOrder: z.number().int().optional(),
       })
     )
@@ -39,6 +52,10 @@ export const pastorsRouter = router({
           firstName: input.firstName.trim(),
           lastName: input.lastName.trim(),
           title: input.title.trim(),
+          photoUrl: normalizeOptionalUrl(input.photoUrl) ?? null,
+          facebookUrl: normalizeOptionalUrl(input.facebookUrl) ?? null,
+          instagramUrl: normalizeOptionalUrl(input.instagramUrl) ?? null,
+          youtubeUrl: normalizeOptionalUrl(input.youtubeUrl) ?? null,
           sortOrder: input.sortOrder ?? (max._max.sortOrder ?? 0) + 1,
         },
       });
@@ -52,6 +69,10 @@ export const pastorsRouter = router({
         firstName: z.string().min(1).max(80).optional(),
         lastName: z.string().min(1).max(80).optional(),
         title: z.string().min(1).max(120).optional(),
+        photoUrl: optionalUrlSchema,
+        facebookUrl: optionalUrlSchema,
+        instagramUrl: optionalUrlSchema,
+        youtubeUrl: optionalUrlSchema,
         sortOrder: z.number().int().optional(),
       })
     )
@@ -69,6 +90,10 @@ export const pastorsRouter = router({
           firstName: input.firstName?.trim(),
           lastName: input.lastName?.trim(),
           title: input.title?.trim(),
+          photoUrl: normalizeOptionalUrl(input.photoUrl),
+          facebookUrl: normalizeOptionalUrl(input.facebookUrl),
+          instagramUrl: normalizeOptionalUrl(input.instagramUrl),
+          youtubeUrl: normalizeOptionalUrl(input.youtubeUrl),
           sortOrder: input.sortOrder,
         },
       });

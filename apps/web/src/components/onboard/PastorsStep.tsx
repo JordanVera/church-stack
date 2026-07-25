@@ -103,6 +103,59 @@ export function PastorsStep({ draft, onChange }: Props) {
                 className={inputClass}
               />
             </div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div>
+                <Label className="mb-1.5 text-ink-700 dark:text-ink-300">Facebook</Label>
+                <Input
+                  value={pastor.facebookUrl}
+                  onChange={(e) => {
+                    const pastors = draft.pastors.map((p) =>
+                      p.clientKey === pastor.clientKey
+                        ? { ...p, facebookUrl: e.target.value }
+                        : p
+                    );
+                    onChange({ ...draft, pastors });
+                  }}
+                  placeholder="https://facebook.com/…"
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <Label className="mb-1.5 text-ink-700 dark:text-ink-300">Instagram</Label>
+                <Input
+                  value={pastor.instagramUrl}
+                  onChange={(e) => {
+                    const pastors = draft.pastors.map((p) =>
+                      p.clientKey === pastor.clientKey
+                        ? { ...p, instagramUrl: e.target.value }
+                        : p
+                    );
+                    onChange({ ...draft, pastors });
+                  }}
+                  placeholder="https://instagram.com/…"
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <Label className="mb-1.5 text-ink-700 dark:text-ink-300">YouTube</Label>
+                <Input
+                  value={pastor.youtubeUrl}
+                  onChange={(e) => {
+                    const pastors = draft.pastors.map((p) =>
+                      p.clientKey === pastor.clientKey
+                        ? { ...p, youtubeUrl: e.target.value }
+                        : p
+                    );
+                    onChange({ ...draft, pastors });
+                  }}
+                  placeholder="https://youtube.com/…"
+                  className={inputClass}
+                />
+              </div>
+            </div>
+            <p className="text-xs text-ink-500">
+              Social links are optional. You can upload a photo from the Pastors dashboard after signup.
+            </p>
           </div>
         ))}
       </div>
@@ -120,6 +173,9 @@ export function PastorsStep({ draft, onChange }: Props) {
                 firstName: '',
                 lastName: '',
                 title: '',
+                facebookUrl: '',
+                instagramUrl: '',
+                youtubeUrl: '',
               },
             ],
           })

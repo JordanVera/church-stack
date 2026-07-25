@@ -71,6 +71,10 @@ export type PublicSitePayload = {
     firstName: string;
     lastName: string;
     title: string;
+    photoUrl: string | null;
+    facebookUrl: string | null;
+    instagramUrl: string | null;
+    youtubeUrl: string | null;
   }>;
 };
 

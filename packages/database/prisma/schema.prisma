@@ -157,6 +157,11 @@ model Pastor {
   firstName String
   lastName  String
   title     String
+  /// Public portrait shown on the white-label site.
+  photoUrl     String?
+  facebookUrl  String?
+  instagramUrl String?
+  youtubeUrl   String?
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

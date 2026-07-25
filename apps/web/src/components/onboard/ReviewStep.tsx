@@ -79,13 +79,23 @@ export function ReviewStep({ draft, planTier = 'SITE' }: Props) {
       ) : null}
 
       <ReviewBlock title="Pastors">
-        <ul className="space-y-1">
-          {draft.pastors.map((p) => (
-            <li key={p.clientKey}>
-              {p.firstName} {p.lastName}
-              <span className="text-ink-500 dark:text-ink-400"> — {p.title}</span>
-            </li>
-          ))}
+        <ul className="space-y-2">
+          {draft.pastors.map((p) => {
+            const socials = [
+              p.facebookUrl.trim() ? 'Facebook' : null,
+              p.instagramUrl.trim() ? 'Instagram' : null,
+              p.youtubeUrl.trim() ? 'YouTube' : null,
+            ].filter(Boolean);
+            return (
+              <li key={p.clientKey}>
+                {p.firstName} {p.lastName}
+                <span className="text-ink-500 dark:text-ink-400"> — {p.title}</span>
+                {socials.length > 0 ? (
+                  <p className="text-xs text-ink-400">{socials.join(' · ')}</p>
+                ) : null}
+              </li>
+            );
+          })}
         </ul>
       </ReviewBlock>
 

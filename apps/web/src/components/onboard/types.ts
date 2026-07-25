@@ -3,6 +3,9 @@ export type OnboardPastor = {
   firstName: string;
   lastName: string;
   title: string;
+  facebookUrl: string;
+  instagramUrl: string;
+  youtubeUrl: string;
 };
 
 export type OnboardService = {
@@ -87,6 +90,9 @@ export function createInitialDraft(): OnboardDraft {
         firstName: '',
         lastName: '',
         title: '',
+        facebookUrl: '',
+        instagramUrl: '',
+        youtubeUrl: '',
       },
     ],
     locations: [

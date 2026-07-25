@@ -43,6 +43,10 @@ type SeedPastor = {
   firstName: string;
   lastName: string;
   title: string;
+  photoUrl?: string | null;
+  facebookUrl?: string | null;
+  instagramUrl?: string | null;
+  youtubeUrl?: string | null;
   sortOrder?: number;
 };
 
@@ -129,6 +133,11 @@ const churches: SeedChurch[] = [
         firstName: 'James',
         lastName: 'Whitfield',
         title: 'Senior Pastor',
+        photoUrl:
+          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=1000&fit=crop&auto=format',
+        facebookUrl: 'https://facebook.com/james.whitfield.example',
+        instagramUrl: 'https://instagram.com/jameswhitfield.example',
+        youtubeUrl: 'https://youtube.com/@jameswhitfield.example',
         sortOrder: 0,
       },
       {
@@ -136,6 +145,11 @@ const churches: SeedChurch[] = [
         firstName: 'Maria',
         lastName: 'Santos',
         title: 'Campus Pastor',
+        photoUrl:
+          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&h=1000&fit=crop&auto=format',
+        facebookUrl: 'https://facebook.com/maria.santos.example',
+        instagramUrl: 'https://instagram.com/mariasantos.example',
+        youtubeUrl: 'https://youtube.com/@mariasantos.example',
         sortOrder: 1,
       },
     ],
@@ -157,9 +171,7 @@ const churches: SeedChurch[] = [
         pastorKey: 'campus',
         sortOrder: 1,
         adminEmails: ['south@gracechurch.example'],
-        services: [
-          { name: 'Sunday Worship', dayOfWeek: 0, startTime: '10:30', sortOrder: 0 },
-        ],
+        services: [{ name: 'Sunday Worship', dayOfWeek: 0, startTime: '10:30', sortOrder: 0 }],
       },
     ],
     announcements: [
@@ -243,6 +255,11 @@ const churches: SeedChurch[] = [
         firstName: 'Daniel',
         lastName: 'Okoye',
         title: 'Lead Pastor',
+        photoUrl:
+          'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&h=1000&fit=crop&auto=format',
+        facebookUrl: 'https://facebook.com/daniel.okoye.example',
+        instagramUrl: 'https://instagram.com/danielokoye.example',
+        youtubeUrl: 'https://youtube.com/@danielokoye.example',
         sortOrder: 0,
       },
       {
@@ -250,6 +267,11 @@ const churches: SeedChurch[] = [
         firstName: 'Rachel',
         lastName: 'Nguyen',
         title: 'Associate Pastor',
+        photoUrl:
+          'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=800&h=1000&fit=crop&auto=format',
+        facebookUrl: 'https://facebook.com/rachel.nguyen.example',
+        instagramUrl: 'https://instagram.com/rachelnguyen.example',
+        youtubeUrl: 'https://youtube.com/@rachelnguyen.example',
         sortOrder: 1,
       },
     ],
@@ -326,7 +348,7 @@ const churches: SeedChurch[] = [
         source: ContentSource.MANUAL,
       },
       {
-        title: 'Men\'s Breakfast',
+        title: "Men's Breakfast",
         description: 'Breakfast, prayer, and conversation.',
         location: 'Fellowship Hall',
         daysFromNow: 5,
@@ -372,7 +394,7 @@ const churches: SeedChurch[] = [
         externalId: 'pco_group_families',
       },
       {
-        name: 'Women\'s Study',
+        name: "Women's Study",
         description: 'Manual CMS group — not synced from Planning Center.',
         location: 'Room 12',
         meetingDay: 2,
@@ -414,6 +436,11 @@ const churches: SeedChurch[] = [
         firstName: 'Sofia',
         lastName: 'Reyes',
         title: 'Lead Pastor',
+        photoUrl:
+          'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&h=1000&fit=crop&auto=format',
+        facebookUrl: 'https://facebook.com/sofia.reyes.example',
+        instagramUrl: 'https://instagram.com/sofiareyes.example',
+        youtubeUrl: 'https://youtube.com/@sofiareyes.example',
         sortOrder: 0,
       },
     ],
@@ -496,11 +523,7 @@ async function upsertUser(opts: {
   });
 }
 
-async function upsertMembership(
-  userId: string,
-  churchId: string,
-  role: MembershipRole
-) {
+async function upsertMembership(userId: string, churchId: string, role: MembershipRole) {
   return prisma.membership.upsert({
     where: { userId_churchId: { userId, churchId } },
     update: { role },
@@ -533,9 +556,25 @@ async function ensurePastorsAndLocations(
           firstName: p.firstName,
           lastName: p.lastName,
           title: p.title,
+          photoUrl: p.photoUrl ?? null,
+          facebookUrl: p.facebookUrl ?? null,
+          instagramUrl: p.instagramUrl ?? null,
+          youtubeUrl: p.youtubeUrl ?? null,
           sortOrder: p.sortOrder ?? 0,
         },
       }));
+    if (existing) {
+      await prisma.pastor.update({
+        where: { id: existing.id },
+        data: {
+          photoUrl: p.photoUrl ?? existing.photoUrl,
+          facebookUrl: p.facebookUrl ?? existing.facebookUrl,
+          instagramUrl: p.instagramUrl ?? existing.instagramUrl,
+          youtubeUrl: p.youtubeUrl ?? existing.youtubeUrl,
+          sortOrder: p.sortOrder ?? existing.sortOrder,
+        },
+      });
+    }
     pastorIds.set(p.key, pastor.id);
   }
 
@@ -783,12 +822,7 @@ async function main() {
     });
     await upsertMembership(owner.id, church.id, MembershipRole.OWNER);
 
-    await ensurePastorsAndLocations(
-      church.id,
-      c.pastors,
-      c.locations,
-      c.churchAdminEmails
-    );
+    await ensurePastorsAndLocations(church.id, c.pastors, c.locations, c.churchAdminEmails);
     await ensureContent(church.id, c);
 
     console.log(
@@ -812,22 +846,16 @@ async function main() {
     name: 'Hillside Member',
     passwordHash: demoPassword,
   });
-  await upsertMembership(
-    hillsideLeader.id,
-    seededChurchIds.hillside,
-    MembershipRole.LEADER
-  );
-  await upsertMembership(
-    hillsideMember.id,
-    seededChurchIds.hillside,
-    MembershipRole.MEMBER
-  );
+  await upsertMembership(hillsideLeader.id, seededChurchIds.hillside, MembershipRole.LEADER);
+  await upsertMembership(hillsideMember.id, seededChurchIds.hillside, MembershipRole.MEMBER);
 
   console.log('');
   console.log('Demo logins (password unless noted):');
   console.log(`  ${DEMO_PASSWORD}`);
   console.log('  - admin@churchstack.example (platform /admin)');
-  console.log(`  - ${JORDAN.email} / ${JORDAN.password} (platform admin + grace/harbor OWNER, hillside ADMIN)`);
+  console.log(
+    `  - ${JORDAN.email} / ${JORDAN.password} (platform admin + grace/harbor OWNER, hillside ADMIN)`
+  );
   console.log('  - admin@gracechurch.example (grace OWNER)');
   console.log('  - admin@hillside.example (hillside OWNER)');
   console.log('  - admin@harbor.example (harbor OWNER — Custom tier)');

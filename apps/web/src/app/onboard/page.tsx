@@ -56,6 +56,15 @@ function validateStep(step: number, draft: OnboardDraft): string | null {
       if (!p.firstName.trim() || !p.lastName.trim() || !p.title.trim()) {
         return 'Each pastor needs a first name, last name, and title.';
       }
+      for (const [label, value] of [
+        ['Facebook', p.facebookUrl],
+        ['Instagram', p.instagramUrl],
+        ['YouTube', p.youtubeUrl],
+      ] as const) {
+        if (!isValidOptionalUrl(value)) {
+          return `${p.firstName || 'Pastor'} ${label} link must be a full URL (https://…), or leave it blank.`;
+        }
+      }
     }
     return null;
   }
@@ -184,6 +193,9 @@ function OnboardForm() {
         firstName: p.firstName.trim(),
         lastName: p.lastName.trim(),
         title: p.title.trim(),
+        facebookUrl: p.facebookUrl.trim() || null,
+        instagramUrl: p.instagramUrl.trim() || null,
+        youtubeUrl: p.youtubeUrl.trim() || null,
       })),
       locations: draft.locations.map((loc) => ({
         name: loc.name.trim(),

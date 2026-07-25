@@ -94,6 +94,9 @@ const churchOnboardInput = z.object({
         firstName: z.string().min(1).max(80),
         lastName: z.string().min(1).max(80),
         title: z.string().min(1).max(120),
+        facebookUrl: optionalUrlSchema,
+        instagramUrl: optionalUrlSchema,
+        youtubeUrl: optionalUrlSchema,
       })
     )
     .min(1)
@@ -294,6 +297,10 @@ export const churchRouter = router({
               firstName: true,
               lastName: true,
               title: true,
+              photoUrl: true,
+              facebookUrl: true,
+              instagramUrl: true,
+              youtubeUrl: true,
             },
             take: 24,
           }),
@@ -508,6 +515,9 @@ export const churchRouter = router({
             firstName: pastor.firstName,
             lastName: pastor.lastName,
             title: pastor.title,
+            facebookUrl: pastor.facebookUrl,
+            instagramUrl: pastor.instagramUrl,
+            youtubeUrl: pastor.youtubeUrl,
             sortOrder: index,
           },
         });
