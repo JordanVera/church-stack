@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Smartphone, Palette, Zap, CalendarDays, HandHeart, Megaphone } from 'lucide-react';
 import { Reveal, Stagger, StaggerItem } from '@/components/motion';
@@ -17,21 +18,29 @@ const cells = [
     icon: Zap,
     title: 'Launch this week',
     body: 'Go from signup to a live branded website without waiting on a dev team or agency timeline.',
+    image: '/marketing/features-launch.jpg',
+    imageAlt: 'Laptop launching a church website',
   },
   {
     icon: Megaphone,
     title: 'Announcements',
     body: 'Publish updates from your dashboard and they appear on your church site.',
+    image: '/marketing/features-announcements.jpg',
+    imageAlt: 'Dashboard publishing an announcement to a church website',
   },
   {
     icon: CalendarDays,
     title: 'Events',
     body: 'Upcoming gatherings listed clearly so guests know what is happening next.',
+    image: '/marketing/features-events.jpg',
+    imageAlt: 'Calendar and community gathering at church',
   },
   {
     icon: HandHeart,
     title: 'Giving link',
     body: 'Point visitors to your Tithe.ly, Pushpay, or other giving page — we never process gifts ourselves.',
+    image: '/marketing/features-giving.jpg',
+    imageAlt: 'Church website Give button linking to external giving partner',
   },
   {
     icon: Smartphone,
@@ -50,14 +59,31 @@ const brandIcons = [
   { initials: 'RC', from: '#c4b5fd', to: '#5b6eae', rotate: -8, x: -48, y: 48 },
 ];
 
+/** Soft background illustration for standard feature cards. */
+function FeatureBgVisual({ src, alt }: { src: string; alt: string }) {
+  return (
+    <div aria-hidden className="absolute inset-0 pointer-events-none">
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        className="object-cover object-[center_40%] opacity-90 transition-opacity duration-500 group-hover:opacity-100"
+      />
+      <div className="absolute inset-0 from-white bg-linear-to-t via-white/88 to-white/55 dark:from-ink-950 dark:via-ink-950/92 dark:to-ink-950/65" />
+      <div className="absolute inset-0 via-transparent to-transparent bg-linear-to-br from-white/80 dark:from-ink-950/85" />
+    </div>
+  );
+}
+
 export default function Features() {
   return (
-    <section id="features" className="mx-auto max-w-6xl scroll-mt-24 px-6 py-28">
+    <section id="features" className="px-6 py-28 mx-auto max-w-6xl scroll-mt-24">
       <Reveal className="mx-auto max-w-2xl text-center">
         <p className="text-sm font-medium uppercase tracking-[0.25em] text-brand-500 dark:text-brand-400">
           What's included
         </p>
-        <h2 className="mt-4 font-display text-4xl font-bold tracking-tight text-ink-900 sm:text-5xl dark:text-white">
+        <h2 className="mt-4 text-4xl font-bold tracking-tight font-display text-ink-900 sm:text-5xl dark:text-white">
           Everything, out of the box
         </h2>
         <p className="mt-4 text-lg text-ink-600 dark:text-ink-300">
@@ -66,7 +92,7 @@ export default function Features() {
         </p>
       </Reveal>
 
-      <Stagger className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <Stagger className="grid gap-4 mt-16 sm:grid-cols-2 lg:grid-cols-3">
         {cells.map((c) => (
           <StaggerItem
             key={c.title}
@@ -78,11 +104,14 @@ export default function Features() {
               className={`group relative h-full overflow-hidden rounded-3xl border py-12 shadow-sm ring-0 transition-shadow hover:shadow-xl hover:shadow-brand-600/10 ${
                 c.feature || c.wide
                   ? 'border-brand-500/20 bg-linear-to-br from-brand-600 to-brand-800 text-white'
-                  : 'border-ink-200 bg-white dark:border-white/10 dark:bg-white/5'
+                  : c.image
+                    ? 'border-ink-200 bg-white dark:border-white/10 dark:bg-ink-950'
+                    : 'border-ink-200 bg-white dark:border-white/10 dark:bg-white/5'
               }`}
             >
               {c.feature && <WhitelabelVisual />}
               {c.wide && <DevicesVisual />}
+              {c.image && <FeatureBgVisual src={c.image} alt={c.imageAlt ?? ''} />}
               <CardContent
                 className={`relative px-7 ${c.feature || c.wide ? 'sm:max-w-[55%] lg:max-w-[48%]' : ''}`}
               >
@@ -93,7 +122,7 @@ export default function Features() {
                       : 'bg-brand-50 text-brand-600 group-hover:bg-brand-600 group-hover:text-white dark:bg-brand-500/10 dark:text-brand-300'
                   }`}
                 >
-                  <c.icon className="h-6 w-6" />
+                  <c.icon className="w-6 h-6" />
                 </div>
                 <h3
                   className={`mt-5 font-display font-semibold ${
@@ -129,14 +158,14 @@ function WhitelabelVisual() {
       aria-hidden
       className="pointer-events-none absolute inset-y-0 right-0 hidden w-[55%] sm:block"
     >
-      <div className="absolute inset-0 bg-linear-to-l from-brand-900/45 via-transparent to-transparent" />
+      <div className="absolute inset-0 via-transparent to-transparent bg-linear-to-l from-brand-900/45" />
 
       {/* Ambient color blooms */}
       <div className="absolute right-8 top-6 h-28 w-28 rounded-full bg-[#f4a5c8]/25 blur-3xl" />
-      <div className="absolute bottom-8 right-16 h-32 w-32 rounded-full bg-brand-300/30 blur-3xl" />
+      <div className="absolute bottom-8 right-16 w-32 h-32 rounded-full blur-3xl bg-brand-300/30" />
       <div className="absolute right-28 top-1/2 h-24 w-24 -translate-y-1/2 rounded-full bg-[#a78bfa]/20 blur-3xl" />
 
-      <div className="absolute right-2 top-1/2 h-55 w-55 -translate-y-1/2 lg:right-6 lg:h-60 lg:w-60">
+      <div className="absolute right-2 top-1/2 -translate-y-1/2 h-55 w-55 lg:right-6 lg:h-60 lg:w-60">
         {/* Slow-spinning color orbit */}
         <motion.div
           className="absolute inset-0"
@@ -179,7 +208,7 @@ function WhitelabelVisual() {
         {brandIcons.map((b, i) => (
           <motion.div
             key={b.initials}
-            className="absolute left-1/2 top-1/2 z-10"
+            className="absolute top-1/2 left-1/2 z-10"
             initial={false}
             animate={
               reduce
@@ -216,7 +245,7 @@ function WhitelabelVisual() {
 
         {/* Hero app icon */}
         <motion.div
-          className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2"
+          className="absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2"
           animate={reduce ? undefined : { y: [0, -10, 0], rotate: [0, 2, 0, -2, 0] }}
           transition={reduce ? undefined : { duration: 6, repeat: Infinity, ease: 'easeInOut' }}
         >
@@ -224,10 +253,10 @@ function WhitelabelVisual() {
             <div className="absolute -inset-4 rounded-[2rem] bg-white/15 blur-xl" />
             <div className="relative grid h-22 w-22 place-items-center overflow-hidden rounded-[1.55rem] bg-linear-to-br from-white via-[#e8f6fc] to-brand-400 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.55)] ring-2 ring-white/50 lg:h-24 lg:w-24 lg:rounded-[1.75rem]">
               {/* Inner sheen */}
-              <div className="absolute inset-0 bg-linear-to-br from-white/70 via-transparent to-transparent" />
+              <div className="absolute inset-0 via-transparent to-transparent bg-linear-to-br from-white/70" />
               <div className="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-[#f4a5c8]/40 blur-2xl" />
-              <div className="absolute -bottom-3 -left-2 h-14 w-14 rounded-full bg-brand-500/35 blur-xl" />
-              <span className="relative font-display text-3xl font-bold text-brand-800 drop-shadow-sm lg:text-4xl">
+              <div className="absolute -left-2 -bottom-3 w-14 h-14 rounded-full blur-xl bg-brand-500/35" />
+              <span className="relative text-3xl font-bold drop-shadow-sm font-display text-brand-800 lg:text-4xl">
                 ✦
               </span>
             </div>
@@ -259,7 +288,7 @@ function WhitelabelVisual() {
             <div className="mt-0.5 flex items-center gap-1">
               <div className="flex gap-px">
                 {[0, 1, 2, 3, 4].map((i) => (
-                  <span key={i} className="h-1 w-1 rounded-full bg-amber-400" />
+                  <span key={i} className="w-1 h-1 bg-amber-400 rounded-full" />
                 ))}
               </div>
               <span className="text-[8px] font-medium text-ink-500">4.9 · Free</span>
@@ -279,7 +308,7 @@ function WhitelabelVisual() {
             {orbitColors.slice(0, 4).map((color) => (
               <span
                 key={color}
-                className="h-4 w-4 rounded-full ring-1 ring-white/40"
+                className="w-4 h-4 rounded-full ring-1 ring-white/40"
                 style={{ backgroundColor: color }}
               />
             ))}
@@ -300,8 +329,8 @@ function DevicesVisual() {
       aria-hidden
       className="pointer-events-none absolute inset-y-0 right-0 hidden w-[55%] sm:block"
     >
-      <div className="absolute inset-0 bg-linear-to-l from-brand-900/50 via-brand-800/20 to-transparent" />
-      <div className="absolute right-4 top-1/2 flex -translate-y-1/2 items-end gap-3 lg:right-10 lg:gap-4">
+      <div className="absolute inset-0 to-transparent bg-linear-to-l from-brand-900/50 via-brand-800/20" />
+      <div className="flex absolute right-4 top-1/2 gap-3 items-end -translate-y-1/2 lg:right-10 lg:gap-4">
         {/* iOS phone */}
         <div className="relative w-27 shrink-0 lg:w-30">
           <div className="overflow-hidden rounded-[1.35rem] border border-white/25 bg-ink-950 shadow-2xl shadow-black/40 ring-1 ring-white/10">
@@ -326,8 +355,8 @@ function DevicesVisual() {
               </div>
             </div>
             <PhoneScreen church="Harbor" accent="#e8a87c" />
-            <div className="flex justify-center pb-2 pt-1">
-              <span className="h-1 w-8 rounded-full bg-white/25" />
+            <div className="flex justify-center pt-1 pb-2">
+              <span className="w-8 h-1 rounded-full bg-white/25" />
             </div>
           </div>
           <p className="mt-2 text-center text-[10px] font-semibold tracking-wider text-white/55 uppercase">
