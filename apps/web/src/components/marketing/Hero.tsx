@@ -10,9 +10,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 const stats = [
-  { value: 1, suffix: '', label: 'Branded church site' },
-  { value: 1, suffix: '', label: 'Owner dashboard' },
-  { value: 100, suffix: '%', label: 'Your colors & logo' },
+  { value: 7, suffix: '', label: 'Days to go live' },
+  { value: 3, suffix: '', label: 'Web · iOS · Android' },
+  { value: 100, suffix: '%', label: 'Your brand, white-label' },
 ];
 
 export default function Hero() {
@@ -128,7 +128,7 @@ export default function Hero() {
             {stats.map((stat) => (
               <div key={stat.label}>
                 <p className="font-display text-3xl font-bold tabular-nums text-ink-900 sm:text-4xl lg:text-3xl dark:text-white">
-                  <Counter value={stat.value} suffix={stat.suffix} duration={1.4} />
+                  <Counter value={stat.value} suffix={stat.suffix} duration={1.4} delay={0.85} eager />
                 </p>
                 <p className="mt-1 text-xs font-medium uppercase tracking-[0.15em] text-ink-500 dark:text-ink-400">
                   {stat.label}

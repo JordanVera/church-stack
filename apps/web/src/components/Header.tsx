@@ -12,6 +12,10 @@ import { Button } from '@/components/ui/button';
 const nav = [
   { href: '/#features', label: 'Features' },
   { href: '/#how', label: 'How it works' },
+  // { href: '/#planning-center', label: 'Planning Center' },
+  // { href: '/#why-custom', label: 'Why custom' },
+  { href: '/#mobile-app', label: 'Mobile app' },
+  { href: '/#faq', label: 'FAQ' },
   { href: '/pricing', label: 'Pricing' },
 ];
 
@@ -51,12 +55,12 @@ export default function Header() {
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         className={`sticky top-0 z-50 transition-colors duration-300 ${
           scrolled
-            ? 'border-b border-ink-200/70 bg-white/80 backdrop-blur-md dark:border-ink-800/70 dark:bg-ink-950/80'
-            : 'border-b border-transparent bg-transparent'
+            ? 'border-b backdrop-blur-md border-ink-200/70 bg-white/80 dark:border-ink-800/70 dark:bg-ink-950/80'
+            : 'bg-transparent border-b border-transparent'
         }`}
       >
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 md:h-20">
-          <Link href="/" className="group flex items-center" onClick={closeMenu}>
+        <div className="flex justify-between items-center px-6 mx-auto max-w-7xl h-16 md:h-20">
+          <Link href="/" className="flex items-center group" onClick={closeMenu}>
             <Image
               src="/brand/gatherly-logo-horizontal.png"
               alt="Gatherly Stack"
@@ -67,12 +71,12 @@ export default function Header() {
             />
           </Link>
 
-          <nav className="hidden items-center gap-10 md:flex">
+          <nav className="hidden gap-5 items-center lg:flex xl:gap-8">
             {nav.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="group relative text-xs font-semibold uppercase tracking-[0.2em] text-ink-600 transition hover:text-ink-900 dark:text-ink-300 dark:hover:text-white"
+                className="group relative text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-ink-600 transition hover:text-ink-900 xl:text-xs xl:tracking-[0.2em] dark:text-ink-300 dark:hover:text-white"
               >
                 {item.label}
                 <span className="absolute -bottom-1.5 left-0 h-px w-0 bg-current transition-all duration-300 group-hover:w-full" />
@@ -80,9 +84,9 @@ export default function Header() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex gap-2 items-center sm:gap-4">
             <ThemeToggle />
-            <div className="hidden items-center gap-3 sm:gap-4 md:flex">
+            <div className="hidden gap-3 items-center sm:gap-4 lg:flex">
               {signedIn ? (
                 <>
                   <Button
@@ -122,7 +126,7 @@ export default function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden"
+              className="lg:hidden"
               aria-label={menuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={menuOpen}
               aria-controls="mobile-nav"
@@ -144,7 +148,7 @@ export default function Header() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[60] bg-ink-950/40 backdrop-blur-sm md:hidden dark:bg-black/50"
+            className="fixed inset-0 z-[60] bg-ink-950/40 backdrop-blur-sm lg:hidden dark:bg-black/50"
             onClick={closeMenu}
           />
         ) : null}
@@ -162,9 +166,9 @@ export default function Header() {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-y-0 right-0 z-[70] flex w-[min(20rem,88vw)] flex-col border-l border-ink-200/70 bg-white shadow-xl md:hidden dark:border-ink-800/70 dark:bg-ink-950"
+            className="fixed inset-y-0 right-0 z-[70] flex w-[min(20rem,88vw)] flex-col border-l border-ink-200/70 bg-white shadow-xl lg:hidden dark:border-ink-800/70 dark:bg-ink-950"
           >
-            <div className="flex items-center justify-between border-b border-ink-200/70 px-5 py-4 dark:border-ink-800/70">
+            <div className="flex justify-between items-center px-5 py-4 border-b border-ink-200/70 dark:border-ink-800/70">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-500 dark:text-ink-400">
                 Menu
               </p>
@@ -173,7 +177,7 @@ export default function Header() {
               </Button>
             </div>
 
-            <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-4 py-5">
+            <nav className="flex overflow-y-auto flex-col flex-1 gap-1 px-4 py-5">
               {nav.map((item) => (
                 <Link
                   key={item.href}
@@ -185,7 +189,7 @@ export default function Header() {
                 </Link>
               ))}
 
-              <div className="mt-auto flex flex-col gap-2 border-t border-ink-200/70 pt-5 dark:border-ink-800/70">
+              <div className="flex flex-col gap-2 pt-5 mt-auto border-t border-ink-200/70 dark:border-ink-800/70">
                 {signedIn ? (
                   <>
                     <Button

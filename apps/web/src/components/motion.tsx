@@ -4,14 +4,13 @@ import {
   animate,
   motion,
   useInView,
-  useMotionValue,
   useReducedMotion,
   useScroll,
   useTransform,
   type HTMLMotionProps,
   type Variants,
 } from 'framer-motion';
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 type MotionTag = keyof typeof motion;
 
@@ -218,36 +217,68 @@ export function Parallax({
 /**
  * Counts up from 0 to `value` once it scrolls into view. Renders `prefix`/`suffix`
  * around the number so callers can wrap things like "$" or "+" without extra markup.
+ *
+ * Pass `eager` for hero (or other above-the-fold) stats — IntersectionObserver with a
+ * shrunk rootMargin often never fires for elements already in view on short mobile
+ * viewports, leaving the count stuck at 0.
+ *
+ * Display uses React state (not MotionValue-as-children) so the digits update reliably
+ * on mobile Safari.
  */
 export function Counter({
   value,
   duration = 1.6,
+  delay = 0,
   prefix = '',
   suffix = '',
   className,
+  eager = false,
 }: {
   value: number;
   duration?: number;
+  delay?: number;
   prefix?: string;
   suffix?: string;
   className?: string;
+  eager?: boolean;
 }) {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
-  const count = useMotionValue(reduce ? value : 0);
-  const display = useTransform(count, (v) => `${prefix}${Math.round(v)}${suffix}`);
+  const inView = useInView(ref, { once: true, amount: 0.4, margin: '0px 0px -12% 0px' });
+  const shouldRun = reduce || eager || inView;
+  const [display, setDisplay] = useState(() =>
+    reduce ? `${prefix}${value}${suffix}` : `${prefix}0${suffix}`
+  );
 
   useEffect(() => {
-    if (!inView || reduce) return;
-    const controls = animate(count, value, { duration, ease: [0.16, 1, 0.3, 1] });
-    return () => controls.stop();
-  }, [inView, reduce, value, duration, count]);
+    if (!shouldRun) return;
+    if (reduce) {
+      setDisplay(`${prefix}${value}${suffix}`);
+      return;
+    }
+
+    let controls: ReturnType<typeof animate> | undefined;
+    const timeout = window.setTimeout(() => {
+      controls = animate(0, value, {
+        duration,
+        ease: [0.16, 1, 0.3, 1],
+        onUpdate: (latest) => {
+          setDisplay(`${prefix}${Math.round(latest)}${suffix}`);
+        },
+        onComplete: () => setDisplay(`${prefix}${value}${suffix}`),
+      });
+    }, delay * 1000);
+
+    return () => {
+      window.clearTimeout(timeout);
+      controls?.stop();
+    };
+  }, [shouldRun, reduce, value, duration, delay, prefix, suffix]);
 
   return (
-    <motion.span ref={ref} className={className}>
+    <span ref={ref} className={className}>
       {display}
-    </motion.span>
+    </span>
   );
 }
 
@@ -298,7 +329,7 @@ export function Marquee({
   return (
     <div className={`flex overflow-hidden ${mask ? 'marquee-mask' : ''} ${className ?? ''}`}>
       <motion.div
-        className="flex shrink-0 items-center"
+        className="flex items-center shrink-0"
         animate={{ x: reverse ? ['-50%', '0%'] : ['0%', '-50%'] }}
         transition={{ duration, repeat: Infinity, ease: 'linear' }}
       >
