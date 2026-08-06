@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -95,15 +95,25 @@ function OnboardForm() {
   const searchParams = useSearchParams();
   const { status: sessionStatus } = useSession();
   const planTier = parsePlan(searchParams.get('plan'));
+  const checkoutSessionId = searchParams.get('session_id') ?? undefined;
   const reduce = useReducedMotion();
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState<OnboardDraft>(() => createInitialDraft());
   const [error, setError] = useState<string | null>(null);
+  const syncAttemptedRef = useRef(false);
 
-  const onboardCallback =
-    planTier != null
-      ? `/onboard?plan=${encodeURIComponent(planTier)}`
-      : '/pricing';
+  const utils = trpc.useUtils();
+
+  const preOnboardStatus = trpc.billing.preOnboardStatus.useQuery(
+    { planTier: planTier ?? undefined },
+    { enabled: sessionStatus === 'authenticated' && planTier != null }
+  );
+
+  const syncPayment = trpc.billing.syncPreOnboardPayment.useMutation({
+    onSuccess: async () => {
+      await utils.billing.preOnboardStatus.invalidate();
+    },
+  });
 
   useEffect(() => {
     if (!planTier) {
@@ -114,15 +124,43 @@ function OnboardForm() {
   useEffect(() => {
     if (!planTier) return;
     if (sessionStatus === 'unauthenticated') {
-      router.replace(`/signup?callbackUrl=${encodeURIComponent(onboardCallback)}`);
+      router.replace(
+        `/signup?callbackUrl=${encodeURIComponent(`/billing/checkout?plan=${planTier}`)}`
+      );
     }
-  }, [sessionStatus, planTier, router, onboardCallback]);
+  }, [sessionStatus, planTier, router]);
+
+  useEffect(() => {
+    if (!planTier || sessionStatus !== 'authenticated') return;
+    if (preOnboardStatus.data?.canOnboard) return;
+    if (!checkoutSessionId || syncAttemptedRef.current) return;
+
+    syncAttemptedRef.current = true;
+    syncPayment.mutate({ sessionId: checkoutSessionId });
+  }, [planTier, sessionStatus, checkoutSessionId, preOnboardStatus.data?.canOnboard]);
+
+  useEffect(() => {
+    if (!planTier || sessionStatus !== 'authenticated') return;
+    if (preOnboardStatus.isLoading || syncPayment.isPending) return;
+    if (preOnboardStatus.data?.canOnboard) return;
+    if (checkoutSessionId) return;
+
+    router.replace(`/billing/checkout?plan=${planTier}`);
+  }, [
+    sessionStatus,
+    planTier,
+    router,
+    preOnboardStatus.isLoading,
+    preOnboardStatus.data?.canOnboard,
+    syncPayment.isPending,
+    checkoutSessionId,
+  ]);
 
   const onboard = trpc.church.onboard.useMutation({
     onSuccess: (church) => {
       if (!planTier) return;
       router.replace(
-        `/billing/subscribe?churchId=${encodeURIComponent(church.id)}&plan=${planTier}`
+        `/billing/success?churchId=${encodeURIComponent(church.id)}&plan=${planTier}`
       );
     },
   });
@@ -142,12 +180,39 @@ function OnboardForm() {
         <p className="mt-3 text-sm">
           Already have an account?{' '}
           <Link
-            href={`/login?callbackUrl=${encodeURIComponent(onboardCallback)}`}
+            href={`/login?callbackUrl=${encodeURIComponent(`/billing/checkout?plan=${planTier}`)}`}
             className="font-semibold text-brand-600 dark:text-brand-400"
           >
             Log in
           </Link>
         </p>
+      </div>
+    );
+  }
+
+  if (preOnboardStatus.isLoading || syncPayment.isPending || !preOnboardStatus.data?.canOnboard) {
+    return (
+      <div className="mx-auto max-w-3xl px-6 py-20 text-ink-600 dark:text-ink-300">
+        {syncPayment.isError ? (
+          <>
+            <p>We couldn&apos;t verify your subscription. Your payment may still have succeeded.</p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              {checkoutSessionId ? (
+                <Button
+                  disabled={syncPayment.isPending}
+                  onClick={() => syncPayment.mutate({ sessionId: checkoutSessionId })}
+                >
+                  Retry verification
+                </Button>
+              ) : null}
+              <Button variant="outline" render={<Link href={`/billing/checkout?plan=${planTier}`} />}>
+                Back to checkout
+              </Button>
+            </div>
+          </>
+        ) : (
+          <p>Confirming your subscription…</p>
+        )}
       </div>
     );
   }
@@ -225,12 +290,12 @@ function OnboardForm() {
             Register your church
           </h1>
           <p className="mt-3 max-w-xl text-base leading-relaxed text-ink-600 dark:text-ink-300">
-            A short guided setup — church basics, pastors, campuses, then review. Selected plan:{' '}
+            A short guided setup — church basics, pastors, campuses, then review. Your{' '}
             <span className="font-semibold text-ink-800 dark:text-ink-100">
               {plan.name} ({plan.priceLabel}
               {plan.period})
-            </span>
-            .
+            </span>{' '}
+            subscription is active.
           </p>
         </header>
 
@@ -295,10 +360,10 @@ function OnboardForm() {
                   disabled={submitting}
                 >
                   {onboard.isSuccess
-                    ? 'Continuing to payment…'
+                    ? 'Finishing setup…'
                     : onboard.isPending
                       ? 'Submitting…'
-                      : 'Submit church'}
+                      : 'Register church'}
                 </Button>
               )}
             </div>

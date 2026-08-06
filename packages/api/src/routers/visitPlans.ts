@@ -177,7 +177,7 @@ export const visitPlansRouter = router({
         phone ? `Phone: ${phone}` : null,
         notes ? `Notes: ${notes}` : null,
         ``,
-        `View visit plans in your Church Stack dashboard.`,
+        `View visit plans in your Gatherly Stack dashboard.`,
       ].filter((line): line is string => line != null);
 
       void notifyByEmail({

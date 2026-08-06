@@ -3,10 +3,9 @@ import { Anton, Inter, Space_Grotesk } from 'next/font/google';
 import { TRPCProvider } from '@/lib/trpc-provider';
 import SessionProvider from '@/components/SessionProvider';
 import ThemeProvider from '@/components/ThemeProvider';
-import Header from '@/components/Header';
+import AppChrome from '@/components/AppChrome';
 import { Toaster } from '@/components/ui/toaster';
 import '@/styles/global.css';
-import Footer from '@/components/marketing/Footer';
 
 const sans = Inter({
   subsets: ['latin'],
@@ -30,7 +29,7 @@ const hero = Anton({
 });
 
 export const metadata: Metadata = {
-  title: 'Church Stack — Whitelabel apps for churches',
+  title: 'Gatherly Stack — Whitelabel apps for churches',
   description:
     'Launch a beautiful, branded mobile app for your church in days, not months. Built for small and medium churches.',
   icons: {
@@ -50,9 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider>
           <SessionProvider>
             <TRPCProvider>
-              <Header />
-              <main>{children}</main>
-              <Footer />
+              <AppChrome>{children}</AppChrome>
               <Toaster />
             </TRPCProvider>
           </SessionProvider>

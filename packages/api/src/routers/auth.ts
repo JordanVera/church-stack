@@ -170,9 +170,9 @@ export const authRouter = router({
         const resetUrl = `${appBaseUrl()}/reset-password?token=${encodeURIComponent(rawToken)}`;
         await notifyByEmail({
           to: [user.email],
-          subject: 'Reset your Church Stack password',
+          subject: 'Reset your Gatherly Stack password',
           text: [
-            'We received a request to reset your Church Stack password.',
+            'We received a request to reset your Gatherly Stack password.',
             '',
             'Open this link to choose a new password (expires in 1 hour):',
             resetUrl,

@@ -1,6 +1,11 @@
 import { prisma } from '@repo/database';
-import { getPlan } from '@repo/config';
-import { applyStripeSubscriptionToChurch, getStripe, provisionChurchWebsite } from '@repo/api';
+import { getPlan, type PlanTierId } from '@repo/config';
+import {
+  applyPreOnboardCheckoutToUser,
+  applyStripeSubscriptionToChurch,
+  getStripe,
+  provisionChurchWebsite,
+} from '@repo/api';
 import type Stripe from 'stripe';
 
 export const runtime = 'nodejs';
@@ -12,9 +17,18 @@ function priceIdFromSubscription(subscription: Stripe.Subscription): string | nu
   return typeof price === 'string' ? price : price.id;
 }
 
-function churchIdFromMetadata(
-  metadata: Stripe.Metadata | null | undefined
-): string | null {
+function userIdFromMetadata(metadata: Stripe.Metadata | null | undefined): string | null {
+  const id = metadata?.userId;
+  return typeof id === 'string' && id.length > 0 ? id : null;
+}
+
+function planTierFromMetadata(metadata: Stripe.Metadata | null | undefined): PlanTierId | null {
+  const tier = metadata?.planTier;
+  if (tier === 'SITE' || tier === 'GROWTH' || tier === 'CUSTOM') return tier;
+  return null;
+}
+
+function churchIdFromMetadata(metadata: Stripe.Metadata | null | undefined): string | null {
   const id = metadata?.churchId;
   return typeof id === 'string' && id.length > 0 ? id : null;
 }
@@ -83,6 +97,22 @@ export async function POST(req: Request) {
           priceFromTierEnv = process.env.STRIPE_PRICE_CUSTOM ?? null;
         const resolvedPriceId = priceId ?? priceFromTierEnv;
 
+        const flow = session.metadata?.flow;
+        const preOnboardUserId = userIdFromMetadata(session.metadata);
+        const preOnboardPlan = planTierFromMetadata(session.metadata);
+
+        if (flow === 'pre_onboard' && preOnboardUserId && preOnboardPlan) {
+          await applyPreOnboardCheckoutToUser(prisma, {
+            userId: preOnboardUserId,
+            planTier: preOnboardPlan,
+            customerId:
+              typeof session.customer === 'string' ? session.customer : session.customer?.id,
+            subscriptionId,
+            priceId: resolvedPriceId,
+          });
+          break;
+        }
+
         const churchId = await applyStripeSubscriptionToChurch(prisma, {
           churchId: churchIdFromMetadata(session.metadata),
           customerId:
@@ -100,8 +130,32 @@ export async function POST(req: Request) {
       case 'customer.subscription.updated':
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription;
+        const churchId = churchIdFromMetadata(subscription.metadata);
+        const preOnboardUserId = userIdFromMetadata(subscription.metadata);
+        const isCanceled =
+          event.type === 'customer.subscription.deleted' ||
+          subscription.status === 'canceled' ||
+          subscription.status === 'unpaid' ||
+          subscription.status === 'incomplete_expired';
+
+        if (!churchId && preOnboardUserId && isCanceled) {
+          await prisma.user.updateMany({
+            where: {
+              id: preOnboardUserId,
+              pendingStripeSubscriptionId: subscription.id,
+            },
+            data: {
+              pendingPlanTier: null,
+              pendingStripeCustomerId: null,
+              pendingStripeSubscriptionId: null,
+              pendingStripePriceId: null,
+            },
+          });
+          break;
+        }
+
         await applyStripeSubscriptionToChurch(prisma, {
-          churchId: churchIdFromMetadata(subscription.metadata),
+          churchId,
           customerId:
             typeof subscription.customer === 'string'
               ? subscription.customer

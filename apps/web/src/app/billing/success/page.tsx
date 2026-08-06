@@ -1,8 +1,9 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { CheckCircle2 } from 'lucide-react';
 import { PLAN_TIERS, type PlanTierId } from '@repo/config';
 import { trpc } from '@/lib/trpc-client';
@@ -16,9 +17,16 @@ function parsePlan(value: string | null): PlanTierId | null {
 }
 
 function SuccessContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
+  const utils = trpc.useUtils();
+  const { status: sessionStatus } = useSession();
   const churchId = searchParams.get('churchId') ?? undefined;
   const planFromQuery = parsePlan(searchParams.get('plan'));
+  const flow = searchParams.get('flow');
+  const isPreOnboard = flow === 'pre_onboard' && !churchId;
+  const sessionId = searchParams.get('session_id') ?? undefined;
+  const syncAttemptedRef = useRef(false);
 
   const preview = trpc.billing.subscribePreview.useQuery(
     {
@@ -28,6 +36,51 @@ function SuccessContent() {
     { enabled: Boolean(churchId) }
   );
 
+  const preOnboardStatus = trpc.billing.preOnboardStatus.useQuery(
+    { planTier: planFromQuery ?? undefined },
+    {
+      enabled: isPreOnboard && sessionStatus === 'authenticated' && planFromQuery != null,
+    }
+  );
+
+  const syncPayment = trpc.billing.syncPreOnboardPayment.useMutation({
+    onSuccess: async () => {
+      await utils.billing.preOnboardStatus.invalidate();
+    },
+  });
+
+  useEffect(() => {
+    if (!isPreOnboard || !planFromQuery) return;
+    if (sessionStatus === 'unauthenticated') {
+      router.replace(`/login?callbackUrl=${encodeURIComponent(`/onboard?plan=${planFromQuery}`)}`);
+    }
+  }, [isPreOnboard, planFromQuery, sessionStatus, router]);
+
+  useEffect(() => {
+    if (
+      !isPreOnboard ||
+      !sessionId ||
+      sessionStatus !== 'authenticated' ||
+      syncAttemptedRef.current ||
+      preOnboardStatus.data?.canOnboard
+    ) {
+      return;
+    }
+
+    syncAttemptedRef.current = true;
+    syncPayment.mutate({ sessionId });
+  }, [isPreOnboard, sessionId, sessionStatus, preOnboardStatus.data?.canOnboard]);
+
+  useEffect(() => {
+    if (!isPreOnboard || !planFromQuery || !preOnboardStatus.data?.canOnboard) return;
+
+    const onboardUrl = sessionId
+      ? `/onboard?plan=${planFromQuery}&session_id=${encodeURIComponent(sessionId)}`
+      : `/onboard?plan=${planFromQuery}`;
+
+    router.replace(onboardUrl);
+  }, [isPreOnboard, planFromQuery, preOnboardStatus.data?.canOnboard, sessionId, router]);
+
   const church = preview.data?.church;
   const planTier =
     planFromQuery ??
@@ -36,13 +89,72 @@ function SuccessContent() {
       : 'SITE');
   const plan = PLAN_TIERS[planTier];
 
+  if (isPreOnboard) {
+    const paymentConfirmed = preOnboardStatus.data?.canOnboard ?? false;
+    const isSyncing =
+      syncPayment.isPending ||
+      (Boolean(sessionId) && !paymentConfirmed && !syncPayment.isError);
+
+    return (
+      <div className="relative overflow-hidden">
+        <div className="relative mx-auto flex min-h-[70vh] max-w-2xl flex-col justify-center px-6 py-20">
+          <div className="text-center">
+            <CheckCircle2 className="mx-auto size-12 text-brand-600 dark:text-brand-400" />
+            <h1 className="font-display mt-6 text-4xl font-bold tracking-tight text-ink-900 dark:text-white">
+              {paymentConfirmed ? 'Payment confirmed' : 'Payment received'}
+            </h1>
+            <p className="mt-3 text-base leading-relaxed text-ink-600 dark:text-ink-300">
+              {paymentConfirmed ? (
+                <>Redirecting you to church registration…</>
+              ) : isSyncing ? (
+                <>Activating your {plan.name} subscription…</>
+              ) : syncPayment.isError ? (
+                <>
+                  Payment succeeded in Stripe, but we couldn&apos;t activate your subscription
+                  locally. Try again or contact support.
+                </>
+              ) : (
+                <>Confirming your {plan.name} subscription…</>
+              )}
+            </p>
+          </div>
+
+          {syncPayment.isError ? (
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              {sessionId ? (
+                <Button
+                  className="h-11 px-6"
+                  disabled={syncPayment.isPending}
+                  onClick={() => syncPayment.mutate({ sessionId })}
+                >
+                  Retry activation
+                </Button>
+              ) : null}
+              <Button
+                variant="outline"
+                className="h-11 px-6"
+                render={
+                  <a
+                    href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('Gatherly Stack payment sync')}`}
+                  />
+                }
+              >
+                Email support
+              </Button>
+            </div>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative overflow-hidden">
       <div className="relative mx-auto flex min-h-[70vh] max-w-2xl flex-col justify-center px-6 py-20">
         <div className="text-center">
           <CheckCircle2 className="mx-auto size-12 text-brand-600 dark:text-brand-400" />
           <h1 className="font-display mt-6 text-4xl font-bold tracking-tight text-ink-900 dark:text-white">
-            You’re in
+            You&apos;re in
           </h1>
           <p className="mt-3 text-base leading-relaxed text-ink-600 dark:text-ink-300">
             {church ? (
@@ -85,8 +197,8 @@ function SuccessContent() {
                 2
               </span>
               <span>
-                We’re provisioning your white-label site and coordinating church-named apps. Check
-                your church home for the live site link.
+                We&apos;re provisioning your white-label site and coordinating church-named apps.
+                Check your church home for the live site link.
               </span>
             </li>
             <li className="flex gap-3">
@@ -109,7 +221,7 @@ function SuccessContent() {
             className="h-11 px-6"
             render={
               <a
-                href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('Church Stack onboarding')}`}
+                href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('Gatherly Stack onboarding')}`}
               />
             }
           >

@@ -42,7 +42,7 @@ export default function Footer() {
           <StaggerItem>
             <Image
               src="/brand/gatherly-logo-horizontal.png"
-              alt="Church Stack"
+              alt="Gatherly Stack"
               width={220}
               height={110}
               className="h-24 w-auto brightness-0 dark:invert"
@@ -74,7 +74,7 @@ export default function Footer() {
         </Stagger>
 
         <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-ink-200 pt-8 text-xs text-ink-500 sm:flex-row dark:border-white/10 dark:text-white/40">
-          <p>© {new Date().getFullYear()} Church Stack. Software that empowers ministry.</p>
+          <p>© {new Date().getFullYear()} Gatherly Stack. Software that empowers ministry.</p>
           <p>Made for churches, by churches.</p>
         </div>
       </div>

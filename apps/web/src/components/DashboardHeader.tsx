@@ -2,24 +2,29 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
 import { Button } from '@/components/ui/button';
+import { dashboardNav } from '@/components/dashboard/DashboardShell';
+import { cn } from '@/lib/utils';
 
-const nav = [
-  { href: '/#features', label: 'Features' },
-  { href: '/#how', label: 'How it works' },
-  { href: '/pricing', label: 'Pricing' },
-];
+function dashboardSlugFromPath(pathname: string) {
+  const match = pathname.match(/^\/dashboard\/([^/]+)/);
+  return match?.[1] ?? null;
+}
 
-export default function Header() {
+export default function DashboardHeader() {
+  const pathname = usePathname();
   const { status } = useSession();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const signedIn = status === 'authenticated';
+  const slug = dashboardSlugFromPath(pathname);
+  const navItems = useMemo(() => (slug ? dashboardNav(slug) : []), [slug]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -52,33 +57,22 @@ export default function Header() {
         className={`sticky top-0 z-50 transition-colors duration-300 ${
           scrolled
             ? 'border-b border-ink-200/70 bg-white/80 backdrop-blur-md dark:border-ink-800/70 dark:bg-ink-950/80'
-            : 'border-b border-transparent bg-transparent'
+            : 'border-b border-ink-200/50 bg-white/70 backdrop-blur-sm dark:border-ink-800/50 dark:bg-ink-950/70'
         }`}
       >
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 md:h-20">
-          <Link href="/" className="group flex items-center" onClick={closeMenu}>
-            <Image
-              src="/brand/gatherly-logo-horizontal.png"
-              alt="Gatherly Stack"
-              width={220}
-              height={110}
-              priority
-              className="h-8 w-auto transition-transform duration-300 group-hover:scale-[1.03] brightness-0 md:h-12 dark:invert"
-            />
-          </Link>
-
-          <nav className="hidden items-center gap-10 md:flex">
-            {nav.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="group relative text-xs font-semibold uppercase tracking-[0.2em] text-ink-600 transition hover:text-ink-900 dark:text-ink-300 dark:hover:text-white"
-              >
-                {item.label}
-                <span className="absolute -bottom-1.5 left-0 h-px w-0 bg-current transition-all duration-300 group-hover:w-full" />
-              </Link>
-            ))}
-          </nav>
+          <div className="flex min-w-0 items-center gap-6">
+            <Link href="/" className="group flex shrink-0 items-center" onClick={closeMenu}>
+              <Image
+                src="/brand/gatherly-logo-horizontal.png"
+                alt="Gatherly Stack"
+                width={220}
+                height={110}
+                priority
+                className="h-8 w-auto transition-transform duration-300 group-hover:scale-[1.03] brightness-0 md:h-10 dark:invert"
+              />
+            </Link>
+          </div>
 
           <div className="flex items-center gap-2 sm:gap-4">
             <ThemeToggle />
@@ -90,7 +84,7 @@ export default function Header() {
                     className="px-3 text-xs font-semibold uppercase tracking-[0.15em] text-ink-600 hover:text-ink-900 dark:text-ink-300 dark:hover:text-white"
                     render={<Link href="/dashboard" />}
                   >
-                    Dashboard
+                    All churches
                   </Button>
                   <Button
                     variant="outline"
@@ -125,7 +119,7 @@ export default function Header() {
               className="md:hidden"
               aria-label={menuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={menuOpen}
-              aria-controls="mobile-nav"
+              aria-controls="dashboard-mobile-nav"
               onClick={() => setMenuOpen((open) => !open)}
             >
               {menuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -137,14 +131,14 @@ export default function Header() {
       <AnimatePresence>
         {menuOpen ? (
           <motion.button
-            key="mobile-nav-backdrop"
+            key="dashboard-mobile-nav-backdrop"
             type="button"
             aria-label="Close menu"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[60] bg-ink-950/40 backdrop-blur-sm md:hidden dark:bg-black/50"
+            className="fixed inset-0 z-[60] bg-ink-950/40 backdrop-blur-sm lg:hidden dark:bg-black/50"
             onClick={closeMenu}
           />
         ) : null}
@@ -153,20 +147,20 @@ export default function Header() {
       <AnimatePresence>
         {menuOpen ? (
           <motion.aside
-            key="mobile-nav-panel"
-            id="mobile-nav"
+            key="dashboard-mobile-nav-panel"
+            id="dashboard-mobile-nav"
             role="dialog"
             aria-modal="true"
-            aria-label="Navigation"
+            aria-label="Dashboard navigation"
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-y-0 right-0 z-[70] flex w-[min(20rem,88vw)] flex-col border-l border-ink-200/70 bg-white shadow-xl md:hidden dark:border-ink-800/70 dark:bg-ink-950"
+            className="fixed inset-y-0 right-0 z-[70] flex w-[min(20rem,88vw)] flex-col border-l border-ink-200/70 bg-white shadow-xl lg:hidden dark:border-ink-800/70 dark:bg-ink-950"
           >
             <div className="flex items-center justify-between border-b border-ink-200/70 px-5 py-4 dark:border-ink-800/70">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-500 dark:text-ink-400">
-                Menu
+                Dashboard
               </p>
               <Button variant="ghost" size="icon" aria-label="Close menu" onClick={closeMenu}>
                 <X className="size-5" />
@@ -174,16 +168,39 @@ export default function Header() {
             </div>
 
             <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-4 py-5">
-              {nav.map((item) => (
+              {navItems.length > 0 ? (
+                navItems.map((item) => {
+                  const active =
+                    item.href === `/dashboard/${slug}`
+                      ? pathname === item.href
+                      : pathname === item.href || pathname.startsWith(`${item.href}/`);
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={closeMenu}
+                      className={cn(
+                        'flex items-center gap-2 rounded-lg px-3 py-3 text-sm font-semibold transition',
+                        active
+                          ? 'bg-brand-50 text-brand-800 dark:bg-brand-500/15 dark:text-brand-200'
+                          : 'text-ink-700 hover:bg-ink-100/70 dark:text-ink-200 dark:hover:bg-ink-900/60'
+                      )}
+                    >
+                      <Icon className="h-4 w-4 shrink-0" />
+                      {item.label}
+                    </Link>
+                  );
+                })
+              ) : (
                 <Link
-                  key={item.href}
-                  href={item.href}
+                  href="/dashboard"
                   onClick={closeMenu}
-                  className="rounded-lg px-3 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-ink-700 transition hover:bg-ink-100/70 dark:text-ink-200 dark:hover:bg-ink-900/60"
+                  className="rounded-lg px-3 py-3 text-sm font-semibold text-ink-700 transition hover:bg-ink-100/70 dark:text-ink-200 dark:hover:bg-ink-900/60"
                 >
-                  {item.label}
+                  All churches
                 </Link>
-              ))}
+              )}
 
               <div className="mt-auto flex flex-col gap-2 border-t border-ink-200/70 pt-5 dark:border-ink-800/70">
                 {signedIn ? (
@@ -193,7 +210,7 @@ export default function Header() {
                       className="justify-start px-3 text-xs font-semibold uppercase tracking-[0.15em] text-ink-600 hover:text-ink-900 dark:text-ink-300 dark:hover:text-white"
                       render={<Link href="/dashboard" onClick={closeMenu} />}
                     >
-                      Dashboard
+                      All churches
                     </Button>
                     <Button
                       variant="outline"

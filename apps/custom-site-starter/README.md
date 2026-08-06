@@ -2,7 +2,7 @@
 
 Minimal Next.js starter for churches on the **Custom** product tier.
 
-This app is intentionally thin: it resolves a tenant via `CHURCH_SLUG` and loads public content from the shared Church Stack API — the **same database** your white-label mobile app uses.
+This app is intentionally thin: it resolves a tenant via `CHURCH_SLUG` and loads public content from the shared Gatherly Stack API — the **same database** your white-label mobile app uses.
 
 ## Quick start
 

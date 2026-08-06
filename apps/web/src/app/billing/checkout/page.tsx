@@ -12,41 +12,35 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-function parsePlan(value: string | null): PlanTierId {
+function parsePlan(value: string | null): PlanTierId | null {
   if (value === 'SITE' || value === 'GROWTH' || value === 'CUSTOM') return value;
-  return 'SITE';
+  return null;
 }
 
-const PROGRESS_STEPS = ['Church details', 'Account', 'Payment'] as const;
+const PROGRESS_STEPS = ['Choose plan', 'Account', 'Payment'] as const;
 
-function SubscribeForm() {
+function CheckoutForm() {
   const searchParams = useSearchParams();
   const { status } = useSession();
-  const churchId = searchParams.get('churchId') ?? undefined;
-  const slug = searchParams.get('slug') ?? undefined;
   const planTier = parsePlan(searchParams.get('plan'));
-  const plan = PLAN_TIERS[planTier];
   const activeProgress = status === 'authenticated' ? 2 : 1;
 
   const callbackUrl = useMemo(() => {
-    const params = new URLSearchParams();
-    if (churchId) params.set('churchId', churchId);
-    if (slug) params.set('slug', slug);
-    params.set('plan', planTier);
-    return `/billing/subscribe?${params.toString()}`;
-  }, [churchId, slug, planTier]);
+    if (!planTier) return '/pricing';
+    return `/billing/checkout?plan=${planTier}`;
+  }, [planTier]);
 
-  const preview = trpc.billing.subscribePreview.useQuery(
-    { churchId, slug, planTier },
-    { enabled: Boolean(churchId || slug) }
+  const preOnboardStatus = trpc.billing.preOnboardStatus.useQuery(
+    { planTier: planTier ?? undefined },
+    { enabled: status === 'authenticated' && planTier != null }
   );
-
-  const claimAndCheckout = trpc.billing.claimAndCheckout.useMutation({
-    onSuccess: (data) => setClientSecret(data.clientSecret),
-  });
 
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const sessionRequestedRef = useRef(false);
+
+  const createPreOnboardCheckout = trpc.billing.createPreOnboardCheckout.useMutation({
+    onSuccess: (data) => setClientSecret(data.clientSecret),
+  });
 
   const register = trpc.auth.register.useMutation();
   const [mode, setMode] = useState<'signup' | 'login'>('signup');
@@ -59,40 +53,35 @@ function SubscribeForm() {
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
 
   const returnUrl = useMemo(() => {
-    const id = preview.data?.church.id;
-    if (!id || !origin) return '';
-    return `${origin}/billing/success?churchId=${encodeURIComponent(id)}&plan=${planTier}&session_id={CHECKOUT_SESSION_ID}`;
-  }, [preview.data?.church.id, origin, planTier]);
+    if (!planTier || !origin) return '';
+    return `${origin}/billing/success?plan=${planTier}&flow=pre_onboard&session_id={CHECKOUT_SESSION_ID}`;
+  }, [planTier, origin]);
 
   useEffect(() => {
     if (
       sessionRequestedRef.current ||
       status !== 'authenticated' ||
-      preview.isLoading ||
-      !preview.data?.church.id ||
+      !planTier ||
       !returnUrl ||
-      preview.data.hasSubscription
+      preOnboardStatus.isLoading ||
+      preOnboardStatus.data?.canOnboard
     ) {
       return;
     }
 
     sessionRequestedRef.current = true;
-    claimAndCheckout.mutate({
-      churchId: preview.data.church.id,
+    createPreOnboardCheckout.mutate({
       planTier,
       returnUrl,
     });
   }, [
     status,
-    preview.isLoading,
-    preview.data?.church.id,
-    preview.data?.hasSubscription,
-    returnUrl,
     planTier,
-    claimAndCheckout.mutate,
+    returnUrl,
+    preOnboardStatus.isLoading,
+    preOnboardStatus.data?.canOnboard,
+    createPreOnboardCheckout.mutate,
   ]);
-
-  const payLabel = `${plan.priceLabel}${plan.period}`;
 
   const onAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,14 +108,14 @@ function SubscribeForm() {
     }
   };
 
-  if (!churchId && !slug) {
+  if (!planTier) {
     return (
       <div className="mx-auto max-w-lg px-6 py-24 text-center">
         <h1 className="font-display text-3xl font-bold text-ink-900 dark:text-white">
-          Missing church
+          Choose a plan
         </h1>
         <p className="mt-4 text-ink-600 dark:text-ink-300">
-          Open this page from church signup, or pass a churchId / slug.
+          Select Site, Growth, or Custom on the pricing page to continue.
         </p>
         <Button className="mt-8" render={<Link href="/pricing" />}>
           View pricing
@@ -135,41 +124,26 @@ function SubscribeForm() {
     );
   }
 
-  if (preview.isLoading) {
-    return (
-      <div className="mx-auto max-w-2xl px-6 py-24 text-ink-600 dark:text-ink-300">Loading…</div>
-    );
-  }
-
-  if (preview.error || !preview.data) {
-    return (
-      <div className="mx-auto max-w-lg px-6 py-24 text-center">
-        <h1 className="font-display text-3xl font-bold text-ink-900 dark:text-white">
-          Church not found
-        </h1>
-        <Button className="mt-8" render={<Link href="/pricing" />}>
-          Choose a plan
-        </Button>
-      </div>
-    );
-  }
-
-  const { church, configured, priceConfigured, hasSubscription } = preview.data;
+  const plan = PLAN_TIERS[planTier];
   const highlightFeatures = plan.features.slice(0, 5);
+  const configured = preOnboardStatus.data?.configured ?? true;
+  const priceConfigured = preOnboardStatus.data?.priceConfigured ?? true;
+  const alreadyPaid = preOnboardStatus.data?.canOnboard ?? false;
+  const payLabel = `${plan.priceLabel}${plan.period}`;
 
   return (
     <div className="relative overflow-hidden">
       <div className="relative mx-auto max-w-2xl px-6 py-12 sm:py-16">
         <header className="mb-10">
           <p className="text-xs font-semibold tracking-[0.22em] text-brand-600 uppercase dark:text-brand-400">
-            Almost done
+            Get started
           </p>
           <h1 className="font-display mt-3 text-4xl font-bold tracking-tight text-ink-900 sm:text-5xl dark:text-white">
-            Activate your plan
+            Subscribe to {plan.name}
           </h1>
           <p className="mt-3 max-w-xl text-base leading-relaxed text-ink-600 dark:text-ink-300">
-            Create your account, then continue to secure payment. Your white-label site and apps
-            unlock after checkout succeeds.
+            Create your account and complete payment on this page. After checkout, you&apos;ll
+            register your church details.
           </p>
         </header>
 
@@ -206,19 +180,16 @@ function SubscribeForm() {
             <div className="mt-3 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
               <div>
                 <h2 className="font-display text-2xl font-semibold tracking-tight text-ink-900 dark:text-white">
-                  {church.name}
+                  {plan.name} plan
                 </h2>
-                <p className="text-sm text-ink-500 dark:text-ink-400">/{church.slug}</p>
+                <p className="text-sm text-ink-500 dark:text-ink-400">Billed monthly</p>
               </div>
               <div className="mt-3 sm:mt-0 sm:text-right">
-                <p className="font-display text-lg font-semibold text-ink-900 dark:text-white">
-                  {plan.name}
-                </p>
-                <p className="text-sm text-ink-600 dark:text-ink-300">
-                  <span className="font-semibold text-ink-800 dark:text-ink-100">
-                    {plan.priceLabel}
+                <p className="font-display text-2xl font-semibold text-ink-900 dark:text-white">
+                  {plan.priceLabel}
+                  <span className="text-base font-normal text-ink-500 dark:text-ink-400">
+                    {plan.period}
                   </span>
-                  {plan.period}
                 </p>
               </div>
             </div>
@@ -233,17 +204,15 @@ function SubscribeForm() {
                 </li>
               ))}
             </ul>
-            {!hasSubscription ? (
-              <p className="mt-5 text-sm text-ink-500 dark:text-ink-400">
-                Need a different tier?{' '}
-                <Link
-                  href="/pricing"
-                  className="font-medium text-brand-600 hover:underline dark:text-brand-400"
-                >
-                  Change plan
-                </Link>
-              </p>
-            ) : null}
+            <p className="mt-5 text-sm text-ink-500 dark:text-ink-400">
+              Need a different tier?{' '}
+              <Link
+                href="/pricing"
+                className="font-medium text-brand-600 hover:underline dark:text-brand-400"
+              >
+                Change plan
+              </Link>
+            </p>
           </div>
 
           <div className="space-y-6 px-6 py-7 sm:px-8">
@@ -261,29 +230,35 @@ function SubscribeForm() {
               </p>
             ) : null}
 
-            {hasSubscription ? (
-              <p className="text-sm text-ink-600 dark:text-ink-300">
-                This church already has a Stripe subscription. Use Manage billing from your staff
-                contact if you need to change plans.
-              </p>
-            ) : null}
-
-            {status === 'authenticated' ? (
+            {alreadyPaid ? (
+              <div className="space-y-4">
+                <p className="text-sm text-ink-600 dark:text-ink-300">
+                  Payment confirmed for the {plan.name} plan. Continue to register your church.
+                </p>
+                <Button
+                  className="h-11 w-full font-semibold"
+                  render={<Link href={`/onboard?plan=${planTier}`} />}
+                >
+                  Register your church
+                </Button>
+              </div>
+            ) : status === 'authenticated' ? (
               <div className="space-y-4">
                 <div>
                   <p className="text-xs font-semibold tracking-[0.18em] text-ink-400 uppercase">
                     Payment
                   </p>
                   <p className="mt-2 text-sm text-ink-600 dark:text-ink-300">
-                    Enter your payment details below. Your plan unlocks after payment succeeds.
+                    Enter your payment details below. Church registration unlocks after payment
+                    succeeds.
                   </p>
                 </div>
-                {claimAndCheckout.error ? (
+                {createPreOnboardCheckout.error ? (
                   <p className="text-sm text-red-600 dark:text-red-400">
-                    {claimAndCheckout.error.message}
+                    {createPreOnboardCheckout.error.message}
                   </p>
                 ) : null}
-                {hasSubscription ? null : clientSecret ? (
+                {clientSecret ? (
                   <EmbeddedCheckoutForm clientSecret={clientSecret} fallbackLabel={payLabel} />
                 ) : (
                   <p className="text-sm text-ink-600 dark:text-ink-300">Preparing secure checkout…</p>
@@ -296,8 +271,7 @@ function SubscribeForm() {
                     Account
                   </p>
                   <p className="mt-2 text-sm text-ink-600 dark:text-ink-300">
-                    Create an account (or log in) with an admin email from your church signup to
-                    continue to payment.
+                    Create an account (or log in) to continue to secure payment.
                   </p>
                 </div>
                 <div className="flex gap-2 text-sm">
@@ -342,7 +316,7 @@ function SubscribeForm() {
                   ) : null}
                   <div>
                     <Label htmlFor="email" className="mb-1">
-                      Admin email
+                      Email
                     </Label>
                     <Input
                       id="email"
@@ -391,14 +365,14 @@ function SubscribeForm() {
   );
 }
 
-export default function BillingSubscribePage() {
+export default function BillingCheckoutPage() {
   return (
     <Suspense
       fallback={
         <div className="mx-auto max-w-2xl px-6 py-24 text-ink-600 dark:text-ink-300">Loading…</div>
       }
     >
-      <SubscribeForm />
+      <CheckoutForm />
     </Suspense>
   );
 }

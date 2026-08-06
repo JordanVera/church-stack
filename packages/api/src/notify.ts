@@ -14,7 +14,7 @@ export async function notifyByEmail(message: NotifyEmail): Promise<{ sent: boole
   const from =
     process.env.RESEND_FROM_EMAIL?.trim() ||
     process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() ||
-    'Church Stack <onboarding@resend.dev>';
+    'Gatherly Stack <onboarding@resend.dev>';
 
   const recipients = Array.from(
     new Set(message.to.map((e) => e.trim().toLowerCase()).filter(Boolean))

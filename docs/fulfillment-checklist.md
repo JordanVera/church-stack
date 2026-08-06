@@ -16,24 +16,29 @@ Internal runbook for dogfooding one church end-to-end before launch. Prefer test
 
 ## Happy path
 
-1. **Signup (auth-gated)**
-   - [ ] Marketing → `/pricing` → choose Site or Growth → redirect to signup/login if needed → `/onboard?plan=…`
-   - [ ] Optionally import campuses via Planning Center (confirm keys saved for post-signup sync)
-   - [ ] Site plan: max 2 campuses enforced
-   - [ ] Submit → `/billing/subscribe` → Stripe Checkout (signed-in user becomes OWNER)
+1. **Pricing → payment (auth-gated)**
+   - [ ] Marketing → `/pricing` → choose Site or Growth → `/billing/checkout?plan=…`
+   - [ ] Create account or log in on checkout page → Stripe Checkout
+   - [ ] After payment → `/billing/success?flow=pre_onboard` → **Register your church**
 
-2. **Post-payment**
+2. **Church registration**
+   - [ ] `/onboard?plan=…` — church basics, pastors, campuses (requires paid subscription)
+   - [ ] Optionally import campuses via Planning Center (confirm keys saved for post-signup sync)
+   - [ ] Site plan: max 2 campuses enforced; Growth: 5; Custom: unlimited
+   - [ ] Submit → `/billing/success?churchId=…` → dashboard
+
+3. **Post-registration**
    - [ ] Land on `/billing/success` with **Go to your church home**
-   - [ ] Webhook updated `Church.planTier`, Stripe customer/subscription ids
+   - [ ] Webhook linked subscription to church; `planTier` and Stripe ids set
    - [ ] Best-effort auto-provision ran: `websiteStatus` moved off `NONE` (or logged failure if Vercel env missing)
 
-3. **Ops fallback (`/dev/churches/[slug]`)**
+4. **Ops fallback (`/dev/churches/[slug]`)**
    - [ ] If auto-provision failed: **Provision website**
    - [ ] Set / attach custom domain when ready
    - [ ] Confirm PCO keys present (from onboard) → **Sync Planning Center**
    - [ ] For Growth: set **Giving URL** (or have owner set it on dashboard Settings)
 
-4. **Owner home**
+5. **Owner home**
    - [ ] Owner signs in at `/login` → `/dashboard`
    - [ ] Sees plan, website status, site link when LIVE
    - [ ] **Manage billing** opens Stripe Customer Portal
@@ -42,7 +47,7 @@ Internal runbook for dogfooding one church end-to-end before launch. Prefer test
    - [ ] Sermons: optional YouTube playlist
    - [ ] Visits: list of plan-a-visit submissions
 
-5. **Public church site**
+6. **Public church site**
    - [ ] Open `websiteUrl` or `church-site?slug=…`
    - [ ] Locations & service times, pastors, life groups, announcements, events
    - [ ] Plan a visit works; admin email notify when Resend is configured

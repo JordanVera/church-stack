@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy · Church Stack',
-  description: 'How Church Stack collects, uses, and protects information.',
+  title: 'Privacy Policy · Gatherly Stack',
+  description: 'How Gatherly Stack collects, uses, and protects information.',
 };
 
 const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || 'hello@churchstack.com';
@@ -25,7 +25,7 @@ export default function PrivacyPage() {
             Who we are
           </h2>
           <p>
-            Church Stack (“we”, “us”) provides white-label websites and related tools for churches.
+            Gatherly Stack (“we”, “us”) provides white-label websites and related tools for churches.
             This policy explains what we collect when you use our platform site, church dashboards,
             and white-label church websites.
           </p>

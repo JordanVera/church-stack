@@ -60,7 +60,7 @@ export function SiteChrome({
 
   const contactLine =
     [contact.address, contact.phone, contact.email].filter(Boolean).join(' · ') ||
-    'Powered by Church Stack';
+    'Powered by Gatherly Stack';
 
   const socialLinks = SOCIAL_LABELS.flatMap(({ key, label }) => {
     const href = social?.[key]?.trim();

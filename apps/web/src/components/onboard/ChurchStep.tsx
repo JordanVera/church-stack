@@ -20,7 +20,7 @@ export function ChurchStep({ draft, onChange }: Props) {
     <div className="space-y-10">
       <FieldSection
         title="About your church"
-        description="This is how your church will appear across Church Stack."
+        description="This is how your church will appear across Gatherly Stack."
       >
         <div>
           <Label htmlFor="church-name" className="mb-1.5 text-ink-700 dark:text-ink-300">

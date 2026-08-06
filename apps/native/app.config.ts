@@ -18,7 +18,7 @@ const perChurch = {
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: perChurch.name ?? 'Church Stack',
+  name: perChurch.name ?? 'Gatherly Stack',
   slug: perChurch.slug ?? 'church-stack',
   scheme: perChurch.scheme ?? 'churchstack',
   version: '1.0.0',

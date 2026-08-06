@@ -76,7 +76,7 @@ function LoginForm() {
             Sign in
           </CardTitle>
           <CardDescription className="text-ink-600 dark:text-ink-300">
-            Church owners and Church Stack staff. New churches start from pricing.
+            Church owners and Gatherly Stack staff. New churches start from pricing.
           </CardDescription>
         </CardHeader>
 

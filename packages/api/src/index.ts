@@ -24,7 +24,7 @@ export {
   assertEditableContentRow,
   isPlanningCenterLinked,
 } from './church-admin';
-export { applyStripeSubscriptionToChurch } from './routers/billing';
+export { applyStripeSubscriptionToChurch, applyPreOnboardCheckoutToUser, applyPendingSubscriptionFromUser } from './routers/billing';
 export { getStripe, isStripeConfigured, planTierForPriceId } from './billing/stripe';
 export { churchDefaultsForPlanTier } from './plans';
 export { provisionChurchWebsite } from './provision/vercel';

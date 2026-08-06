@@ -16,7 +16,7 @@ const display = Fraunces({
 
 export const metadata: Metadata = {
   title: 'Church site',
-  description: 'Your church website, powered by Church Stack.',
+  description: 'Your church website, powered by Gatherly Stack.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

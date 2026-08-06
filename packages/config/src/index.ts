@@ -48,7 +48,7 @@ export interface TenantFeatures {
 /** Fallback branding used before a tenant is resolved (or in dev). */
 export const DEFAULT_BRANDING: TenantBranding = {
   slug: 'default',
-  name: 'Church Stack',
+  name: 'Gatherly Stack',
   tagline: 'Your church, your app.',
   logoUrl: null,
   heroMediaUrl: null,

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Custom church site',
-  description: 'Church Stack Custom plan starter — shared API / DB',
+  description: 'Gatherly Stack Custom plan starter — shared API / DB',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -37,7 +37,7 @@ export default function WhyCustom() {
           </h2>
           <p className="mt-5 text-lg leading-relaxed text-white/65">
             Template builders are fine for a brochure. Churches need to show up when someone
-            searches “church near me,” “Sunday service times,” or your campus name. Church Stack
+            searches “church near me,” “Sunday service times,” or your campus name. Gatherly Stack
             sites are custom Next.js applications — engineered for search engines first, not bolted
             onto a generic page builder after the fact.
           </p>

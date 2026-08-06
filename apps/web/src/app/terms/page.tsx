@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service · Church Stack',
-  description: 'Terms that govern use of Church Stack.',
+  title: 'Terms of Service · Gatherly Stack',
+  description: 'Terms that govern use of Gatherly Stack.',
 };
 
 const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || 'hello@churchstack.com';
@@ -25,7 +25,7 @@ export default function TermsPage() {
             Agreement
           </h2>
           <p>
-            By creating an account or using Church Stack, you agree to these Terms. If you are
+            By creating an account or using Gatherly Stack, you agree to these Terms. If you are
             accepting on behalf of a church or organization, you represent that you have authority
             to bind that organization.
           </p>
@@ -36,7 +36,7 @@ export default function TermsPage() {
             The service
           </h2>
           <p>
-            Church Stack provides software to operate a white-label church website, a staff
+            Gatherly Stack provides software to operate a white-label church website, a staff
             dashboard, optional Planning Center sync, and related tools. Features available to you
             depend on your subscription plan. Mobile app white-label delivery may be fulfilled with
             our team’s assistance and is subject to App Store / Google Play requirements.

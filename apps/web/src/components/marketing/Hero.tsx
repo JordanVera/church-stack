@@ -92,7 +92,7 @@ export default function Hero() {
             as="p"
             className="relative z-10 mt-5 max-w-xl text-lg leading-relaxed text-ink-600 sm:text-xl lg:mt-4 lg:max-w-md lg:text-lg dark:text-ink-300"
           >
-            Church Stack gives you a branded church website and owner dashboard — locations,
+            Gatherly Stack gives you a branded church website and owner dashboard — locations,
             announcements, events, sermons, and an external giving link — ready before your next
             Sunday.
           </Reveal>

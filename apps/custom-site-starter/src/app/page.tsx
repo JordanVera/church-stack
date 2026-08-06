@@ -44,7 +44,7 @@ export default async function HomePage() {
       <section style={{ padding: '3rem 1.5rem', maxWidth: 48 * 16, margin: '0 auto' }}>
         <h2>Upcoming events</h2>
         <p style={{ color: '#555' }}>
-          Same events as the mobile app — shared database via Church Stack API.
+          Same events as the mobile app — shared database via Gatherly Stack API.
         </p>
         <ul style={{ paddingLeft: '1.25rem' }}>
           {events.length === 0 ? <li>No upcoming events.</li> : null}

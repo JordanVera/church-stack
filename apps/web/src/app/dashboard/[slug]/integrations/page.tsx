@@ -113,7 +113,7 @@ function IntegrationsPanel({
                 onClick={() => {
                   if (
                     window.confirm(
-                      'Disconnect Planning Center? You’ll manage locations, events, and groups in Church Stack. Existing synced rows stay until you edit or delete them.'
+                      'Disconnect Planning Center? You’ll manage locations, events, and groups in Gatherly Stack. Existing synced rows stay until you edit or delete them.'
                     )
                   ) {
                     disconnect.mutate({ churchId });
@@ -211,7 +211,7 @@ function IntegrationsPanel({
                   <span className="font-medium text-ink-800 dark:text-ink-100">
                     New personal access token
                   </span>
-                  . Name it e.g. “Church Stack”.
+                  . Name it e.g. “Gatherly Stack”.
                 </li>
                 <li>
                   Copy the{' '}

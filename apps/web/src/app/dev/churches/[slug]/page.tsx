@@ -98,15 +98,6 @@ export default function DevChurchDetailPage() {
     },
   });
 
-  const createCheckout = trpc.billing.createCheckoutSession.useMutation({
-    onSuccess: (data) => {
-      window.location.href = data.url;
-    },
-    onError: (err) => {
-      setActionMessage(`Checkout failed: ${err.message}`);
-    },
-  });
-
   const createPortal = trpc.billing.createPortalSession.useMutation({
     onSuccess: (data) => {
       window.location.href = data.url;
@@ -442,16 +433,9 @@ export default function DevChurchDetailPage() {
                   key={tier}
                   type="button"
                   variant="outline"
-                  disabled={createCheckout.isPending}
                   className="border-ink-300 dark:border-ink-700 dark:bg-transparent"
                   onClick={() => {
-                    const origin = window.location.origin;
-                    createCheckout.mutate({
-                      churchId: church.id,
-                      planTier: tier,
-                      successUrl: `${origin}/billing/success?churchId=${encodeURIComponent(church.id)}`,
-                      cancelUrl: `${origin}/dev/churches/${church.slug}`,
-                    });
+                    window.location.href = `/billing/subscribe?churchId=${encodeURIComponent(church.id)}&plan=${tier}`;
                   }}
                 >
                   Checkout {tier}
@@ -519,7 +503,7 @@ export default function DevChurchDetailPage() {
           <CardHeader className="px-5">
             <CardTitle className="text-base text-ink-900 dark:text-white">Hybrid plan</CardTitle>
             <CardDescription className="text-ink-500 dark:text-ink-400">
-              SHARED = Church Stack store app with picker. WHITELABEL = paid per-church EAS build.
+              SHARED = Gatherly Stack store app with picker. WHITELABEL = paid per-church EAS build.
             </CardDescription>
             <div className="mt-4 flex flex-wrap gap-2">
               <Button

@@ -169,7 +169,7 @@ export default function SelectChurch() {
         <View className="px-6 pt-3 pb-2">
           <View className="mb-[18px] flex-row items-center justify-between">
             <Text className="text-[15px] font-bold tracking-tight text-brand-400">
-              Church Stack
+              Gatherly Stack
             </Text>
             <TouchableOpacity onPress={onSignOut} hitSlop={12}>
               <Text className="text-sm font-semibold text-brand-300">Sign out</Text>

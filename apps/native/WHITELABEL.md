@@ -6,7 +6,7 @@ The native app runs in **SHARED** mode by default (church picker at runtime). Pa
 
 | Profile | Use |
 |---------|-----|
-| `shared` | Church Stack branded store app |
+| `shared` | Gatherly Stack branded store app |
 | `whitelabel` | Per-church build — set tenant env vars |
 
 ## Queue from /dev

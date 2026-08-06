@@ -1,4 +1,4 @@
-# Church Stack — Native
+# Gatherly Stack — Native
 
 Expo / React Native app (tenant-aware church app shell) on **Expo SDK 54**.
 

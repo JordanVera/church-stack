@@ -155,7 +155,9 @@ export default function PricingPage() {
                     render={
                       <Link
                         href={
-                          tier.id === 'CUSTOM' ? '/onboard?plan=CUSTOM' : `/onboard?plan=${tier.id}`
+                          tier.id === 'CUSTOM'
+                            ? '/billing/checkout?plan=CUSTOM'
+                            : `/billing/checkout?plan=${tier.id}`
                         }
                       />
                     }
@@ -180,7 +182,7 @@ export default function PricingPage() {
               site.
             </p>
             <p>
-              Every plan hosts your church data on Church Stack (events, announcements, locations,
+              Every plan hosts your church data on Gatherly Stack (events, announcements, locations,
               and more) whether you sync from Planning Center or manage everything here — so site
               and mobile stay in sync on one database.
             </p>

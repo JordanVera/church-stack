@@ -120,7 +120,7 @@ export default function AccountScreen() {
            >
             <Text className="text-base font-semibold text-destructive">Sign out</Text>
             <Text className="mt-1 text-sm text-destructive/80">
-              Sign out of Church Stack on this device.
+              Sign out of Gatherly Stack on this device.
             </Text>
           </TouchableOpacity>
         </View>

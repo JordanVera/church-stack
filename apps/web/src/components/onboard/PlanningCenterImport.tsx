@@ -170,7 +170,7 @@ export function PlanningCenterImport({ draft, onChange }: Props) {
                 <span className="font-medium text-ink-800 dark:text-ink-100">
                   New personal access token
                 </span>
-                . Give it a name (e.g. “Church Stack import”).
+                . Give it a name (e.g. “Gatherly Stack import”).
               </li>
               <li>
                 Copy the{' '}

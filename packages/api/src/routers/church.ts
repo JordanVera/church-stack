@@ -15,6 +15,7 @@ import {
   isPlanningCenterLinked,
 } from '../church-admin';
 import { attachCustomDomainToProject, provisionChurchWebsite } from '../provision/vercel';
+import { applyPendingSubscriptionFromUser } from './billing';
 import { queueWhiteLabelBuild, setMobilePlan } from '../provision/eas';
 import { fetchCampusesWithServiceTimes } from '../planning-center/client';
 import { syncPlanningCenterForChurch } from '../planning-center/sync';
@@ -444,6 +445,23 @@ export const churchRouter = router({
       });
     }
 
+    const userBilling = await ctx.prisma.user.findUnique({
+      where: { id: user.id },
+      select: {
+        pendingPlanTier: true,
+        pendingStripeSubscriptionId: true,
+      },
+    });
+
+    if (!userBilling?.pendingStripeSubscriptionId || !userBilling.pendingPlanTier) {
+      throw new TRPCError({
+        code: 'PRECONDITION_FAILED',
+        message: 'Complete payment for your plan before registering your church.',
+      });
+    }
+
+    const paidPlanTier = userBilling.pendingPlanTier;
+
     const existingSlug = await ctx.prisma.church.findUnique({ where: { slug: input.slug } });
     if (existingSlug) {
       throw new TRPCError({ code: 'CONFLICT', message: 'Slug already in use' });
@@ -456,11 +474,11 @@ export const churchRouter = router({
       throw new TRPCError({ code: 'BAD_REQUEST', message: 'Add at least one admin email' });
     }
 
-    const maxCampuses = getPlan('SITE').maxCampuses;
+    const maxCampuses = getPlan(paidPlanTier).maxCampuses;
     if (maxCampuses != null && input.locations.length > maxCampuses) {
       throw new TRPCError({
         code: 'BAD_REQUEST',
-        message: `Site plan includes up to ${maxCampuses} campuses. Remove a location or choose Growth.`,
+        message: `Your ${getPlan(paidPlanTier).name} plan includes up to ${maxCampuses} campuses. Remove a location or upgrade your plan.`,
       });
     }
 
@@ -477,7 +495,7 @@ export const churchRouter = router({
       }
     }
 
-    return ctx.prisma.$transaction(async (tx) => {
+    const result = await ctx.prisma.$transaction(async (tx) => {
       const siteDefaults = planTierDefaults('SITE');
       const pcoKey = input.planningCenterApiKey?.trim() || null;
       const pcoSecret = input.planningCenterSecretKey?.trim() || null;
@@ -576,6 +594,27 @@ export const churchRouter = router({
         name: church.name,
       };
     });
+
+    const appliedTier = await applyPendingSubscriptionFromUser(ctx.prisma, {
+      userId: user.id,
+      churchId: result.id,
+    });
+
+    if (appliedTier) {
+      try {
+        const church = await ctx.prisma.church.findUnique({ where: { id: result.id } });
+        if (church) {
+          const provision = await provisionChurchWebsite(ctx.prisma, church);
+          if (!provision.ok) {
+            console.error('[church.onboard] auto-provision failed:', provision.error);
+          }
+        }
+      } catch (err) {
+        console.error('[church.onboard] auto-provision error', err);
+      }
+    }
+
+    return result;
   }),
 
   create: devProcedure.input(churchCreateInput).mutation(async ({ ctx, input }) => {

@@ -10,7 +10,7 @@ const steps = [
   {
     n: '01',
     title: 'Create your church',
-    body: 'Register your church, add locations and pastors, and Church Stack stands up a branded site that looks like it was made in-house.',
+    body: 'Register your church, add locations and pastors, and Gatherly Stack stands up a branded site that looks like it was made in-house.',
     visual: 'brand' as const,
   },
   {

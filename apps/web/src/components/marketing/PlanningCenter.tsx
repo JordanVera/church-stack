@@ -32,7 +32,7 @@ export default function PlanningCenter() {
           </h2>
           <p className="mt-4 text-lg leading-relaxed text-ink-600 dark:text-white/70">
             Connect a Planning Center Personal Access Token to pull campuses and weekly service
-            times into Church Stack — then keep syncing from Integrations when you are ready. Full
+            times into Gatherly Stack — then keep syncing from Integrations when you are ready. Full
             PCO surface sync (groups, events, check-ins) is not required for launch.
           </p>
         </Reveal>

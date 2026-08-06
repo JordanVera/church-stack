@@ -49,7 +49,7 @@ function Overview({ slug }: { slug: string }) {
           <CardDescription>
             {data.planningCenterLinked
               ? 'Locations, events, and life groups sync from Planning Center. Pastors and announcements stay editable here.'
-              : 'You’re managing content in Church Stack. Connect Planning Center anytime if you prefer to sync.'}
+              : 'You’re managing content in Gatherly Stack. Connect Planning Center anytime if you prefer to sync.'}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-3">
