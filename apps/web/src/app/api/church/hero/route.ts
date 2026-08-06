@@ -22,7 +22,9 @@ function isVercelBlobUrl(url: string | null | undefined): boolean {
   if (!url) return false;
   try {
     const host = new URL(url).hostname;
-    return host.endsWith('.public.blob.vercel-storage.com') || host.endsWith('.blob.vercel-storage.com');
+    return (
+      host.endsWith('.public.blob.vercel-storage.com') || host.endsWith('.blob.vercel-storage.com')
+    );
   } catch {
     return false;
   }
@@ -75,7 +77,10 @@ export async function PUT(req: Request) {
       return NextResponse.json({ ok: false, error: 'churchId is required' }, { status: 400 });
     }
     if (!url || !isVercelBlobUrl(url)) {
-      return NextResponse.json({ ok: false, error: 'A valid blob url is required' }, { status: 400 });
+      return NextResponse.json(
+        { ok: false, error: 'A valid blob url is required' },
+        { status: 400 }
+      );
     }
 
     const heroMediaType = mediaTypeForMime(contentType);

@@ -106,7 +106,7 @@ export default function Features() {
                   ? 'border-brand-500/20 bg-linear-to-br from-brand-600 to-brand-800 text-white'
                   : c.image
                     ? 'border-ink-200 bg-white dark:border-white/10 dark:bg-ink-950'
-                    : 'border-ink-200 bg-white dark:border-white/10 dark:bg-white/5'
+                    : 'border-ink-200  dark:border-white/10 dark:bg-white/5 bg-white'
               }`}
             >
               {c.feature && <WhitelabelVisual />}
