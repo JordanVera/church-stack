@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { use } from 'react';
 import { toast } from 'sonner';
 import { ChurchDashboardProvider } from '@/components/dashboard/ChurchDashboardProvider';
@@ -11,7 +12,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || 'hello@churchstack.com';
 const PCO_TOKENS_URL = 'https://api.planningcenteronline.com/personal_access_tokens';
 
 function IntegrationsPanel({
@@ -220,12 +220,12 @@ function IntegrationsPanel({
                   the fields above. The secret is shown only once.
                 </li>
               </ol>
-              <a
-                href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('Help me get Planning Center keys')}`}
+              <Link
+                href={`/dashboard/${slug}/support?category=PLANNING_CENTER`}
                 className="inline-flex font-semibold text-brand-600 dark:text-brand-400"
               >
-                Email us for help getting keys
-              </a>
+                Contact support for Planning Center help
+              </Link>
             </div>
           ) : null}
         </CardContent>

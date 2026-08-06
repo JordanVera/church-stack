@@ -9,7 +9,7 @@ import { PLAN_TIERS, type PlanTierId } from '@repo/config';
 import { trpc } from '@/lib/trpc-client';
 import { Button } from '@/components/ui/button';
 
-const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || 'hello@churchstack.com';
+const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || 'gatherlystack@proton.me';
 
 function parsePlan(value: string | null): PlanTierId | null {
   if (value === 'SITE' || value === 'GROWTH' || value === 'CUSTOM') return value;

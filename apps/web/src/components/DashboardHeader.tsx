@@ -79,6 +79,15 @@ export default function DashboardHeader() {
             <div className="hidden gap-3 items-center sm:gap-4 md:flex">
               {signedIn ? (
                 <>
+                  {slug ? (
+                    <Button
+                      variant="ghost"
+                      className="px-3 text-xs font-semibold uppercase tracking-[0.15em] text-ink-600 hover:text-ink-900 dark:text-ink-300 dark:hover:text-white"
+                      render={<Link href={`/dashboard/${slug}/support`} />}
+                    >
+                      Contact support
+                    </Button>
+                  ) : null}
                   <Button
                     variant="outline"
                     className="cursor-pointer rounded-full border-ink-300 px-4 py-2.5 text-xs uppercase tracking-[0.15em] dark:border-ink-600"

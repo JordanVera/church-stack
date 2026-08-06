@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: 'How Gatherly Stack collects, uses, and protects information.',
 };
 
-const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || 'hello@churchstack.com';
+const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || 'gatherlystack@proton.me';
 
 export default function PrivacyPage() {
   return (

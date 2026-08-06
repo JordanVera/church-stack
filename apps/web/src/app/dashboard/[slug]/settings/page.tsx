@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { use } from 'react';
+import Link from 'next/link';
 import { upload } from '@vercel/blob/client';
 import { toast } from 'sonner';
 import { ChurchDashboardProvider } from '@/components/dashboard/ChurchDashboardProvider';
@@ -34,7 +35,6 @@ function heroExtForMime(mime: string): string {
   }
 }
 
-const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || 'hello@churchstack.com';
 const HEX_COLOR = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/;
 
 function normalizeHex(value: string) {
@@ -808,14 +808,7 @@ function SettingsPanel({ churchId, slug }: { churchId: string; slug: string }) {
           <CardDescription>Questions about your site, apps, or Planning Center?</CardDescription>
         </CardHeader>
         <CardContent>
-          <Button
-            variant="outline"
-            render={
-              <a
-                href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(`${data.name} support`)}`}
-              />
-            }
-          >
+          <Button variant="outline" render={<Link href={`/dashboard/${slug}/support`} />}>
             Contact support
           </Button>
         </CardContent>

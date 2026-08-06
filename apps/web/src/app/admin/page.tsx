@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { prisma } from '@repo/database';
 import { requireAdmin } from '@/lib/require-admin';
+import { AdminSupportRequests } from '@/components/admin/AdminSupportRequests';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -89,6 +90,8 @@ export default async function AdminPage() {
           </Card>
         ))}
       </div>
+
+      <AdminSupportRequests />
     </div>
   );
 }

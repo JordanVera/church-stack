@@ -6,22 +6,22 @@ export const metadata: Metadata = {
   description: 'Terms that govern use of Gatherly Stack.',
 };
 
-const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || 'hello@churchstack.com';
+const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || 'gatherlystack@proton.me';
 
 export default function TermsPage() {
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16 sm:py-24">
+    <main className="px-6 py-16 mx-auto max-w-3xl sm:py-24">
       <p className="text-xs font-semibold tracking-[0.2em] text-brand-600 uppercase dark:text-brand-400">
         Legal
       </p>
-      <h1 className="font-display mt-3 text-4xl font-bold tracking-tight text-ink-900 dark:text-white">
+      <h1 className="mt-3 text-4xl font-bold tracking-tight font-display text-ink-900 dark:text-white">
         Terms of Service
       </h1>
       <p className="mt-3 text-sm text-ink-500 dark:text-ink-400">Last updated: July 24, 2026</p>
 
       <div className="mt-10 space-y-8 text-base leading-relaxed text-ink-700 dark:text-ink-300">
         <section className="space-y-3">
-          <h2 className="font-display text-xl font-semibold text-ink-900 dark:text-white">
+          <h2 className="text-xl font-semibold font-display text-ink-900 dark:text-white">
             Agreement
           </h2>
           <p>
@@ -32,7 +32,7 @@ export default function TermsPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-xl font-semibold text-ink-900 dark:text-white">
+          <h2 className="text-xl font-semibold font-display text-ink-900 dark:text-white">
             The service
           </h2>
           <p>
@@ -44,10 +44,10 @@ export default function TermsPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-xl font-semibold text-ink-900 dark:text-white">
+          <h2 className="text-xl font-semibold font-display text-ink-900 dark:text-white">
             Accounts &amp; content
           </h2>
-          <ul className="list-disc space-y-2 pl-5">
+          <ul className="pl-5 space-y-2 list-disc">
             <li>You are responsible for account credentials and activity under your account.</li>
             <li>
               You retain ownership of content you upload. You grant us a license to host, display,
@@ -62,7 +62,7 @@ export default function TermsPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-xl font-semibold text-ink-900 dark:text-white">
+          <h2 className="text-xl font-semibold font-display text-ink-900 dark:text-white">
             Billing
           </h2>
           <p>
@@ -73,7 +73,7 @@ export default function TermsPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-xl font-semibold text-ink-900 dark:text-white">
+          <h2 className="text-xl font-semibold font-display text-ink-900 dark:text-white">
             Third-party services
           </h2>
           <p>
@@ -84,7 +84,7 @@ export default function TermsPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-xl font-semibold text-ink-900 dark:text-white">
+          <h2 className="text-xl font-semibold font-display text-ink-900 dark:text-white">
             Disclaimer &amp; liability
           </h2>
           <p>
@@ -96,7 +96,7 @@ export default function TermsPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-xl font-semibold text-ink-900 dark:text-white">
+          <h2 className="text-xl font-semibold font-display text-ink-900 dark:text-white">
             Changes
           </h2>
           <p>
@@ -106,13 +106,13 @@ export default function TermsPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-xl font-semibold text-ink-900 dark:text-white">
+          <h2 className="text-xl font-semibold font-display text-ink-900 dark:text-white">
             Contact
           </h2>
           <p>
             Questions:{' '}
             <a
-              className="font-medium text-brand-600 underline dark:text-brand-400"
+              className="font-medium underline text-brand-600 dark:text-brand-400"
               href={`mailto:${SUPPORT_EMAIL}`}
             >
               {SUPPORT_EMAIL}
@@ -120,7 +120,7 @@ export default function TermsPage() {
             . See also our{' '}
             <Link
               href="/privacy"
-              className="font-medium text-brand-600 underline dark:text-brand-400"
+              className="font-medium underline text-brand-600 dark:text-brand-400"
             >
               Privacy Policy
             </Link>

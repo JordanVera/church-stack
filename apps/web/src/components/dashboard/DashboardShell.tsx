@@ -8,6 +8,7 @@ import {
   Church,
   HandHeart,
   LayoutDashboard,
+  LifeBuoy,
   MapPin,
   Plug,
   Settings,
@@ -38,6 +39,7 @@ export function dashboardNav(slug: string): NavItem[] {
     { href: `${base}/visits`, label: 'Planned visits', icon: HandHeart },
     { href: `${base}/sermons`, label: 'Sermons', icon: Video },
     { href: `${base}/groups`, label: 'Life groups', icon: UsersRound, pcoOwned: true },
+    { href: `${base}/support`, label: 'Support', icon: LifeBuoy },
     { href: `${base}/settings`, label: 'Settings', icon: Settings },
   ];
 }

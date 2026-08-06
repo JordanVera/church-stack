@@ -137,6 +137,7 @@ model Church {
   lifeGroups          LifeGroup[]
   adminEmails         ChurchAdminEmail[]
   visitPlans          VisitPlan[]
+  supportRequests     SupportRequest[]
   deviceTokens        DeviceToken[]
   prayerRequests      PrayerRequest[]
   lifeGroupInterests  LifeGroupInterest[]
@@ -273,6 +274,7 @@ model User {
   accounts            Account[]
   sessions            Session[]
   memberships         Membership[]
+  supportRequests     SupportRequest[]
   eventRegistrations  EventRegistration[]
   deviceTokens        DeviceToken[]
   prayerRequests      PrayerRequest[]
@@ -485,5 +487,45 @@ model VisitPlan {
 
   @@index([churchId])
   @@index([visitDate])
+  @@index([createdAt])
+}
+
+enum SupportRequestStatus {
+  OPEN
+  RESOLVED
+}
+
+enum SupportRequestCategory {
+  GENERAL
+  WEBSITE
+  MOBILE
+  PLANNING_CENTER
+  BILLING
+  OTHER
+}
+
+/// Owner support message to Gatherly Stack platform team.
+model SupportRequest {
+  id         String                 @id @default(cuid())
+  churchId   String
+  userId     String
+  category   SupportRequestCategory @default(GENERAL)
+  subject    String
+  message    String                 @db.Text
+  status     SupportRequestStatus   @default(OPEN)
+  userEmail  String
+  userName   String?
+  churchName String
+  churchSlug String
+  resolvedAt DateTime?
+  createdAt  DateTime               @default(now())
+  updatedAt  DateTime               @updatedAt
+
+  church Church @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([churchId])
+  @@index([userId])
+  @@index([status])
   @@index([createdAt])
 }

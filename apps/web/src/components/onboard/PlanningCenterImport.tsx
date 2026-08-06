@@ -10,7 +10,7 @@ import type { OnboardDraft, OnboardLocation } from './types';
 import { newClientKey } from './types';
 import Image from 'next/image';
 
-const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || 'hello@churchstack.com';
+const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || 'gatherlystack@proton.me';
 
 const PCO_TOKENS_URL = 'https://api.planningcenteronline.com/personal_access_tokens';
 
