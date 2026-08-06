@@ -58,12 +58,12 @@ export default function Header() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 md:h-20">
           <Link href="/" className="group flex items-center" onClick={closeMenu}>
             <Image
-              src="/brand/logo-horizontal.png"
+              src="/brand/gatherly-logo-horizontal.png"
               alt="Church Stack"
               width={220}
               height={110}
               priority
-              className="h-16 w-auto transition-transform duration-300 group-hover:scale-[1.03] brightness-0 md:h-24 dark:invert"
+              className="h-8 w-auto transition-transform duration-300 group-hover:scale-[1.03] brightness-0 md:h-12 dark:invert"
             />
           </Link>
 
@@ -168,12 +168,7 @@ export default function Header() {
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-500 dark:text-ink-400">
                 Menu
               </p>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="Close menu"
-                onClick={closeMenu}
-              >
+              <Button variant="ghost" size="icon" aria-label="Close menu" onClick={closeMenu}>
                 <X className="size-5" />
               </Button>
             </div>
@@ -216,9 +211,7 @@ export default function Header() {
                     <Button
                       variant="ghost"
                       className="justify-start px-3 text-xs font-semibold uppercase tracking-[0.15em] text-ink-600 hover:text-ink-900 dark:text-ink-300 dark:hover:text-white"
-                      render={
-                        <Link href="/login?callbackUrl=/dashboard" onClick={closeMenu} />
-                      }
+                      render={<Link href="/login?callbackUrl=/dashboard" onClick={closeMenu} />}
                     >
                       Log in
                     </Button>

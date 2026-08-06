@@ -41,7 +41,7 @@ export default function Footer() {
         <Stagger className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
           <StaggerItem>
             <Image
-              src="/brand/logo-horizontal.png"
+              src="/brand/gatherly-logo-horizontal.png"
               alt="Church Stack"
               width={220}
               height={110}

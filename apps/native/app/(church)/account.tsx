@@ -117,7 +117,7 @@ export default function AccountScreen() {
           <TouchableOpacity
             onPress={() => void onSignOut()}
             className="rounded-2xl border border-destructive/40 bg-destructive/10 px-4 py-4"
-          >
+           >
             <Text className="text-base font-semibold text-destructive">Sign out</Text>
             <Text className="mt-1 text-sm text-destructive/80">
               Sign out of Church Stack on this device.
