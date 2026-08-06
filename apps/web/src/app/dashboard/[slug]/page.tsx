@@ -5,6 +5,7 @@ import { use } from 'react';
 import { PLAN_TIERS, type PlanTierId } from '@repo/config';
 import { trpc } from '@/lib/trpc-client';
 import { ChurchDashboardProvider } from '@/components/dashboard/ChurchDashboardProvider';
+import { DashboardOverviewSkeleton } from '@/components/dashboard/DashboardOverviewSkeleton';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -25,7 +26,7 @@ function websiteStatusCopy(status: string) {
 function Overview({ slug }: { slug: string }) {
   const dash = trpc.church.getOwnerDashboard.useQuery({ slug });
   const data = dash.data;
-  if (!data) return null;
+  if (dash.isLoading || !data) return <DashboardOverviewSkeleton />;
 
   const planTier =
     data.planTier === 'SITE' || data.planTier === 'GROWTH' || data.planTier === 'CUSTOM'
@@ -155,7 +156,7 @@ export default function ChurchOverviewPage({
 }) {
   const { slug } = use(params);
   return (
-    <ChurchDashboardProvider slug={slug}>
+    <ChurchDashboardProvider slug={slug} loading={<DashboardOverviewSkeleton />}>
       {() => <Overview slug={slug} />}
     </ChurchDashboardProvider>
   );

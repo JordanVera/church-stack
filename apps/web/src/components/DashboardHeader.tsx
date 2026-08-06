@@ -56,13 +56,13 @@ export default function DashboardHeader() {
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         className={`sticky top-0 z-50 transition-colors duration-300 ${
           scrolled
-            ? 'border-b border-ink-200/70 bg-white/80 backdrop-blur-md dark:border-ink-800/70 dark:bg-ink-950/80'
-            : 'border-b border-ink-200/50 bg-white/70 backdrop-blur-sm dark:border-ink-800/50 dark:bg-ink-950/70'
+            ? 'border-b backdrop-blur-md border-ink-200/70 bg-white/80 dark:border-ink-800/70 dark:bg-ink-950/80'
+            : 'border-b backdrop-blur-sm border-ink-200/50 bg-white/70 dark:border-ink-800/50 dark:bg-ink-950/70'
         }`}
       >
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 md:h-20">
-          <div className="flex min-w-0 items-center gap-6">
-            <Link href="/" className="group flex shrink-0 items-center" onClick={closeMenu}>
+        <div className="flex justify-between items-center px-6 mx-auto max-w-7xl h-16 md:h-20">
+          <div className="flex gap-6 items-center min-w-0">
+            <Link href="/" className="flex items-center group shrink-0" onClick={closeMenu}>
               <Image
                 src="/brand/gatherly-logo-horizontal.png"
                 alt="Gatherly Stack"
@@ -74,18 +74,11 @@ export default function DashboardHeader() {
             </Link>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex gap-2 items-center sm:gap-4">
             <ThemeToggle />
-            <div className="hidden items-center gap-3 sm:gap-4 md:flex">
+            <div className="hidden gap-3 items-center sm:gap-4 md:flex">
               {signedIn ? (
                 <>
-                  <Button
-                    variant="ghost"
-                    className="px-3 text-xs font-semibold uppercase tracking-[0.15em] text-ink-600 hover:text-ink-900 dark:text-ink-300 dark:hover:text-white"
-                    render={<Link href="/dashboard" />}
-                  >
-                    All churches
-                  </Button>
                   <Button
                     variant="outline"
                     className="cursor-pointer rounded-full border-ink-300 px-4 py-2.5 text-xs uppercase tracking-[0.15em] dark:border-ink-600"
@@ -158,7 +151,7 @@ export default function DashboardHeader() {
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="fixed inset-y-0 right-0 z-[70] flex w-[min(20rem,88vw)] flex-col border-l border-ink-200/70 bg-white shadow-xl lg:hidden dark:border-ink-800/70 dark:bg-ink-950"
           >
-            <div className="flex items-center justify-between border-b border-ink-200/70 px-5 py-4 dark:border-ink-800/70">
+            <div className="flex justify-between items-center px-5 py-4 border-b border-ink-200/70 dark:border-ink-800/70">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-500 dark:text-ink-400">
                 Dashboard
               </p>
@@ -167,7 +160,7 @@ export default function DashboardHeader() {
               </Button>
             </div>
 
-            <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-4 py-5">
+            <nav className="flex overflow-y-auto flex-col flex-1 gap-1 px-4 py-5">
               {navItems.length > 0 ? (
                 navItems.map((item) => {
                   const active =
@@ -181,13 +174,13 @@ export default function DashboardHeader() {
                       href={item.href}
                       onClick={closeMenu}
                       className={cn(
-                        'flex items-center gap-2 rounded-lg px-3 py-3 text-sm font-semibold transition',
+                        'flex gap-2 items-center px-3 py-3 text-sm font-semibold rounded-lg transition',
                         active
                           ? 'bg-brand-50 text-brand-800 dark:bg-brand-500/15 dark:text-brand-200'
                           : 'text-ink-700 hover:bg-ink-100/70 dark:text-ink-200 dark:hover:bg-ink-900/60'
                       )}
                     >
-                      <Icon className="h-4 w-4 shrink-0" />
+                      <Icon className="w-4 h-4 shrink-0" />
                       {item.label}
                     </Link>
                   );
@@ -196,13 +189,13 @@ export default function DashboardHeader() {
                 <Link
                   href="/dashboard"
                   onClick={closeMenu}
-                  className="rounded-lg px-3 py-3 text-sm font-semibold text-ink-700 transition hover:bg-ink-100/70 dark:text-ink-200 dark:hover:bg-ink-900/60"
+                  className="px-3 py-3 text-sm font-semibold rounded-lg transition text-ink-700 hover:bg-ink-100/70 dark:text-ink-200 dark:hover:bg-ink-900/60"
                 >
                   All churches
                 </Link>
               )}
 
-              <div className="mt-auto flex flex-col gap-2 border-t border-ink-200/70 pt-5 dark:border-ink-800/70">
+              <div className="flex flex-col gap-2 pt-5 mt-auto border-t border-ink-200/70 dark:border-ink-800/70">
                 {signedIn ? (
                   <>
                     <Button

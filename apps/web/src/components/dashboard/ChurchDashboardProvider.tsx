@@ -3,12 +3,16 @@
 import { useSession } from 'next-auth/react';
 import { trpc } from '@/lib/trpc-client';
 import { DashboardShell } from './DashboardShell';
+import { DashboardShellSkeleton } from './DashboardShellSkeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function ChurchDashboardProvider({
   slug,
   children,
+  loading,
 }: {
   slug: string;
+  loading?: React.ReactNode;
   children: (data: {
     churchId: string;
     slug: string;
@@ -23,7 +27,14 @@ export function ChurchDashboardProvider({
 
   if (status === 'loading' || (status === 'authenticated' && dash.isLoading)) {
     return (
-      <div className="mx-auto max-w-6xl px-6 py-20 text-ink-600 dark:text-ink-300">Loading…</div>
+      <DashboardShellSkeleton>
+        {loading ?? (
+          <div className="space-y-4">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-32 w-full rounded-xl" />
+          </div>
+        )}
+      </DashboardShellSkeleton>
     );
   }
 
