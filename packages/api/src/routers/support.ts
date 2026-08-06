@@ -97,8 +97,9 @@ export const supportRouter = router({
         select: { id: true },
       });
 
-      void notifyByEmail({
+      const emailResult = await notifyByEmail({
         to: [getPlatformSupportEmail()],
+        replyTo: user.email,
         subject: `[Gatherly Stack] ${subject} — ${church.name}`,
         text: formatSupportEmailBody({
           churchName: church.name,
@@ -112,7 +113,12 @@ export const supportRouter = router({
         }),
       });
 
-      return { ok: true as const, id: created.id };
+      return {
+        ok: true as const,
+        id: created.id,
+        emailSent: emailResult.sent,
+        emailSkippedReason: emailResult.sent ? undefined : emailResult.reason,
+      };
     }),
 
   listForChurch: churchAdminProcedure

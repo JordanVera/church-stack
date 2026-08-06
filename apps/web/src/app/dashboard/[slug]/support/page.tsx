@@ -41,10 +41,19 @@ function SupportPanel({ churchId }: { churchId: string }) {
   const [message, setMessage] = useState('');
 
   const submit = trpc.support.submit.useMutation({
-    onSuccess: async () => {
-      toast.success('Message sent', {
-        description: 'Our team will reply to your account email.',
-      });
+    onSuccess: async (data) => {
+      if (data.emailSent) {
+        toast.success('Message sent', {
+          description: 'Our team will reply to your account email.',
+        });
+      } else {
+        toast.success('Message saved', {
+          description:
+            data.emailSkippedReason === 'missing_api_key'
+              ? 'Email delivery is not configured yet — our team will still see your message in admin.'
+              : 'We saved your message but could not send the email notification. Our team will still see it in admin.',
+        });
+      }
       setSubject('');
       setMessage('');
       await utils.support.listForChurch.invalidate({ churchId });
