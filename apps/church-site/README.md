@@ -10,13 +10,13 @@ With the platform API running on port 3000:
 CHURCH_SLUG=grace PLATFORM_API_URL=http://localhost:3000 npm run dev --workspace=church-site
 ```
 
-Or open http://localhost:3001?slug=grace (when `CHURCH_SLUG` is unset).
+Or open http://localhost:3001?slug=grace (when `CHURCH_SLUG` is unset). From the platform origin, http://localhost:3000?slug=grace redirects here.
 
 ## Production env (per Vercel project)
 
-| Variable | Purpose |
-|----------|---------|
-| `CHURCH_SLUG` | Tenant this deploy serves |
+| Variable           | Purpose                                 |
+| ------------------ | --------------------------------------- |
+| `CHURCH_SLUG`      | Tenant this deploy serves               |
 | `PLATFORM_API_URL` | Platform web origin hosting `/api/trpc` |
 
 Provisioned automatically from `/dev` when `VERCEL_TOKEN` + `VERCEL_GIT_REPO` are set.

@@ -25,18 +25,18 @@ export function ThemeToggle({ className = '', onBrand = false }: Props) {
         !mounted ? 'Toggle color theme' : isDark ? 'Switch to light mode' : 'Switch to dark mode'
       }
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className={`inline-flex h-9 w-9 items-center justify-center rounded-md transition ${
+      className={`inline-flex h-9 w-9 items-center justify-center rounded-md transition cursor-pointer ${
         onBrand
-          ? 'border border-white/25 bg-white/10 text-white hover:bg-white/15'
+          ? 'text-white border border-white/25 bg-white/10 hover:bg-white/15'
           : 'border border-[var(--site-line)] bg-[var(--site-band)] text-[var(--site-fg)] hover:bg-[var(--site-band-alt)]'
       } ${className}`}
     >
       {!mounted ? (
-        <span className="h-4 w-4" />
+        <span className="w-4 h-4" />
       ) : isDark ? (
         <svg
           viewBox="0 0 24 24"
-          className="h-4 w-4"
+          className="w-4 h-4"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
@@ -47,7 +47,7 @@ export function ThemeToggle({ className = '', onBrand = false }: Props) {
       ) : (
         <svg
           viewBox="0 0 24 24"
-          className="h-4 w-4"
+          className="w-4 h-4"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"

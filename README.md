@@ -69,19 +69,19 @@ docs/
    ```
 
    - Web (platform): http://localhost:3000
-   - Church site template: `npm run dev --workspace=church-site` → http://localhost:3001?slug=grace
+   - Church site template: http://localhost:3001?slug=grace (also reachable via http://localhost:3000?slug=grace — redirects to :3001)
    - Native: press `w`/`i`/`a` in the Expo CLI, or scan the QR code.
 
 ## Useful scripts
 
-| Command             | Description                                   |
-| ------------------- | --------------------------------------------- |
-| `npm run dev`       | Run web + native + package watchers via Turbo |
-| `npm run build`     | Build all apps/packages                       |
-| `npm run db:push`   | Push the Prisma schema to the database        |
+| Command             | Description                                     |
+| ------------------- | ----------------------------------------------- |
+| `npm run dev`       | Run web + native + package watchers via Turbo   |
+| `npm run build`     | Build all apps/packages                         |
+| `npm run db:push`   | Push the Prisma schema to the database          |
 | `npm run db:seed`   | Seed demo churches (Site/Growth/Custom) + users |
-| `npm run db:studio` | Open Prisma Studio                            |
-| `npm run format`    | Prettier across the repo                      |
+| `npm run db:studio` | Open Prisma Studio                              |
+| `npm run format`    | Prettier across the repo                        |
 
 ## Whitelabel / tenant resolution
 

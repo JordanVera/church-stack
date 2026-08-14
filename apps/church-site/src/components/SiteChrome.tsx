@@ -78,7 +78,7 @@ export function SiteChrome({
             : 'border-[var(--site-line)] bg-[color-mix(in_srgb,var(--site-band)_88%,transparent)] text-[var(--site-fg)]'
         }`}
       >
-        <div className="mx-auto flex h-20 max-w-6xl items-center justify-between gap-4 px-6 sm:h-24">
+        <div className="flex gap-4 justify-between items-center px-6 mx-auto max-w-6xl h-20 sm:h-24">
           <a href="#top" className="flex min-w-0 items-center gap-2.5">
             {logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -93,12 +93,14 @@ export function SiteChrome({
               </span>
             )}
           </a>
-          <nav className="flex items-center gap-3 text-sm sm:gap-4">
+          <nav className="flex gap-3 items-center text-sm sm:gap-4">
             {showVisit ? (
               <a
                 href="#visit"
                 className={`hidden transition sm:inline ${
-                  onBrand ? 'text-white/80 hover:text-white' : 'text-[var(--site-muted)] hover:text-[var(--site-fg)]'
+                  onBrand
+                    ? 'text-white/80 hover:text-white'
+                    : 'text-[var(--site-muted)] hover:text-[var(--site-fg)]'
                 }`}
               >
                 Visit
@@ -108,7 +110,9 @@ export function SiteChrome({
               <a
                 href="#belong"
                 className={`hidden transition sm:inline ${
-                  onBrand ? 'text-white/80 hover:text-white' : 'text-[var(--site-muted)] hover:text-[var(--site-fg)]'
+                  onBrand
+                    ? 'text-white/80 hover:text-white'
+                    : 'text-[var(--site-muted)] hover:text-[var(--site-fg)]'
                 }`}
               >
                 Groups
@@ -118,7 +122,9 @@ export function SiteChrome({
               <a
                 href="#team"
                 className={`hidden transition sm:inline ${
-                  onBrand ? 'text-white/80 hover:text-white' : 'text-[var(--site-muted)] hover:text-[var(--site-fg)]'
+                  onBrand
+                    ? 'text-white/80 hover:text-white'
+                    : 'text-[var(--site-muted)] hover:text-[var(--site-fg)]'
                 }`}
               >
                 Team
@@ -137,7 +143,7 @@ export function SiteChrome({
                 href={givingUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`rounded-md px-3 py-1.5 text-xs font-semibold sm:text-sm ${
+                className={`rounded-md px-3 py-1.5 text-xs font-semibold sm:text-sm cursor-pointer ${
                   onBrand ? 'text-stone-900' : 'text-white'
                 }`}
                 style={{ backgroundColor: onBrand ? secondaryColor : primaryColor }}
@@ -171,14 +177,14 @@ export function SiteChrome({
             )}
             <p className="max-w-md text-base leading-relaxed">{contactLine}</p>
             {socialLinks.length > 0 ? (
-              <ul className="flex flex-wrap gap-x-5 gap-y-2 pt-1">
+              <ul className="flex flex-wrap gap-y-2 gap-x-5 pt-1">
                 {socialLinks.map((link) => (
                   <li key={link.label}>
                     <a
                       href={link.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-medium underline-offset-4 transition hover:underline"
+                      className="font-medium transition underline-offset-4 hover:underline"
                       style={{ color: primaryColor }}
                     >
                       {link.label}
@@ -188,21 +194,19 @@ export function SiteChrome({
               </ul>
             ) : null}
           </div>
-          <div className="flex flex-col items-start gap-4 lg:items-end">
+          <div className="flex flex-col gap-4 items-start lg:items-end">
             {givingUrl ? (
               <a
                 href={givingUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex rounded-md px-5 py-3 text-sm font-semibold text-white"
+                className="inline-flex px-5 py-3 text-sm font-semibold text-white rounded-md"
                 style={{ backgroundColor: primaryColor }}
               >
                 Give online
               </a>
             ) : null}
-            <p className="text-xs text-[var(--site-muted)]">
-              A community gathering around Jesus.
-            </p>
+            <p className="text-xs text-[var(--site-muted)]">A community gathering around Jesus.</p>
           </div>
         </div>
       </footer>

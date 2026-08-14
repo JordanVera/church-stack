@@ -27,7 +27,7 @@ export function PlanVisitButton({
         onClick={openPlanVisit}
         className={
           className ||
-          `rounded-md px-3 py-1.5 text-xs font-semibold sm:text-sm ${
+          `rounded-md px-3 py-1.5 text-xs font-semibold sm:text-sm cursor-pointer ${
             onBrand ? 'text-stone-900' : 'text-white'
           }`
         }
@@ -44,7 +44,7 @@ export function PlanVisitButton({
       onClick={openPlanVisit}
       className={
         className ||
-        'inline-flex rounded-md px-6 py-3.5 text-sm font-semibold text-stone-900 transition hover:opacity-95'
+        'inline-flex rounded-md px-6 py-3.5 text-sm font-semibold text-stone-900 transition hover:opacity-95 cursor-pointer'
       }
       style={{ backgroundColor: secondaryColor }}
     >

@@ -139,15 +139,15 @@ export default function DevChurchDetailPage() {
 
   if (churchQuery.isLoading) {
     return (
-      <div className="mx-auto max-w-3xl px-6 py-16 text-ink-600 dark:text-ink-300">Loading…</div>
+      <div className="px-6 py-16 mx-auto max-w-3xl text-ink-600 dark:text-ink-300">Loading…</div>
     );
   }
 
   if (churchQuery.error || !churchQuery.data) {
     return (
-      <div className="mx-auto max-w-3xl px-6 py-16">
+      <div className="px-6 py-16 mx-auto max-w-3xl">
         <p className="text-ink-600 dark:text-ink-300">Church not found.</p>
-        <Link href="/dev" className="mt-4 inline-block text-brand-600 hover:underline">
+        <Link href="/dev" className="inline-block mt-4 text-brand-600 hover:underline">
           ← Back
         </Link>
       </div>
@@ -158,8 +158,8 @@ export default function DevChurchDetailPage() {
   const previewUrl = process.env.NEXT_PUBLIC_CHURCH_SITE_PREVIEW_URL ?? `http://localhost:3001`;
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <div className="px-6 py-16 mx-auto max-w-3xl">
+      <div className="flex flex-wrap gap-4 justify-between items-end">
         <div>
           <Link
             href="/dev"
@@ -189,13 +189,13 @@ export default function DevChurchDetailPage() {
       </div>
 
       {actionMessage ? (
-        <pre className="mt-6 overflow-x-auto whitespace-pre-wrap rounded-lg border border-ink-200 bg-ink-50 p-4 text-sm text-ink-800 dark:border-ink-700 dark:bg-ink-900 dark:text-ink-200">
+        <pre className="overflow-x-auto p-4 mt-6 text-sm whitespace-pre-wrap rounded-lg border border-ink-200 bg-ink-50 text-ink-800 dark:border-ink-700 dark:bg-ink-900 dark:text-ink-200">
           {actionMessage}
         </pre>
       ) : null}
 
       <form
-        className="mt-10 grid gap-4"
+        className="grid gap-4 mt-10"
         onSubmit={(e) => {
           e.preventDefault();
           update.mutate({
@@ -225,7 +225,7 @@ export default function DevChurchDetailPage() {
               id="planTier"
               value={planTier}
               onChange={(e) => setPlanTier(e.target.value as 'SITE' | 'GROWTH' | 'CUSTOM')}
-              className="flex h-10 w-full rounded-md border border-ink-200 bg-white px-3 text-sm dark:border-ink-700 dark:bg-ink-900"
+              className="flex px-3 w-full h-10 text-sm bg-white rounded-md border border-ink-200 dark:border-ink-700 dark:bg-ink-900"
             >
               <option value="SITE">Site ($129)</option>
               <option value="GROWTH">Growth ($249)</option>
@@ -311,7 +311,7 @@ export default function DevChurchDetailPage() {
         </div>
 
         <div className="flex flex-wrap gap-4 text-sm text-ink-700 dark:text-ink-300">
-          <label className="flex items-center gap-2">
+          <label className="flex gap-2 items-center">
             <input
               type="checkbox"
               checked={isActive}
@@ -319,7 +319,7 @@ export default function DevChurchDetailPage() {
             />
             Active
           </label>
-          <label className="flex items-center gap-2">
+          <label className="flex gap-2 items-center">
             <input
               type="checkbox"
               checked={givingEnabled}
@@ -327,7 +327,7 @@ export default function DevChurchDetailPage() {
             />
             Giving enabled
           </label>
-          <label className="flex items-center gap-2">
+          <label className="flex gap-2 items-center">
             <input
               type="checkbox"
               checked={eventsEnabled}
@@ -335,7 +335,7 @@ export default function DevChurchDetailPage() {
             />
             Events
           </label>
-          <label className="flex items-center gap-2">
+          <label className="flex gap-2 items-center">
             <input
               type="checkbox"
               checked={sermonsEnabled}
@@ -345,12 +345,12 @@ export default function DevChurchDetailPage() {
           </label>
         </div>
 
-        <Button type="submit" disabled={update.isPending} className="w-fit bg-brand-600 text-white">
+        <Button type="submit" disabled={update.isPending} className="text-white w-fit bg-brand-600">
           {update.isPending ? 'Saving…' : 'Save changes'}
         </Button>
       </form>
 
-      <div className="mt-12 grid gap-4">
+      <div className="grid gap-4 mt-12">
         <h2 className="text-lg font-semibold text-ink-900 dark:text-white">Website</h2>
         <Card className="border-ink-200 dark:border-ink-800 dark:bg-ink-900">
           <CardHeader className="px-5">
@@ -365,7 +365,7 @@ export default function DevChurchDetailPage() {
                     href={church.websiteUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-brand-600 underline dark:text-brand-400"
+                    className="underline text-brand-600 dark:text-brand-400"
                   >
                     {church.websiteUrl}
                   </a>
@@ -374,15 +374,15 @@ export default function DevChurchDetailPage() {
                 'No website URL yet. Provision creates a Vercel project for apps/church-site.'
               )}
               {church.vercelProjectId ? (
-                <span className="mt-1 block">Project: {church.vercelProjectId}</span>
+                <span className="block mt-1">Project: {church.vercelProjectId}</span>
               ) : null}
             </CardDescription>
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 mt-4">
               <Button
                 type="button"
                 disabled={provision.isPending}
                 onClick={() => provision.mutate({ churchId: church.id })}
-                className="bg-brand-600 text-white"
+                className="text-white bg-brand-600"
               >
                 {provision.isPending ? 'Provisioning…' : 'Provision / redeploy'}
               </Button>
@@ -410,7 +410,7 @@ export default function DevChurchDetailPage() {
         </Card>
       </div>
 
-      <div className="mt-12 grid gap-4">
+      <div className="grid gap-4 mt-12">
         <h2 className="text-lg font-semibold text-ink-900 dark:text-white">Billing</h2>
         <Card className="border-ink-200 dark:border-ink-800 dark:bg-ink-900">
           <CardHeader className="px-5">
@@ -418,16 +418,16 @@ export default function DevChurchDetailPage() {
             <CardDescription className="text-ink-500 dark:text-ink-400">
               Start Checkout for a tier, or open the Customer Portal when a Stripe customer exists.
               {church.stripeCustomerId ? (
-                <span className="mt-1 block">Customer: {church.stripeCustomerId}</span>
+                <span className="block mt-1">Customer: {church.stripeCustomerId}</span>
               ) : null}
               {church.stripeSubscriptionId ? (
-                <span className="mt-1 block">Subscription: {church.stripeSubscriptionId}</span>
+                <span className="block mt-1">Subscription: {church.stripeSubscriptionId}</span>
               ) : null}
               {church.stripePriceId ? (
-                <span className="mt-1 block">Price: {church.stripePriceId}</span>
+                <span className="block mt-1">Price: {church.stripePriceId}</span>
               ) : null}
             </CardDescription>
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 mt-4">
               {(['SITE', 'GROWTH', 'CUSTOM'] as const).map((tier) => (
                 <Button
                   key={tier}
@@ -444,7 +444,7 @@ export default function DevChurchDetailPage() {
               <Button
                 type="button"
                 disabled={createPortal.isPending || !church.stripeCustomerId}
-                className="bg-brand-600 text-white"
+                className="text-white bg-brand-600"
                 onClick={() => {
                   createPortal.mutate({
                     churchId: church.id,
@@ -459,7 +459,7 @@ export default function DevChurchDetailPage() {
         </Card>
       </div>
 
-      <div className="mt-12 grid gap-4">
+      <div className="grid gap-4 mt-12">
         <h2 className="text-lg font-semibold text-ink-900 dark:text-white">Plan & sync</h2>
         <Card className="border-ink-200 dark:border-ink-800 dark:bg-ink-900">
           <CardHeader className="px-5">
@@ -471,7 +471,7 @@ export default function DevChurchDetailPage() {
               Stripe. Or pull locations, events, and life groups from Planning Center into the
               shared DB.
             </CardDescription>
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 mt-4">
               {(['SITE', 'GROWTH', 'CUSTOM'] as const).map((tier) => (
                 <Button
                   key={tier}
@@ -488,7 +488,7 @@ export default function DevChurchDetailPage() {
                 type="button"
                 disabled={syncPco.isPending}
                 onClick={() => syncPco.mutate({ churchId: church.id })}
-                className="bg-brand-600 text-white"
+                className="text-white bg-brand-600"
               >
                 {syncPco.isPending ? 'Syncing…' : 'Sync Planning Center'}
               </Button>
@@ -497,7 +497,7 @@ export default function DevChurchDetailPage() {
         </Card>
       </div>
 
-      <div className="mt-12 grid gap-4">
+      <div className="grid gap-4 mt-12">
         <h2 className="text-lg font-semibold text-ink-900 dark:text-white">Mobile</h2>
         <Card className="border-ink-200 dark:border-ink-800 dark:bg-ink-900">
           <CardHeader className="px-5">
@@ -505,7 +505,7 @@ export default function DevChurchDetailPage() {
             <CardDescription className="text-ink-500 dark:text-ink-400">
               SHARED = Gatherly Stack store app with picker. WHITELABEL = paid per-church EAS build.
             </CardDescription>
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 mt-4">
               <Button
                 type="button"
                 variant="outline"
@@ -528,7 +528,7 @@ export default function DevChurchDetailPage() {
                 type="button"
                 disabled={queueBuild.isPending}
                 onClick={() => queueBuild.mutate({ churchId: church.id })}
-                className="bg-brand-600 text-white"
+                className="text-white bg-brand-600"
               >
                 {queueBuild.isPending ? 'Queuing…' : 'Queue white-label build'}
               </Button>
