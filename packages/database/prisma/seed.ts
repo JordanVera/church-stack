@@ -1,15 +1,13 @@
 import {
-  PrismaClient,
+  prisma,
   MembershipRole,
   WebsiteStatus,
   MobilePlan,
   MobileBuildStatus,
   PlanTier,
   ContentSource,
-} from '@prisma/client';
+} from '../src/index';
 import bcrypt from 'bcryptjs';
-
-const prisma = new PrismaClient();
 
 const DEMO_PASSWORD = 'password123';
 const JORDAN = {

@@ -70,9 +70,9 @@ function LoginForm() {
 
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-6">
-      <Card className="border-ink-200 shadow-sm dark:border-ink-800">
+      <Card className="shadow-sm border-ink-200 dark:border-ink-800">
         <CardHeader className="px-6">
-          <CardTitle className="font-display text-3xl font-bold tracking-tight text-ink-900 dark:text-white">
+          <CardTitle className="text-3xl font-bold tracking-tight font-display text-ink-900 dark:text-white">
             Sign in
           </CardTitle>
           <CardDescription className="text-ink-600 dark:text-ink-300">
@@ -96,7 +96,7 @@ function LoginForm() {
               />
             </div>
             <div>
-              <div className="mb-1 flex items-center justify-between gap-3">
+              <div className="flex gap-3 justify-between items-center mb-1">
                 <Label htmlFor="password" className="text-ink-700 dark:text-ink-300">
                   Password
                 </Label>
@@ -117,13 +117,13 @@ function LoginForm() {
               />
             </div>
             {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
-            <Button type="submit" disabled={loading} className="h-10 w-full font-semibold">
+            <Button type="submit" disabled={loading} className="w-full h-10 font-semibold">
               {loading ? 'Logging in…' : 'Log in'}
             </Button>
           </form>
         </CardContent>
 
-        <CardFooter className="flex flex-col items-center justify-center gap-3 text-sm text-yellow-300">
+        <CardFooter className="flex flex-col gap-3 justify-center items-center text-sm text-yellow-300">
           <div className="flex flex-col items-center gap-0.5">
             <p className="font-medium text-yellow-200">Platform</p>
             <p>admin@churchstack.example</p>
@@ -147,7 +147,7 @@ function LoginForm() {
         </CardFooter>
       </Card>
 
-      <p className="mt-6 text-center text-sm text-ink-600 dark:text-ink-300">
+      <p className="my-6 text-sm text-center text-ink-600 dark:text-ink-300">
         Registering a church?{' '}
         <Link
           href="/pricing"
@@ -164,7 +164,7 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="mx-auto max-w-md px-6 py-20 text-ink-600 dark:text-ink-300">Loading…</div>
+        <div className="px-6 py-20 mx-auto max-w-md text-ink-600 dark:text-ink-300">Loading…</div>
       }
     >
       <LoginForm />
