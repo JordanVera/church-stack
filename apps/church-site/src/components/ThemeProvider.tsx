@@ -15,6 +15,7 @@ export default function ThemeProvider({ children, defaultTheme = 'light' }: Prop
       defaultTheme={defaultTheme}
       enableSystem={false}
       disableTransitionOnChange
+      scriptProps={typeof window === 'undefined' ? undefined : { type: 'application/json' }}
     >
       {children}
     </NextThemesProvider>

@@ -16,11 +16,7 @@ import {
   CardDescription,
   CardFooter,
 } from '@/components/ui/card';
-
-function safeCallbackUrl(value: string | null) {
-  if (!value || !value.startsWith('/') || value.startsWith('//')) return '/dashboard';
-  return value;
-}
+import { resolvePostLoginRedirect, safeCallbackUrl } from '@/lib/post-login-redirect';
 
 function LoginForm() {
   const router = useRouter();
@@ -44,9 +40,9 @@ function LoginForm() {
     }
 
     try {
+      const me = await utils.auth.me.fetch();
       const billingReturn = callbackUrl.startsWith('/billing/');
       if (!billingReturn) {
-        const me = await utils.auth.me.fetch();
         const allowed = Boolean(
           me?.isAdmin || me?.isDev || (me?.memberships && me.memberships.length > 0)
         );
@@ -59,7 +55,7 @@ function LoginForm() {
           return;
         }
       }
-      router.push(callbackUrl);
+      router.push(resolvePostLoginRedirect(callbackUrl, me ?? {}));
     } catch {
       await signOut({ redirect: false });
       setError('Unable to verify access.');

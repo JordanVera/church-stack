@@ -19,10 +19,14 @@ export default function DashboardIndexPage() {
 
   useEffect(() => {
     if (status !== 'authenticated' || me.isLoading) return;
+    if (me.data?.isAdmin && memberships.length === 0) {
+      router.replace('/admin');
+      return;
+    }
     if (memberships.length === 1 && memberships[0]) {
       router.replace(`/dashboard/${memberships[0].church.slug}`);
     }
-  }, [status, me.isLoading, memberships, router]);
+  }, [status, me.isLoading, me.data?.isAdmin, memberships, router]);
 
   if (status === 'loading' || (status === 'authenticated' && me.isLoading)) {
     return (

@@ -25,8 +25,8 @@ export default async function AdminPage() {
   ]);
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-16">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <div className="px-6 py-16 mx-auto max-w-5xl">
+      <div className="flex flex-wrap gap-4 justify-between items-end">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-500 dark:text-ink-400">
             Platform
@@ -34,26 +34,18 @@ export default async function AdminPage() {
           <h1 className="mt-2 text-3xl font-bold tracking-tight text-ink-900 dark:text-white">
             Admin
           </h1>
-          <p className="mt-1 text-ink-600 dark:text-ink-300">
-            Signed in as {admin.email}
-          </p>
+          <p className="mt-1 text-ink-600 dark:text-ink-300">Signed in as {admin.email}</p>
         </div>
-        <Link
-          href="/dashboard"
-          className="text-sm font-medium text-brand-600 hover:underline dark:text-brand-400"
-        >
-          ← Back to dashboard
-        </Link>
       </div>
 
-      <div className="mt-10 grid gap-4 sm:grid-cols-2">
-        <Card className="border-ink-200 shadow-sm dark:border-ink-800 dark:bg-ink-900">
+      <div className="grid gap-4 mt-10 sm:grid-cols-2">
+        <Card className="shadow-sm border-ink-200 dark:border-ink-800 dark:bg-ink-900">
           <CardHeader className="px-5">
             <CardDescription>Churches</CardDescription>
             <CardTitle className="text-3xl tabular-nums">{churchCount}</CardTitle>
           </CardHeader>
         </Card>
-        <Card className="border-ink-200 shadow-sm dark:border-ink-800 dark:bg-ink-900">
+        <Card className="shadow-sm border-ink-200 dark:border-ink-800 dark:bg-ink-900">
           <CardHeader className="px-5">
             <CardDescription>Users</CardDescription>
             <CardTitle className="text-3xl tabular-nums">{userCount}</CardTitle>
@@ -62,14 +54,14 @@ export default async function AdminPage() {
       </div>
 
       <h2 className="mt-12 text-lg font-semibold text-ink-900 dark:text-white">Churches</h2>
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 mt-4 sm:grid-cols-2">
         {churches.map((church) => (
           <Card
             key={church.id}
-            className="border-ink-200 shadow-sm dark:border-ink-800 dark:bg-ink-900"
+            className="shadow-sm border-ink-200 dark:border-ink-800 dark:bg-ink-900"
           >
             <CardHeader className="px-5">
-              <div className="flex items-center justify-between gap-3">
+              <div className="flex gap-3 justify-between items-center">
                 <CardTitle className="font-semibold text-ink-900 dark:text-white">
                   {church.name}
                 </CardTitle>
